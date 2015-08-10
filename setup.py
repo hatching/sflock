@@ -12,6 +12,10 @@ setup(
     author_email="jbr@cuckoo.sh",
     packages=[
         "sflock",
+        "sflock.unpack",
+        "sflock.test",
+        "sflock.data",
+        "sflock.data.test",
     ],
     scripts=[
         "bin/sflock",
@@ -21,8 +25,8 @@ setup(
     description="Sample staging and detonation utility",
     include_package_data=True,
     package_data={
-        "vmcloak.data": ["*.*"],
-        "vmcloak.data.test": ["*.*"],
+        "sflock.data": ["*.*"],
+        "sflock.data.test": ["*.*"],
     },
     install_requires=[
         "magic",
