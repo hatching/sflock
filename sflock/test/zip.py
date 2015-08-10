@@ -8,6 +8,7 @@ from sflock.unpack import Zipfile
 
 class ZipfileTestCase(UnitTest):
     def test_zip_plain(self):
+        self.assertIn("Zip archive", test_file("zip_plain.zip").magic)
         z = Zipfile(test_file("zip_plain.zip"))
         self.assertEqual(z.handles(), True)
         files = list(z.unpack())
@@ -15,8 +16,10 @@ class ZipfileTestCase(UnitTest):
         self.assertEqual(files[0].filepath, "sflock.txt")
         self.assertEqual(files[0].contents, "sflock_plain_zip\n")
         self.assertEqual(files[0].password, None)
+        self.assertEqual(files[0].magic, "ASCII text")
 
     def test_zip_encrypted(self):
+        self.assertIn("Zip archive", test_file("zip_encrypted.zip").magic)
         z = Zipfile(test_file("zip_encrypted.zip"))
         self.assertEqual(z.handles(), True)
         files = list(z.unpack())
@@ -24,14 +27,17 @@ class ZipfileTestCase(UnitTest):
         self.assertEqual(files[0].filepath, "sflock.txt")
         self.assertEqual(files[0].contents, "sflock_encrypted_zip\n")
         self.assertEqual(files[0].password, "infected")
+        self.assertEqual(files[0].magic, "ASCII text")
 
     def test_zip_encrypted2(self):
+        self.assertIn("Zip archive", test_file("zip_encrypted2.zip").magic)
         z = Zipfile(test_file("zip_encrypted2.zip"))
         self.assertEqual(z.handles(), True)
         files = list(z.unpack())
         self.assertEqual(len(files), 1)
         self.assertEqual(files[0].mode, "failed")
         self.assertEqual(files[0].description, "Error decrypting file")
+        self.assertEqual(files[0].magic, None)
 
         z = Zipfile(test_file("zip_encrypted2.zip"))
         self.assertEqual(z.handles(), True)
@@ -40,3 +46,4 @@ class ZipfileTestCase(UnitTest):
         self.assertEqual(files[0].filepath, "sflock.txt")
         self.assertEqual(files[0].contents, "sflock_encrypted_zip\n")
         self.assertEqual(files[0].password, "sflock")
+        self.assertEqual(files[0].magic, "ASCII text")

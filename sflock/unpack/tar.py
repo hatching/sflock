@@ -11,16 +11,16 @@ class Tarfile(Unpacker):
     author = ["Jurriaan Bremer"]
 
     def handles(self):
-        return tarfile.is_tarfile(self.filepath)
+        return tarfile.is_tarfile(self.f.filepath)
 
     def unpack(self):
         try:
-            archive = tarfile.TarFile.taropen(self.filepath)
+            archive = tarfile.TarFile.taropen(self.f.filepath)
         except tarfile.ReadError:
             try:
-                archive = tarfile.TarFile.gzopen(self.filepath)
+                archive = tarfile.TarFile.gzopen(self.f.filepath)
             except tarfile.ReadError:
-                archive = tarfile.TarFile.bz2open(self.filepath)
+                archive = tarfile.TarFile.bz2open(self.f.filepath)
 
         for entry in archive:
             yield File(entry.path, archive.extractfile(entry).read())

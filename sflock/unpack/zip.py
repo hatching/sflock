@@ -17,7 +17,7 @@ class Zipfile(Unpacker):
         self.known_passwords = set()
 
     def handles(self):
-        return zipfile.is_zipfile(self.filepath)
+        return zipfile.is_zipfile(self.f.filepath)
 
     def _bruteforce(self, archive, entry, passwords):
         for password in passwords:
@@ -51,6 +51,6 @@ class Zipfile(Unpacker):
                  description="Error decrypting file")
 
     def unpack(self, password=None):
-        archive = zipfile.ZipFile(self.filepath)
+        archive = zipfile.ZipFile(self.f.filepath)
         for entry in archive.infolist():
             yield self._decrypt(archive, entry, password)

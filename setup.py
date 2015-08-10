@@ -24,4 +24,7 @@ setup(
         "vmcloak.data": ["*.*"],
         "vmcloak.data.test": ["*.*"],
     },
+    install_requires=[
+        "magic",
+    ],
 )

@@ -5,6 +5,8 @@
 import os.path
 import pkg_resources
 
+from sflock.abstracts import File
+
 def iter_passwords():
     filepath = pkg_resources.resource_filename("sflock", "data/password.txt")
     for line in open(filepath, "rb"):
@@ -12,4 +14,5 @@ def iter_passwords():
 
 def test_file(filename):
     relative_filename = os.path.join("data", "test", filename)
-    return pkg_resources.resource_filename("sflock", relative_filename)
+    filepath = pkg_resources.resource_filename("sflock", relative_filename)
+    return File.from_path(filepath)
