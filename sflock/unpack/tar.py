@@ -14,6 +14,13 @@ class Tarfile(Unpacker):
         return tarfile.is_tarfile(self.filepath)
 
     def unpack(self):
-        archive = tarfile.TarFile(self.filepath)
+        try:
+            archive = tarfile.TarFile.taropen(self.filepath)
+        except tarfile.ReadError:
+            try:
+                archive = tarfile.TarFile.gzopen(self.filepath)
+            except tarfile.ReadError:
+                archive = tarfile.TarFile.bz2open(self.filepath)
+
         for entry in archive:
             yield File(entry.path, archive.extractfile(entry).read())
