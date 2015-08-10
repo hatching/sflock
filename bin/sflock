@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+# Copyright (C) 2015 Jurriaan Bremer.
+# This file is part of SFlock - http://www.sflock.org/.
+# See the file 'docs/LICENSE.txt' for copying permission.
+
+import argparse
+import glob
+import os
+
+def process_file(filepath):
+    pass
+
+def process_directory(dirpath):
+    for rootpath, directories, filenames in os.walk(dirpath):
+        for filename in filenames:
+            process_file(os.path.join(rootpath, filename))
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("files", nargs="+", help="Files to be processed.")
+    args = parser.parse_args()
+
+    for pattern in args.files:
+        for path in glob.iglob(pattern):
+            if os.path.isdir(path):
+                process_directory(path)
+            else:
+                process_file(path)
+
+if __name__ == "__main__":
+    main()
