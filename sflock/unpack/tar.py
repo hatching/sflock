@@ -10,6 +10,9 @@ class Tarfile(Unpacker):
     name = "tarfile"
     author = ["Jurriaan Bremer"]
 
+    def handles(self):
+        return tarfile.is_tarfile(self.filepath)
+
     def unpack(self):
         archive = tarfile.TarFile(self.filepath)
         for entry in archive:

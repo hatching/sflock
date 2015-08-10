@@ -10,11 +10,18 @@ class Unpacker(object):
     def __init__(self, filepath):
         self.filepath = filepath
 
+    def handles(self):
+        raise NotImplementedError
+
     def unpack(self):
-        pass
+        raise NotImplementedError
 
 class File(object):
     """Abstract class for extracted files."""
-    def __init__(self, filepath, contents):
+    def __init__(self, filepath, contents, mode=None, password=None,
+                 description=None):
         self.filepath = filepath
         self.contents = contents
+        self.mode = mode
+        self.password = password
+        self.description = description

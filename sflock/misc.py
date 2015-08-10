@@ -14,7 +14,8 @@ def import_plugins(dirpath, namespace, class_):
 
     for fname in os.listdir(dirpath):
         if fname.endswith(".py") and not fname.startswith("__init__"):
-            importlib.import_module("sflock.unpack.%s" % fname.rstrip(".py"))
+            module_name, _ = os.path.splitext(fname)
+            importlib.import_module("sflock.unpack.%s" % module_name)
 
     for subclass in class_.__subclasses__():
         namespace[subclass.__name__] = subclass
