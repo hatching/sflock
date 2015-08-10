@@ -6,18 +6,22 @@
 from setuptools import setup
 
 setup(
-    name='SFlock',
-    version='0.1',
-    author='Jurriaan Bremer',
-    author_email='jbr@cuckoo.sh',
+    name="SFlock",
+    version="0.1",
+    author="Jurriaan Bremer",
+    author_email="jbr@cuckoo.sh",
     packages=[
-        'sflock',
+        "sflock",
     ],
     scripts=[
-        'bin/sflock',
+        "bin/sflock",
     ],
-    url='http://sflock.org/',
-    license='GPLv3',
-    description='Sample staging and detonation utility',
+    url="http://sflock.org/",
+    license="GPLv3",
+    description="Sample staging and detonation utility",
     include_package_data=True,
+    package_data={
+        "vmcloak.data": ["*.*"],
+        "vmcloak.data.test": ["*.*"],
+    },
 )

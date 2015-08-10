@@ -2,6 +2,11 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import unittest
+
+class UnitTest(unittest.TestCase):
+    """Abstract class for unit tests."""
+
 class Unpacker(object):
     """Abstract class for Unpacker engines."""
     name = None

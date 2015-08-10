@@ -15,10 +15,25 @@ def process_directory(dirpath):
         for filename in filenames:
             process_file(os.path.join(rootpath, filename))
 
+def do_unittest():
+    import unittest
+    from sflock.test import plugins
+
+    for plugin in plugins:
+        print "Loaded plugin: %s from module %s" % (
+            plugin.__name__, plugin.__module__)
+    print
+
+    unittest.main(module="sflock.test", argv=["sflock", "-v"])
+
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("files", nargs="+", help="Files to be processed.")
+    parser.add_argument("--unittest", action="store_true", help="Run all unittests.")
+    parser.add_argument("files", nargs="*", help="Files to be processed.")
     args = parser.parse_args()
+
+    if args.unittest:
+        do_unittest()
 
     for pattern in args.files:
         for path in glob.iglob(pattern):

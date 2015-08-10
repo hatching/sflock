@@ -28,9 +28,8 @@ class Zipfile(Unpacker):
                 self.known_passwords.add(password)
                 return ret
             except (RuntimeError, zipfile.BadZipfile) as e:
-                message = e.message or e.args[0]
-                if "Bad password" not in message and \
-                        "Bad CRC-32" not in message:
+                msg = e.message or e.args[0]
+                if "Bad password" not in msg and "Bad CRC-32" not in msg:
                     raise UnpackException("Unknown zipfile error: %s" % e)
 
     def _decrypt(self, archive, entry, password):
