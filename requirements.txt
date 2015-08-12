@@ -1,1 +1,1 @@
-magic
+python-magic

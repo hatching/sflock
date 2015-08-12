@@ -29,6 +29,6 @@ setup(
         "sflock.data.test": ["*.*"],
     },
     install_requires=[
-        "magic",
+        "python-magic",
     ],
 )
