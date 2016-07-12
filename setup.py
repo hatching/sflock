@@ -28,6 +28,6 @@ setup(
         "sflock.data": ["*.*"],
     },
     install_requires=[
-        "python-magic",
+        "python-magic==0.4.12",
     ],
 )

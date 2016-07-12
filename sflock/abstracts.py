@@ -24,8 +24,6 @@ class Unpacker(object):
 
 class File(object):
     """Abstract class for extracted files."""
-    magic_set = magic.open(magic.MAGIC_NONE)
-    magic_set.load()
 
     def __init__(self, filepath, contents, mode=None, password=None,
                  description=None):
@@ -43,5 +41,5 @@ class File(object):
     @property
     def magic(self):
         if not self._magic and self.contents:
-            self._magic = self.magic_set.buffer(self.contents)
+            self._magic = magic.from_buffer(self.contents)
         return self._magic
