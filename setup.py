@@ -26,7 +26,6 @@ setup(
     include_package_data=True,
     package_data={
         "sflock.data": ["*.*"],
-        "sflock.data.test": ["*.*"],
     },
     install_requires=[
         "python-magic",
