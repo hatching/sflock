@@ -3,10 +3,6 @@
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 import magic
-import unittest
-
-class UnitTest(unittest.TestCase):
-    """Abstract class for unit tests."""
 
 class Unpacker(object):
     """Abstract class for Unpacker engines."""

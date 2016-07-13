@@ -2,48 +2,50 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
-from sflock.abstracts import UnitTest
-from sflock.config import test_file
+from sflock.abstracts import File
 from sflock.unpack import Zipfile
 
-class ZipfileTestCase(UnitTest):
+def f(filename):
+    return File.from_path("tests/files/%s" % filename)
+
+class TestZipfile(object):
     def test_zip_plain(self):
-        self.assertIn("Zip archive", test_file("zip_plain.zip").magic)
-        z = Zipfile(test_file("zip_plain.zip"))
-        self.assertEqual(z.handles(), True)
+        assert "Zip archive" in f("zip_plain.zip").magic
+        z = Zipfile(f("zip_plain.zip"))
+        assert z.handles() is True
         files = list(z.unpack())
-        self.assertEqual(len(files), 1)
-        self.assertEqual(files[0].filepath, "sflock.txt")
-        self.assertEqual(files[0].contents, "sflock_plain_zip\n")
-        self.assertEqual(files[0].password, None)
-        self.assertEqual(files[0].magic, "ASCII text")
+        assert len(files) == 1
+        assert files[0].filepath == "sflock.txt"
+        assert files[0].contents == "sflock_plain_zip\n"
+        assert files[0].password is None
+        assert files[0].magic == "ASCII text"
 
     def test_zip_encrypted(self):
-        self.assertIn("Zip archive", test_file("zip_encrypted.zip").magic)
-        z = Zipfile(test_file("zip_encrypted.zip"))
-        self.assertEqual(z.handles(), True)
+        assert "Zip archive" in f("zip_encrypted.zip").magic
+        z = Zipfile(f("zip_encrypted.zip"))
+        assert z.handles() is True
         files = list(z.unpack())
-        self.assertEqual(len(files), 1)
-        self.assertEqual(files[0].filepath, "sflock.txt")
-        self.assertEqual(files[0].contents, "sflock_encrypted_zip\n")
-        self.assertEqual(files[0].password, "infected")
-        self.assertEqual(files[0].magic, "ASCII text")
+        assert len(files) == 1
+        assert files[0].filepath == "sflock.txt"
+        assert files[0].contents == "sflock_encrypted_zip\n"
+        assert files[0].password == "infected"
+        assert files[0].magic == "ASCII text"
 
     def test_zip_encrypted2(self):
-        self.assertIn("Zip archive", test_file("zip_encrypted2.zip").magic)
-        z = Zipfile(test_file("zip_encrypted2.zip"))
-        self.assertEqual(z.handles(), True)
+        assert "Zip archive" in f("zip_encrypted2.zip").magic
+        z = Zipfile(f("zip_encrypted2.zip"))
+        assert z.handles() is True
         files = list(z.unpack())
-        self.assertEqual(len(files), 1)
-        self.assertEqual(files[0].mode, "failed")
-        self.assertEqual(files[0].description, "Error decrypting file")
-        self.assertEqual(files[0].magic, None)
+        assert len(files) == 1
+        assert files[0].mode == "failed"
+        assert files[0].description == "Error decrypting file"
+        assert files[0].magic is None
 
-        z = Zipfile(test_file("zip_encrypted2.zip"))
-        self.assertEqual(z.handles(), True)
+        z = Zipfile(f("zip_encrypted2.zip"))
+        assert z.handles() is True
         files = list(z.unpack(password="sflock"))
-        self.assertEqual(len(files), 1)
-        self.assertEqual(files[0].filepath, "sflock.txt")
-        self.assertEqual(files[0].contents, "sflock_encrypted_zip\n")
-        self.assertEqual(files[0].password, "sflock")
-        self.assertEqual(files[0].magic, "ASCII text")
+        assert len(files) == 1
+        assert files[0].filepath == "sflock.txt"
+        assert files[0].contents == "sflock_encrypted_zip\n"
+        assert files[0].password == "sflock"
+        assert files[0].magic == "ASCII text"
