@@ -29,6 +29,7 @@ class File(object):
         self.password = password
         self.description = description
         self._magic = None
+        self._magic_mime = None
 
     @classmethod
     def from_path(self, filepath):
@@ -39,3 +40,9 @@ class File(object):
         if not self._magic and self.contents:
             self._magic = magic.from_buffer(self.contents)
         return self._magic
+
+    @property
+    def mime(self):
+        if not self._magic_mime and self.contents:
+            self._magic_mime = magic.from_buffer(self.contents, mime=True)
+        return self._magic_mime
