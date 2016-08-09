@@ -14,7 +14,7 @@ class Rarfile(Unpacker):
     def handles(self):
         return "RAR archive" in self.f.magic
 
-    def unpack(self):
+    def unpack(self, mode=None):
         output = subprocess.check_output([self.unrar, "lb", self.f.filepath])
         for entry in output.split("\n"):
             # yield File(entry.path, archive.extractfile(entry).read())

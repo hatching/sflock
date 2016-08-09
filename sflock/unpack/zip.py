@@ -11,7 +11,7 @@ from sflock.exception import UnpackException
 
 class Zipfile(Unpacker):
     name = "zipfile"
-    author = ["Jurriaan Bremer"]
+    author = ["Jurriaan Bremer", "Sander Ferdinand"]
 
     def __init__(self, *args, **kwargs):
         super(Zipfile, self).__init__(*args, **kwargs)
@@ -54,7 +54,7 @@ class Zipfile(Unpacker):
             File(entry.filename, None, mode="failed",
                  description="Error decrypting file")
 
-    def unpack(self, password=None):
+    def unpack(self, mode=None, password=None):
         if self.f.filepath:
             archive = zipfile.ZipFile(self.f.filepath)
         else:

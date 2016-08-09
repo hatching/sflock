@@ -32,7 +32,9 @@ class Unpacker(object):
             signature = f.get_signature()
 
             container = signature["unpacker"](f=f)
-            data.update({"unpacked": [z for z in container.unpack()]})
+            data.update({
+                "unpacked": [z for z in container.unpack(mode=signature["mode"])]
+            })
 
         return data
 
@@ -55,28 +57,9 @@ class File(object):
         return File(filepath, open(filepath, "rb").read())
 
     def get_signature(self):
-        from sflock.unpack.tar import Tarfile
-        from sflock.unpack.zip import Zipfile
+        from sflock.unpack.signatures import Signatures
 
-        signatures = {
-            "\x50\x4B": {
-                "unpacker": Zipfile
-            },
-            "\x75\x73\x74\x61\x72\x20\x20\x00": {
-                "unpacker": Tarfile,
-                "mode": "r:*"
-            },
-            "\x42\x5A\x68": {
-                "unpacker": Tarfile,
-                "mode": "r:bz2"
-            },
-            "\x1F\x8B": {
-                "unpacker": Tarfile,
-                "mode": "r:gz"
-            }
-        }
-
-        for k, v in signatures.iteritems():
+        for k, v in Signatures.signatures.iteritems():
             if self.contents.startswith(k):
                 return v
 
@@ -102,7 +85,7 @@ class File(object):
     def to_dict(self):
         return {
             "filepath": self.filepath,
-            "contents": len(self.contents),
+            "size": len(self.contents),
             "mode": self.mode,
             "password": self.password,
             "description": self.description,

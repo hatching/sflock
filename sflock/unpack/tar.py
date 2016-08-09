@@ -11,17 +11,23 @@ class Tarfile(Unpacker):
     name = "tarfile"
     author = ["Jurriaan Bremer", "Sander Ferdinand"]
 
+    def __init__(self, f):
+        super(Tarfile, self).__init__(f=f)
+        self.signatures = {
+
+        }
+
     def handles(self):
         if self.f.filepath:
             return tarfile.is_tarfile(self.f.filepath)
         else:
             return self._is_tarfile(contents=self.f.contents)
 
-    def unpack(self):
+    def unpack(self, mode=None):
         if self.f.filepath:
             archive = self._openPath(self.f.filepath)
         else:
-            archive = self._openStream(self.f.contents)
+            archive = self._openStream(self.f.contents, mode=mode)
 
         for entry in archive:
             f = File(entry.path, archive.extractfile(entry).read())
@@ -29,34 +35,27 @@ class Tarfile(Unpacker):
 
     @staticmethod
     def _is_tarfile(contents=None):
-        headers = {
-            "tar": "\x75\x73\x74\x61\x72\x20\x20\x00",
-            "bzip2": "\x42\x5A\x68",
-            "gzip": "\x1F\x8B"
-        }
+        from sflock.unpack.signatures import Signatures
 
-        for k, v in headers.iteritems():
-            if contents.startswith(v):
-                return True
+        for k, v in Signatures.signatures.iteritems():
+            if contents.startswith(k):
+                return v
 
-    @staticmethod
-    def _openStream(contents):
-        formats = {
-            "tar": "r:*",
-            "gzip": "r:gz",
-            "bzip2": "r:bz2"
-        }
+    def _openStream(self, contents, mode):
+        from sflock.unpack.signatures import Signatures
 
         fileobj = StringIO(contents)
+        if mode:
+            return tarfile.open(mode=mode, fileobj=fileobj)
 
-        for compression, mode in formats.iteritems():
+        for compression, info in Signatures.signatures.iteritems():
+            if info["family"] != "tar":
+                continue
+
             try:
-                archive = tarfile.open(mode=mode, fileobj=fileobj)
-                break
+                return tarfile.open(mode=info["mode"], fileobj=fileobj)
             except:
                 pass
-
-        return archive
 
     @staticmethod
     def _openPath(filepath):
