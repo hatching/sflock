@@ -3,6 +3,7 @@
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 import zipfile
+from StringIO import StringIO
 
 from sflock.abstracts import File, Unpacker
 from sflock.config import iter_passwords
@@ -17,7 +18,10 @@ class Zipfile(Unpacker):
         self.known_passwords = set()
 
     def handles(self):
-        return zipfile.is_zipfile(self.f.filepath)
+        if self.f.filepath:
+            return zipfile.is_zipfile(self.f.filepath)
+        else:
+            return self._is_zipfile(self.f.contents)
 
     def _bruteforce(self, archive, entry, passwords):
         for password in passwords:
@@ -51,6 +55,15 @@ class Zipfile(Unpacker):
                  description="Error decrypting file")
 
     def unpack(self, password=None):
-        archive = zipfile.ZipFile(self.f.filepath)
+        if self.f.filepath:
+            archive = zipfile.ZipFile(self.f.filepath)
+        else:
+            archive = zipfile.ZipFile(StringIO(self.f.contents))
+
         for entry in archive.infolist():
-            yield self._decrypt(archive, entry, password)
+            yield self.parse_item(self._decrypt(archive, entry, password))
+
+    @staticmethod
+    def _is_zipfile(contents=None):
+        if contents.startswith("\x50\x4B"):
+            return True
