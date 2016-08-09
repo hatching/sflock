@@ -15,10 +15,10 @@ class TestZipfile(object):
         assert z.handles() is True
         files = list(z.unpack())
         assert len(files) == 1
-        assert files[0].filepath == "sflock.txt"
-        assert files[0].contents == "sflock_plain_zip\n"
-        assert files[0].password is None
-        assert files[0].magic == "ASCII text"
+        assert files[0]["file"].filepath == "sflock.txt"
+        assert files[0]["file"].contents == "sflock_plain_zip\n"
+        assert files[0]["file"].password is None
+        assert files[0]["file"].magic == "ASCII text"
 
     def test_zip_encrypted(self):
         assert "Zip archive" in f("zip_encrypted.zip").magic
@@ -26,10 +26,10 @@ class TestZipfile(object):
         assert z.handles() is True
         files = list(z.unpack())
         assert len(files) == 1
-        assert files[0].filepath == "sflock.txt"
-        assert files[0].contents == "sflock_encrypted_zip\n"
-        assert files[0].password == "infected"
-        assert files[0].magic == "ASCII text"
+        assert files[0]["file"].filepath == "sflock.txt"
+        assert files[0]["file"].contents == "sflock_encrypted_zip\n"
+        assert files[0]["file"].password == "infected"
+        assert files[0]["file"].magic == "ASCII text"
 
     def test_zip_encrypted2(self):
         assert "Zip archive" in f("zip_encrypted2.zip").magic
@@ -37,15 +37,15 @@ class TestZipfile(object):
         assert z.handles() is True
         files = list(z.unpack())
         assert len(files) == 1
-        assert files[0].mode == "failed"
-        assert files[0].description == "Error decrypting file"
-        assert files[0].magic is None
+        assert files[0]["file"].mode == "failed"
+        assert files[0]["file"].description == "Error decrypting file"
+        assert files[0]["file"].magic is None
 
         z = Zipfile(f("zip_encrypted2.zip"))
         assert z.handles() is True
         files = list(z.unpack(password="sflock"))
         assert len(files) == 1
-        assert files[0].filepath == "sflock.txt"
-        assert files[0].contents == "sflock_encrypted_zip\n"
-        assert files[0].password == "sflock"
-        assert files[0].magic == "ASCII text"
+        assert files[0]["file"].filepath == "sflock.txt"
+        assert files[0]["file"].contents == "sflock_encrypted_zip\n"
+        assert files[0]["file"].password == "sflock"
+        assert files[0]["file"].magic == "ASCII text"

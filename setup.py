@@ -13,7 +13,6 @@ setup(
     packages=[
         "sflock",
         "sflock.unpack",
-        "tests",
         "sflock.data",
     ],
     scripts=[
