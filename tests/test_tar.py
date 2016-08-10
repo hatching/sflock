@@ -25,7 +25,7 @@ class TestTarfile(object):
         assert f("tar_plain.tar").get_signature() is None
 
     def test_tar_plain2(self):
-        assert "POSIX tar" in f("tar_plain.tar").magic
+        assert "POSIX tar" in f("tar_plain2.tar").magic
         t = Tarfile(f("tar_plain2.tar"))
         assert t.handles() is True
         files = list(t.unpack())

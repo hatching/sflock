@@ -96,5 +96,5 @@ class File(object):
             "description": self.description,
             "magic": self._magic,
             "mime": self.mime,
-            "hash": self.hash
+            "hash": self.hash,
         }
