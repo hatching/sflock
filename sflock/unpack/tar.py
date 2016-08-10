@@ -28,7 +28,7 @@ class Tarfile(Unpacker):
             f = File(entry.path, archive.extractfile(entry).read())
             yield self.parse_item(f)
 
-    def _is_tarfile(self, contents=None):
+    def _is_tarfile(self, contents):
         for k, v in Signatures.signatures.items():
             if contents.startswith(k) and v["unpacker"] == "tarfile":
                 return v

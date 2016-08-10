@@ -64,7 +64,7 @@ class Zipfile(Unpacker):
         for entry in archive.infolist():
             yield self.parse_item(self._decrypt(archive, entry, password))
 
-    def _is_zipfile(self, contents=None):
+    def _is_zipfile(self, contents):
         for k, v in Signatures.signatures.items():
             if contents.startswith(k) and v["unpacker"] == "zipfile":
                 return v
