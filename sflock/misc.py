@@ -17,8 +17,9 @@ def import_plugins(dirpath, module_prefix, namespace, class_):
             module_name, _ = os.path.splitext(fname)
             importlib.import_module("%s.%s" % (module_prefix, module_name))
 
-    plugins = []
+    plugins = {}
     for subclass in class_.__subclasses__():
         namespace[subclass.__name__] = subclass
-        plugins.append(subclass)
+        plugins[subclass.__name__.lower()] = subclass
+        class_.plugins[subclass.__name__.lower()] = subclass
     return plugins

@@ -2,28 +2,25 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
-from sflock.unpack.tar import Tarfile
-from sflock.unpack.zip import Zipfile
-
 class Signatures:
     signatures = {
-        "\x50\x4B": {
-            "unpacker": Zipfile,
+        "\x50\x4b": {
+            "unpacker": "zipfile",
             "mode": "",
             "family": "zip"
         },
         "\x75\x73\x74\x61\x72\x20\x20\x00": {
-            "unpacker": Tarfile,
+            "unpacker": "tarfile",
             "mode": "r:*",
             "family": "tar"
         },
-        "\x42\x5A\x68": {
-            "unpacker": Tarfile,
+        "\x42\x5a\x68": {
+            "unpacker": "tarfile",
             "mode": "r:bz2",
             "family": "tar"
         },
-        "\x1F\x8B": {
-            "unpacker": Tarfile,
+        "\x1f\x8b": {
+            "unpacker": "tarfile",
             "mode": "r:gz",
             "family": "tar"
         }

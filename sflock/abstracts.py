@@ -11,6 +11,9 @@ class Unpacker(object):
     name = None
     author = None
 
+    # Initiated at runtime - contains each Unpacker subclass.
+    plugins = {}
+
     def __init__(self, f):
         self.f = f
         self.init()
@@ -34,7 +37,7 @@ class Unpacker(object):
             f = File(contents=entry.contents)
             signature = f.get_signature()
 
-            container = signature["unpacker"](f=f)
+            container = self.plugins[signature["unpacker"]](f)
             data.update({
                 "unpacked": [z for z in container.unpack(mode=signature["mode"])]
             })

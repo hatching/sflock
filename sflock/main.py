@@ -7,11 +7,12 @@ import glob
 import os.path
 
 from sflock.abstracts import File
+from sflock.unpack import plugins
 
 def process_file(filepath):
     f = File(filepath)
     signature = f.get_signature()
-    container = signature["unpacker"](f)
+    container = plugins[signature["unpacker"]](f)
     for entry in container.unpack(mode=signature["mode"]):
         print entry["file"].filepath
 
