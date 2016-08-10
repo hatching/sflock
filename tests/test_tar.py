@@ -19,6 +19,11 @@ class TestTarfile(object):
         assert files[0]["file"].contents == "sflock_plain_tar\n"
         assert files[0]["file"].magic == "ASCII text"
 
+        # TODO A combination of file extension, file magic, and initial bytes
+        # signature should be used instead of just the bytes (as this call
+        # should not yield None).
+        assert f("tar_plain.tar").get_signature() is None
+
     def test_tar_plain2(self):
         assert "POSIX tar" in f("tar_plain.tar").magic
         t = Tarfile(f("tar_plain2.tar"))
@@ -31,6 +36,9 @@ class TestTarfile(object):
         assert files[1]["file"].filepath == "sflock2.txt"
         assert files[1]["file"].contents == "sflock_plain_tar2\n"
         assert files[1]["file"].magic == "ASCII text"
+
+        # TODO See item above for tar_plain.tar.
+        assert f("tar_plain2.tar").get_signature() is None
 
     def test_tar_plain2_gz(self):
         assert "gzip compr" in f("tar_plain2.tar.gz").magic
@@ -45,6 +53,9 @@ class TestTarfile(object):
         assert files[1]["file"].contents == "sflock_plain_tar2\n"
         assert files[1]["file"].magic == "ASCII text"
 
+        s = f("tar_plain2.tar.gz").get_signature()
+        assert s == {"family": "tar", "mode": "r:gz", "unpacker": "tarfile"}
+
     def test_tar_plain2_bz2(self):
         assert "bzip2 compr" in f("tar_plain2.tar.bz2").magic
         t = Tarfile(f("tar_plain2.tar.bz2"))
@@ -57,3 +68,6 @@ class TestTarfile(object):
         assert files[1]["file"].filepath == "sflock2.txt"
         assert files[1]["file"].contents == "sflock_plain_tar2\n"
         assert files[1]["file"].magic == "ASCII text"
+
+        s = f("tar_plain2.tar.bz2").get_signature()
+        assert s == {"family": "tar", "mode": "r:bz2", "unpacker": "tarfile"}

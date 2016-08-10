@@ -20,6 +20,9 @@ class TestZipfile(object):
         assert files[0]["file"].password is None
         assert files[0]["file"].magic == "ASCII text"
 
+        s = f("zip_plain.zip").get_signature()
+        assert s == {"family": "zip", "mode": "", "unpacker": "zipfile"}
+
     def test_zip_encrypted(self):
         assert "Zip archive" in f("zip_encrypted.zip").magic
         z = Zipfile(f("zip_encrypted.zip"))
@@ -30,6 +33,9 @@ class TestZipfile(object):
         assert files[0]["file"].contents == "sflock_encrypted_zip\n"
         assert files[0]["file"].password == "infected"
         assert files[0]["file"].magic == "ASCII text"
+
+        s = f("zip_encrypted.zip").get_signature()
+        assert s == {"family": "zip", "mode": "", "unpacker": "zipfile"}
 
     def test_zip_encrypted2(self):
         assert "Zip archive" in f("zip_encrypted2.zip").magic
@@ -49,3 +55,6 @@ class TestZipfile(object):
         assert files[0]["file"].contents == "sflock_encrypted_zip\n"
         assert files[0]["file"].password == "sflock"
         assert files[0]["file"].magic == "ASCII text"
+
+        s = f("zip_encrypted2.zip").get_signature()
+        assert s == {"family": "zip", "mode": "", "unpacker": "zipfile"}
