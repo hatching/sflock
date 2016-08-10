@@ -27,8 +27,7 @@ class Unpacker(object):
     def determine(self):
         pass
 
-    @staticmethod
-    def parse_item(entry):
+    def parse_item(self, entry):
         data = {"file": entry}
 
         if entry.filepath.endswith((".gz", ".tar", ".tar.gz", ".bz2", ".zip")):
@@ -69,9 +68,8 @@ class File(object):
 
     @property
     def hash(self):
-        if self.contents:
+        if not self._hash and self.contents:
             self._hash = hashlib.sha256(StringIO(self.contents).getvalue()).hexdigest()
-
         return self._hash
 
     @property

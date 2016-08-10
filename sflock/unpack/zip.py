@@ -47,11 +47,12 @@ class Zipfile(Unpacker):
 
         # Bruteforce the password. First try all passwords that are known to
         # work and if that fails try our entire dictionary.
-        return \
-            self._bruteforce(archive, entry, self.known_passwords) or \
-            self._bruteforce(archive, entry, iter_passwords()) or \
+        return (
+            self._bruteforce(archive, entry, self.known_passwords) or
+            self._bruteforce(archive, entry, iter_passwords()) or
             File(entry.filename, None, mode="failed",
                  description="Error decrypting file")
+        )
 
     def unpack(self, mode=None, password=None):
         if self.f.filepath:
@@ -62,7 +63,6 @@ class Zipfile(Unpacker):
         for entry in archive.infolist():
             yield self.parse_item(self._decrypt(archive, entry, password))
 
-    @staticmethod
-    def _is_zipfile(contents=None):
-        if contents.startswith("\x50\x4B"):
+    def _is_zipfile(self, contents=None):
+        if contents.startswith("\x50\x4b"):
             return True

@@ -11,12 +11,6 @@ class Tarfile(Unpacker):
     name = "tarfile"
     author = ["Jurriaan Bremer", "Sander Ferdinand"]
 
-    def __init__(self, f):
-        super(Tarfile, self).__init__(f=f)
-        self.signatures = {
-
-        }
-
     def handles(self):
         if self.f.filepath:
             return tarfile.is_tarfile(self.f.filepath)
@@ -25,23 +19,22 @@ class Tarfile(Unpacker):
 
     def unpack(self, mode=None):
         if self.f.filepath:
-            archive = self._openPath(self.f.filepath)
+            archive = self._open_path(self.f.filepath)
         else:
-            archive = self._openStream(self.f.contents, mode=mode)
+            archive = self._open_stream(self.f.contents, mode=mode)
 
         for entry in archive:
             f = File(entry.path, archive.extractfile(entry).read())
             yield self.parse_item(f)
 
-    @staticmethod
-    def _is_tarfile(contents=None):
+    def _is_tarfile(self, contents=None):
         from sflock.unpack.signatures import Signatures
 
         for k, v in Signatures.signatures.iteritems():
             if contents.startswith(k):
                 return v
 
-    def _openStream(self, contents, mode):
+    def _open_stream(self, contents, mode):
         from sflock.unpack.signatures import Signatures
 
         fileobj = StringIO(contents)
@@ -57,8 +50,7 @@ class Tarfile(Unpacker):
             except:
                 pass
 
-    @staticmethod
-    def _openPath(filepath):
+    def _open_path(self, filepath):
         try:
             archive = tarfile.TarFile.taropen(filepath)
         except tarfile.ReadError:
