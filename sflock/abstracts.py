@@ -6,6 +6,8 @@ import magic
 import hashlib
 from StringIO import StringIO
 
+from sflock.signatures import Signatures
+
 class Unpacker(object):
     """Abstract class for Unpacker engines."""
     name = None
@@ -63,8 +65,6 @@ class File(object):
         return File(filepath, open(filepath, "rb").read())
 
     def get_signature(self):
-        from sflock.unpack.signatures import Signatures
-
         for k, v in Signatures.signatures.iteritems():
             if self.contents.startswith(k):
                 return v

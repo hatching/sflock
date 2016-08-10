@@ -6,7 +6,7 @@ import tarfile
 from StringIO import StringIO
 
 from sflock.abstracts import Unpacker, File
-from sflock.unpack.signatures import Signatures
+from sflock.signatures import Signatures
 
 class Tarfile(Unpacker):
     name = "tarfile"
@@ -29,8 +29,8 @@ class Tarfile(Unpacker):
             yield self.parse_item(f)
 
     def _is_tarfile(self, contents=None):
-        for k, v in Signatures.signatures.iteritems():
-            if contents.startswith(k):
+        for k, v in Signatures.signatures.items():
+            if contents.startswith(k) and v["unpacker"] == "tarfile":
                 return v
 
     def _open_stream(self, contents, mode):
@@ -38,7 +38,7 @@ class Tarfile(Unpacker):
         if mode:
             return tarfile.open(mode=mode, fileobj=fileobj)
 
-        for compression, info in Signatures.signatures.iteritems():
+        for compression, info in Signatures.signatures.items():
             if info["family"] != "tar":
                 continue
 

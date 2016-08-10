@@ -8,6 +8,7 @@ from StringIO import StringIO
 from sflock.abstracts import File, Unpacker
 from sflock.config import iter_passwords
 from sflock.exception import UnpackException
+from sflock.signatures import Signatures
 
 class Zipfile(Unpacker):
     name = "zipfile"
@@ -64,5 +65,6 @@ class Zipfile(Unpacker):
             yield self.parse_item(self._decrypt(archive, entry, password))
 
     def _is_zipfile(self, contents=None):
-        if contents.startswith("\x50\x4b"):
-            return True
+        for k, v in Signatures.signatures.items():
+            if contents.startswith(k) and v["unpacker"] == "zipfile":
+                return v
