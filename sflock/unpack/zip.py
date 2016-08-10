@@ -13,8 +13,7 @@ class Zipfile(Unpacker):
     name = "zipfile"
     author = ["Jurriaan Bremer", "Sander Ferdinand"]
 
-    def __init__(self, *args, **kwargs):
-        super(Zipfile, self).__init__(*args, **kwargs)
+    def init(self):
         self.known_passwords = set()
 
     def handles(self):

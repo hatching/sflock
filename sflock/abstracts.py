@@ -13,6 +13,10 @@ class Unpacker(object):
 
     def __init__(self, f):
         self.f = f
+        self.init()
+
+    def init(self):
+        pass
 
     def handles(self):
         raise NotImplementedError
