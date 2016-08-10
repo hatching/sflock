@@ -15,9 +15,11 @@ setup(
         "sflock.unpack",
         "sflock.data",
     ],
-    scripts=[
-        "bin/sflock",
-    ],
+    entry_points={
+        "console_scripts": {
+            "sflock = sflock.main:main",
+        },
+    },
     url="http://sflock.org/",
     license="GPLv3",
     description="Sample staging and detonation utility",
