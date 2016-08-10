@@ -1,3 +1,7 @@
+# Copyright (C) 2015-2016 Jurriaan Bremer.
+# This file is part of SFlock - http://www.sflock.org/.
+# See the file 'docs/LICENSE.txt' for copying permission.
+
 from sflock.unpack.tar import Tarfile
 from sflock.unpack.zip import Zipfile
 
