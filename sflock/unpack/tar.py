@@ -13,16 +13,16 @@ class Tarfile(Unpacker):
     author = ["Jurriaan Bremer", "Sander Ferdinand"]
 
     def handles(self):
-        if self.f.filepath:
-            return tarfile.is_tarfile(self.f.filepath)
-        else:
+        if self.f.contents:
             return self._is_tarfile(contents=self.f.contents)
+        else:
+            return tarfile.is_tarfile(self.f.filepath)
 
     def unpack(self, mode=None):
-        if self.f.filepath:
-            archive = self._open_path(self.f.filepath)
-        else:
+        if self.f.contents:
             archive = self._open_stream(self.f.contents, mode=mode)
+        else:
+            archive = self._open_path(self.f.filepath)
 
         for entry in archive:
             f = File(entry.path, archive.extractfile(entry).read())
@@ -35,6 +35,7 @@ class Tarfile(Unpacker):
 
     def _open_stream(self, contents, mode):
         fileobj = StringIO(contents)
+
         if mode:
             return tarfile.open(mode=mode, fileobj=fileobj)
 

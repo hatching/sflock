@@ -35,7 +35,7 @@ class Unpacker(object):
     def parse_item(self, entry):
         data = {"file": entry}
 
-        if entry.filepath.endswith((".gz", ".tar", ".tar.gz", ".bz2", ".zip")):
+        if entry.filepath.endswith((".gz", ".tar", ".bz2", ".zip")):
             f = File(contents=entry.contents)
             signature = f.get_signature()
 
@@ -91,10 +91,9 @@ class File(object):
         return {
             "filepath": self.filepath,
             "size": len(self.contents),
-            "mode": self.mode,
             "password": self.password,
             "description": self.description,
-            "magic": self._magic,
+            "magic": self.magic,
             "mime": self.mime,
             "hash": self.hash,
         }

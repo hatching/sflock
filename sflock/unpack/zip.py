@@ -18,10 +18,10 @@ class Zipfile(Unpacker):
         self.known_passwords = set()
 
     def handles(self):
-        if self.f.filepath:
-            return zipfile.is_zipfile(self.f.filepath)
-        else:
+        if self.f.contents:
             return self._is_zipfile(self.f.contents)
+        else:
+            return zipfile.is_zipfile(self.f.filepath)
 
     def _bruteforce(self, archive, entry, passwords):
         for password in passwords:
@@ -56,10 +56,10 @@ class Zipfile(Unpacker):
         )
 
     def unpack(self, mode=None, password=None):
-        if self.f.filepath:
-            archive = zipfile.ZipFile(self.f.filepath)
-        else:
+        if self.f.contents:
             archive = zipfile.ZipFile(StringIO(self.f.contents))
+        else:
+            archive = zipfile.ZipFile(self.f.filepath)
 
         for entry in archive.infolist():
             yield self.parse_item(self._decrypt(archive, entry, password))
