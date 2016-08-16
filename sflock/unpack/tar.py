@@ -2,10 +2,11 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import os
 import tarfile
 from StringIO import StringIO
 
-from sflock.abstracts import Unpacker, File
+from sflock.abstracts import Unpacker, File, Directory, Entries
 from sflock.signatures import Signatures
 
 class Tarfile(Unpacker):
@@ -25,11 +26,20 @@ class Tarfile(Unpacker):
             archive = self._open_path(self.f.filepath)
 
         entries = Entries()
-        for entry in archive.infolist():
-            if entry.filename.endswith("/"):
-                entries.children.append(Directory(filepath=entry.filename))
-            else:
-                entries.children.append(File(entry.path, archive.extractfile(entry).read()))
+        for entry in archive:
+            entries.children.append(File(entry.path, archive.extractfile(entry).read()))
+
+            if "/" in entry.name:
+                dirname = os.path.dirname(entry.name)
+                if not dirname.endswith("/"):
+                    dirname += "/"
+
+                if not dirname or dirname == "/":
+                    continue
+
+                filepaths = [z.filepath for z in entries.children]
+                if not dirname in filepaths:
+                    entries.children.append(Directory(filepath=dirname))
 
         return self.parse_items(entries)
 

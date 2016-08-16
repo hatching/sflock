@@ -4,6 +4,7 @@
 
 import magic
 import hashlib
+import ntpath
 from StringIO import StringIO
 
 from sflock.signatures import Signatures
@@ -36,7 +37,7 @@ class Unpacker(object):
         tmp_data = []
 
         for entry in entries.files():
-            if entry.filepath.endswith((".gz", ".tar", ".bz2", ".zip")):
+            if entry.filepath.endswith((".gz", ".tar", ".bz2", ".zip", ".tgz")):
                 f = File(contents=entry.contents)
                 signature = f.get_signature()
 
@@ -86,6 +87,7 @@ class File(object):
         self.password = password
         self.description = description
         self.children = []
+        self._filename = None
         self._magic = None
         self._magic_mime = None
         self._sha256 = None
@@ -124,6 +126,13 @@ class File(object):
             self._magic_mime = magic.from_buffer(self.contents, mime=True)
         return self._magic_mime
 
+    @property
+    def filename(self):
+        if not self._filename and not self.filepath.endswith("/"):
+            self._filename = ntpath.basename(self.filepath)
+
+        return self._filename
+
     def to_dict(self):
         if not self.contents:
             size = 0
@@ -132,11 +141,14 @@ class File(object):
 
         return {
             "filepath": self.filepath,
+            "filename": self.filename,
             "size": len(self.contents),
             "password": self.password,
             "magic": self.magic,
             "mime": self.mime,
             "sha256": self.sha256,
+            "children": self.children,
+            "type": "container" if self.children else "file"
         }
 
 class Directory(object):
@@ -146,7 +158,10 @@ class Directory(object):
 
     def to_dict(self):
         return {
-            "filepath": self.filepath
+            "filepath": self.filepath,
+            "filename": ntpath.basename(self.filepath[:-1]),
+            "children": self.children,
+            "type": "directory"
         }
 
 class Entries(object):
