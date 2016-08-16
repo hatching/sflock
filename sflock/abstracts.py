@@ -32,17 +32,46 @@ class Unpacker(object):
     def determine(self):
         pass
 
-    def parse_item(self, entry):
-        data = {"file": entry}
+    def parse_items(self, entries):
+        tmp_data = []
 
-        if entry.filepath.endswith((".gz", ".tar", ".bz2", ".zip")):
-            f = File(contents=entry.contents)
-            signature = f.get_signature()
+        for entry in entries.files():
+            if entry.filepath.endswith((".gz", ".tar", ".bz2", ".zip")):
+                f = File(contents=entry.contents)
+                signature = f.get_signature()
 
-            container = self.plugins[signature["unpacker"]](f)
-            data.update({
-                "unpacked": [z for z in container.unpack(mode=signature["mode"])]
-            })
+                container = self.plugins[signature["unpacker"]](f)
+                entry.children = container.unpack(mode=signature["mode"])
+
+            tmp_data.append(entry)
+
+        directories = sorted(entries.directories(),
+                             key=lambda entry: entry.filepath.count("/"), reverse=True)
+
+        for directory in directories:
+            for file in [e for e in entries.files() \
+                         if e.filepath.startswith(directory.filepath)]:
+                basepath = file.filepath[len(directory.filepath):]
+                if "/" not in basepath and basepath:
+                    directory.children.append(file)
+
+            # find parent directory of this directory
+            for tmp_directory in directories:
+                parent_path = "%s/" % "/".join(directory.filepath.split("/")[:-2])
+                if tmp_directory.filepath == parent_path:
+                    tmp_directory.children.append(directory)
+
+            tmp_data.append(directory)
+
+        # remove duplicates from root list
+        data = []
+        for entry in tmp_data:
+            if isinstance(entry, Directory):
+                if entry.filepath.count("/") == 1:
+                    data.append(entry)
+            elif isinstance(entry, File):
+                if "/" not in entry.filepath:
+                    data.append(entry)
 
         return data
 
@@ -56,9 +85,10 @@ class File(object):
         self.mode = mode
         self.password = password
         self.description = description
+        self.children = []
         self._magic = None
         self._magic_mime = None
-        self._hash = None
+        self._sha256 = None
 
     @classmethod
     def from_path(self, filepath):
@@ -70,30 +100,61 @@ class File(object):
                 return v
 
     @property
-    def hash(self):
-        if not self._hash and self.contents:
-            self._hash = hashlib.sha256(StringIO(self.contents).getvalue()).hexdigest()
-        return self._hash
+    def sha256(self):
+        if not self._sha256 and isinstance(self.contents, (str, unicode, bytes)):
+            sha256 = hashlib.sha256(StringIO(self.contents).getvalue()).hexdigest()
+            if not sha256:
+                hash = ""
+
+            self._sha256 = sha256
+        else:
+            return ""
+
+        return self._sha256
 
     @property
     def magic(self):
-        if not self._magic and self.contents:
+        if not self._magic and isinstance(self.contents, (str, unicode, bytes)):
             self._magic = magic.from_buffer(self.contents)
         return self._magic
 
     @property
     def mime(self):
-        if not self._magic_mime and self.contents:
+        if not self._magic_mime and isinstance(self.contents,(str, unicode, bytes)):
             self._magic_mime = magic.from_buffer(self.contents, mime=True)
         return self._magic_mime
 
     def to_dict(self):
+        if not self.contents:
+            size = 0
+        else:
+            size = len(self.contents)
+
         return {
             "filepath": self.filepath,
             "size": len(self.contents),
             "password": self.password,
-            "description": self.description,
             "magic": self.magic,
             "mime": self.mime,
-            "hash": self.hash,
+            "sha256": self.sha256,
         }
+
+class Directory(object):
+    def __init__(self, filepath):
+        self.filepath = filepath
+        self.children = []
+
+    def to_dict(self):
+        return {
+            "filepath": self.filepath
+        }
+
+class Entries(object):
+    def __init__(self):
+        self.children = []
+
+    def files(self):
+        return [z for z in self.children if isinstance(z, File)]
+
+    def directories(self):
+        return [z for z in self.children if isinstance(z, Directory)]

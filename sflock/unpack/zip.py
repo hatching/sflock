@@ -5,7 +5,7 @@
 import zipfile
 from StringIO import StringIO
 
-from sflock.abstracts import File, Unpacker
+from sflock.abstracts import File, Unpacker, Directory, Entries
 from sflock.config import iter_passwords
 from sflock.exception import UnpackException
 from sflock.signatures import Signatures
@@ -61,8 +61,14 @@ class Zipfile(Unpacker):
         else:
             archive = zipfile.ZipFile(self.f.filepath)
 
+        entries = Entries()
         for entry in archive.infolist():
-            yield self.parse_item(self._decrypt(archive, entry, password))
+            if entry.filename.endswith("/"):
+                entries.children.append(Directory(filepath=entry.filename))
+            else:
+                entries.children.append(self._decrypt(archive, entry, password))
+
+        return self.parse_items(entries)
 
     def _is_zipfile(self, contents):
         for k, v in Signatures.signatures.items():

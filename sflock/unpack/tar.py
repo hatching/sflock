@@ -24,9 +24,14 @@ class Tarfile(Unpacker):
         else:
             archive = self._open_path(self.f.filepath)
 
-        for entry in archive:
-            f = File(entry.path, archive.extractfile(entry).read())
-            yield self.parse_item(f)
+        entries = Entries()
+        for entry in archive.infolist():
+            if entry.filename.endswith("/"):
+                entries.children.append(Directory(filepath=entry.filename))
+            else:
+                entries.children.append(File(entry.path, archive.extractfile(entry).read()))
+
+        return self.parse_items(entries)
 
     def _is_tarfile(self, contents):
         for k, v in Signatures.signatures.items():
