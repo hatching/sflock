@@ -33,7 +33,7 @@ class Unpacker(object):
     def determine(self):
         pass
 
-    def parse_items(self, entries):
+    def parse_items(self, entries, duplicates):
         tmp_data = []
 
         for entry in entries.files():
@@ -42,7 +42,8 @@ class Unpacker(object):
                 signature = f.get_signature()
 
                 container = self.plugins[signature["unpacker"]](f)
-                entry.children = container.unpack(mode=signature["mode"])
+                entry.children = container.unpack(mode=signature["mode"],
+                                                  duplicates=duplicates)
 
             tmp_data.append(entry)
 
@@ -87,6 +88,7 @@ class File(object):
         self.password = password
         self.description = description
         self.children = []
+        self.duplicate = False
         self._filename = None
         self._magic = None
         self._magic_mime = None
@@ -103,7 +105,10 @@ class File(object):
 
     @property
     def sha256(self):
-        if not self._sha256 and isinstance(self.contents, (str, unicode, bytes)):
+        if not self._sha256 and \
+            isinstance(self.contents, (str, unicode, bytes)) and \
+            len(self.contents) > 0:
+
             sha256 = hashlib.sha256(StringIO(self.contents).getvalue()).hexdigest()
             if not sha256:
                 hash = ""
@@ -148,6 +153,7 @@ class File(object):
             "mime": self.mime,
             "sha256": self.sha256,
             "children": self.children,
+            "duplicate": self.duplicate,
             "type": "container" if self.children else "file"
         }
 

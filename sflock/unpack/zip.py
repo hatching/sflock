@@ -55,20 +55,33 @@ class Zipfile(Unpacker):
                  description="Error decrypting file")
         )
 
-    def unpack(self, mode=None, password=None):
+    def unpack(self, mode=None, password=None, duplicates=None):
         if self.f.contents:
             archive = zipfile.ZipFile(StringIO(self.f.contents))
         else:
             archive = zipfile.ZipFile(self.f.filepath)
 
+        if not isinstance(duplicates, list):
+            duplicates = []
+
         entries = Entries()
         for entry in archive.infolist():
             if entry.filename.endswith("/"):
-                entries.children.append(Directory(filepath=entry.filename))
+                directory = Directory(filepath=entry.filename)
+                entries.children.append(directory)
             else:
-                entries.children.append(self._decrypt(archive, entry, password))
+                _entry = self._decrypt(archive, entry, password)
+                _hash = _entry.sha256
 
-        return self.parse_items(entries)
+                if _hash:
+                    if _hash not in duplicates:
+                        duplicates.append(_hash)
+                    else:
+                        _entry.duplicate = True
+
+                entries.children.append(_entry)
+
+        return self.parse_items(entries, duplicates)
 
     def _is_zipfile(self, contents):
         for k, v in Signatures.signatures.items():
