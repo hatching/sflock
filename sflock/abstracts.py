@@ -85,14 +85,19 @@ class File(object):
         self.filepath = filepath
         self.contents = contents
         self.mode = mode
-        self.password = password
         self.description = description
+        self.password = password
         self.children = []
         self.duplicate = False
+
         self._filename = None
-        self._magic = None
-        self._magic_mime = None
         self._sha256 = None
+        self._finger = {
+            "mime": None,
+            "magic": None,
+            "mime_human": None,
+            "magic_human": None
+        }
 
     @classmethod
     def from_path(self, filepath):
@@ -121,15 +126,48 @@ class File(object):
 
     @property
     def magic(self):
-        if not self._magic and isinstance(self.contents, (str, unicode, bytes)):
-            self._magic = magic.from_buffer(self.contents)
-        return self._magic
+        if not self._finger["magic"] and isinstance(self.contents, (str, unicode, bytes)):
+            self._finger["magic"] = magic.from_buffer(self.contents)
+        return self._finger["magic"]
 
     @property
     def mime(self):
-        if not self._magic_mime and isinstance(self.contents,(str, unicode, bytes)):
-            self._magic_mime = magic.from_buffer(self.contents, mime=True)
-        return self._magic_mime
+        if not self._finger["mime"] and isinstance(self.contents,(str, unicode, bytes)):
+            self._finger["mime"] = magic.from_buffer(self.contents, mime=True)
+        return self._finger["mime"]
+
+    @property
+    def magic_human(self):
+        if not self._finger["magic"]:
+            self.magic()
+
+        if not self._finger["magic_human"]:
+            magic = self.magic
+            if "," in magic:
+                spl = magic.split(",")
+                magic = "%s (%s)" % (spl[0],
+                                     ",".join(spl[1:3]).strip())
+
+            self._finger["magic_human"] = magic
+        return self._finger["magic_human"]
+
+    @property
+    def mime_human(self):
+        if not self._finger["mime"]:
+            self.mime()
+
+        if not self._finger["mime_human"]:
+            mime = self.mime
+            if "/" in mime:
+                mime = mime.split("/", 1)[1]
+
+                if mime.startswith("x-"):
+                    mime = mime[2:]
+
+                mime = mime.replace("-", " ")
+
+            self._finger["mime_human"] = mime
+        return self._finger["mime_human"]
 
     @property
     def filename(self):
@@ -147,14 +185,18 @@ class File(object):
         return {
             "filepath": self.filepath,
             "filename": self.filename,
-            "size": len(self.contents),
-            "password": self.password,
-            "magic": self.magic,
-            "mime": self.mime,
-            "sha256": self.sha256,
-            "children": self.children,
             "duplicate": self.duplicate,
-            "type": "container" if self.children else "file"
+            "size": len(self.contents),
+            "children": self.children,
+            "type": "container" if self.children else "file",
+            "finger": {
+                "magic": self.magic,
+                "mime": self.mime,
+                "mime_human": self.mime_human,
+                "magic_human": self.magic_human
+            },
+            "password": self.password,
+            "sha256": self.sha256
         }
 
 class Directory(object):
