@@ -19,6 +19,7 @@ class TestZipfile(object):
         assert files[0].contents == "sflock_plain_zip\n"
         assert files[0].password is None
         assert files[0].magic == "ASCII text"
+        assert files[0].parentdirs == []
 
         s = f("zip_plain.zip").get_signature()
         assert s == {"family": "zip", "mode": "", "unpacker": "zipfile"}
@@ -33,6 +34,7 @@ class TestZipfile(object):
         assert files[0].contents == "sflock_encrypted_zip\n"
         assert files[0].password == "infected"
         assert files[0].magic == "ASCII text"
+        assert files[0].parentdirs == []
 
         s = f("zip_encrypted.zip").get_signature()
         assert s == {"family": "zip", "mode": "", "unpacker": "zipfile"}
@@ -46,6 +48,7 @@ class TestZipfile(object):
         assert files[0].mode == "failed"
         assert files[0].description == "Error decrypting file"
         assert files[0].magic is None
+        assert files[0].parentdirs == []
 
         z = Zipfile(f("zip_encrypted2.zip"))
         assert z.handles() is True
@@ -55,6 +58,7 @@ class TestZipfile(object):
         assert files[0].contents == "sflock_encrypted_zip\n"
         assert files[0].password == "sflock"
         assert files[0].magic == "ASCII text"
+        assert files[0].parentdirs == []
 
         s = f("zip_encrypted2.zip").get_signature()
         assert s == {"family": "zip", "mode": "", "unpacker": "zipfile"}
@@ -68,9 +72,27 @@ class TestZipfile(object):
 
         x = files[0]
         assert x.filepath == "foo/bar.txt"
+        assert x.parentdirs == ["foo"]
         assert x.contents == "hello world\n"
         assert not x.password
         assert x.magic == "ASCII text"
 
         s = f("zip_nested.zip").get_signature()
+        assert s == {"family": "zip", "mode": "", "unpacker": "zipfile"}
+
+    def test_nested2(self):
+        assert "Zip archive" in f("zip_nested2.zip").magic
+        z = Zipfile(f("zip_nested2.zip"))
+        assert z.handles() is True
+        files = list(z.unpack())
+        assert len(files) == 1
+
+        x = files[0]
+        assert x.filepath == "deepfoo/foo/bar.txt"
+        assert x.parentdirs == ["deepfoo", "foo"]
+        assert x.contents == "hello world\n"
+        assert not x.password
+        assert x.magic == "ASCII text"
+
+        s = f("zip_nested2.zip").get_signature()
         assert s == {"family": "zip", "mode": "", "unpacker": "zipfile"}

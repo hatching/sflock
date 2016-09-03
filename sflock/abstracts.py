@@ -4,6 +4,7 @@
 
 import magic
 import hashlib
+import os.path
 import ntpath
 
 from sflock.pick import picker
@@ -123,6 +124,11 @@ class File(object):
         return self._finger["mime_human"]
 
     @property
+    def parentdirs(self):
+        dirname = os.path.dirname(self.filepath.replace("\\", "/"))
+        return dirname.split("/") if dirname else []
+
+    @property
     def filename(self):
         if not self._filename and not self.filepath.endswith("/"):
             self._filename = ntpath.basename(self.filepath)
@@ -131,6 +137,7 @@ class File(object):
     def to_dict(self):
         return {
             "filepath": self.filepath,
+            "parentdirs": self.parentdirs,
             "filename": self.filename,
             "duplicate": self.duplicate,
             "size": len(self.contents) if self.contents else 0,
