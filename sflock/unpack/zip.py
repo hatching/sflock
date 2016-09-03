@@ -5,7 +5,7 @@
 import zipfile
 from StringIO import StringIO
 
-from sflock.abstracts import File, Unpacker
+from sflock.abstracts import File, Unpacker, Directory, Entries
 from sflock.config import iter_passwords
 from sflock.exception import UnpackException
 from sflock.signatures import Signatures
@@ -18,10 +18,10 @@ class Zipfile(Unpacker):
         self.known_passwords = set()
 
     def handles(self):
-        if self.f.filepath:
-            return zipfile.is_zipfile(self.f.filepath)
-        else:
+        if self.f.contents:
             return self._is_zipfile(self.f.contents)
+        else:
+            return zipfile.is_zipfile(self.f.filepath)
 
     def _bruteforce(self, archive, entry, passwords):
         for password in passwords:
@@ -55,14 +55,33 @@ class Zipfile(Unpacker):
                  description="Error decrypting file")
         )
 
-    def unpack(self, mode=None, password=None):
-        if self.f.filepath:
-            archive = zipfile.ZipFile(self.f.filepath)
-        else:
+    def unpack(self, mode=None, password=None, duplicates=None):
+        if self.f.contents:
             archive = zipfile.ZipFile(StringIO(self.f.contents))
+        else:
+            archive = zipfile.ZipFile(self.f.filepath)
 
+        if not isinstance(duplicates, list):
+            duplicates = []
+
+        entries = Entries()
         for entry in archive.infolist():
-            yield self.parse_item(self._decrypt(archive, entry, password))
+            if entry.filename.endswith("/"):
+                directory = Directory(filepath=entry.filename)
+                entries.children.append(directory)
+            else:
+                _entry = self._decrypt(archive, entry, password)
+                _hash = _entry.sha256
+
+                if _hash:
+                    if _hash not in duplicates:
+                        duplicates.append(_hash)
+                    else:
+                        _entry.duplicate = True
+
+                entries.children.append(_entry)
+
+        return self.parse_items(entries, duplicates)
 
     def _is_zipfile(self, contents):
         for k, v in Signatures.signatures.items():

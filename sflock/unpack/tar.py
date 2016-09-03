@@ -2,10 +2,11 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import os
 import tarfile
 from StringIO import StringIO
 
-from sflock.abstracts import Unpacker, File
+from sflock.abstracts import Unpacker, File, Directory, Entries
 from sflock.signatures import Signatures
 
 class Tarfile(Unpacker):
@@ -13,20 +14,47 @@ class Tarfile(Unpacker):
     author = ["Jurriaan Bremer", "Sander Ferdinand"]
 
     def handles(self):
-        if self.f.filepath:
-            return tarfile.is_tarfile(self.f.filepath)
-        else:
+        if self.f.contents:
             return self._is_tarfile(contents=self.f.contents)
-
-    def unpack(self, mode=None):
-        if self.f.filepath:
-            archive = self._open_path(self.f.filepath)
         else:
-            archive = self._open_stream(self.f.contents, mode=mode)
+            return tarfile.is_tarfile(self.f.filepath)
 
+    def unpack(self, mode=None, duplicates=None):
+        if self.f.contents:
+            archive = self._open_stream(self.f.contents, mode=mode)
+        else:
+            archive = self._open_path(self.f.filepath)
+
+        if not isinstance(duplicates, list):
+            duplicates = []
+
+        entries = Entries()
         for entry in archive:
-            f = File(entry.path, archive.extractfile(entry).read())
-            yield self.parse_item(f)
+            _entry = File(entry.path, archive.extractfile(entry).read())
+            _hash = _entry.sha256
+
+            if _hash:
+                if _hash not in duplicates:
+                    duplicates.append(_hash)
+                else:
+                    _entry.duplicate = True
+
+            entries.children.append(_entry)
+
+            if "/" in entry.name:
+                dirname = os.path.dirname(entry.name)
+                if not dirname.endswith("/"):
+                    dirname += "/"
+
+                if not dirname or dirname == "/":
+                    continue
+
+                filepaths = [z.filepath for z in entries.children]
+                if not dirname in filepaths:
+                    directory = Directory(filepath=dirname)
+                    entries.children.append(directory)
+
+        return self.parse_items(entries, duplicates)
 
     def _is_tarfile(self, contents):
         for k, v in Signatures.signatures.items():
@@ -35,6 +63,7 @@ class Tarfile(Unpacker):
 
     def _open_stream(self, contents, mode):
         fileobj = StringIO(contents)
+
         if mode:
             return tarfile.open(mode=mode, fileobj=fileobj)
 
