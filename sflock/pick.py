@@ -21,3 +21,6 @@ def picker(filename):
 
     if filename.endswith(".rar"):
         return "rarfile"
+
+    if filename.endswith(".7z"):
+        return "7zfile"

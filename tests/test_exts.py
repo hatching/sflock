@@ -12,3 +12,4 @@ def test_extensions():
     assert picker("a.tar.bz2") == "tarbz2file"
     assert picker("a.zip") == "zipfile"
     assert picker("a.rar") == "rarfile"
+    assert picker("a.7z") == "7zfile"
