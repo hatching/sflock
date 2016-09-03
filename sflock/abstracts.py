@@ -6,6 +6,7 @@ import magic
 import hashlib
 import os.path
 import ntpath
+import shutil
 
 import sflock
 
@@ -54,6 +55,28 @@ class Unpacker(object):
 
             ret.append(entry)
         return ret
+
+    def process_directory(self, dirpath, duplicates):
+        """Enumerates a directory, removes the directory, and returns data
+        after calling the process function."""
+        entries = []
+        duplicates = duplicates or []
+        for dirpath2, dirnames, filepaths in os.walk(dirpath):
+            for filepath in filepaths:
+                filepath = os.path.join(dirpath2, filepath)
+                f = File.from_path(
+                    filepath, filename=filepath[len(dirpath)+1:],
+                )
+
+                if f.sha256 not in duplicates:
+                    duplicates.append(f.sha256)
+                else:
+                    f.duplicate = True
+
+                entries.append(f)
+
+        shutil.rmtree(dirpath)
+        return self.process(entries, duplicates)
 
 class File(object):
     """Abstract class for extracted files."""

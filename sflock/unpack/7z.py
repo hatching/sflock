@@ -8,13 +8,13 @@ import tempfile
 from sflock.abstracts import Unpacker
 from sflock.exception import UnpackException
 
-class Rarfile(Unpacker):
-    name = "rarfile"
-    exe = "/usr/bin/rar"
-    exts = ".rar"
+class Zip7File(Unpacker):
+    name = "7zfile"
+    exe = "/usr/bin/7z"
+    exts = ".7z"
 
     def handles(self):
-        return "RAR archive" in self.f.magic
+        return "7-zip archive" in self.f.magic
 
     def unpack(self, duplicates=None):
         dirpath = tempfile.mkdtemp()
@@ -22,7 +22,7 @@ class Rarfile(Unpacker):
         try:
             subprocess.check_call([
                 self.zipjail, self.f.filepath, dirpath,
-                self.exe, "x", "-mt1", self.f.filepath, dirpath,
+                self.exe, "x", "-mmt=off", "-o%s" % dirpath, self.f.filepath,
             ])
         except subprocess.CalledProcessError as e:
             raise UnpackException(e)
