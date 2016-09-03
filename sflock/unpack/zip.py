@@ -13,9 +13,14 @@ from sflock.signatures import Signatures
 
 class Zipfile(Unpacker):
     name = "zipfile"
+    exts = ".zip"
 
     def init(self):
         self.known_passwords = set()
+
+    @staticmethod
+    def supported():
+        return True
 
     def handles(self):
         if picker(self.f.filepath) == "zipfile":

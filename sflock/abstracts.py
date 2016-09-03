@@ -24,6 +24,10 @@ class Unpacker(object):
     def init(self):
         pass
 
+    @staticmethod
+    def supported():
+        raise NotImplementedError
+
     def handles(self):
         raise NotImplementedError
 

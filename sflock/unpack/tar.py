@@ -12,6 +12,11 @@ from sflock.signatures import Signatures
 class TarFile(Unpacker):
     name = "tarfile"
     mode = None
+    exts = ".tar"
+
+    @staticmethod
+    def supported():
+        return True
 
     def handles(self):
         if picker(self.f.filepath) == self.name:
@@ -81,7 +86,9 @@ class TarFile(Unpacker):
 class TargzFile(TarFile, Unpacker):
     name = "targzfile"
     mode = "r:gz"
+    exts = ".tar.gz"
 
 class Tarbz2File(TarFile, Unpacker):
     name = "tarbz2file"
     mode = "r:bz2"
+    exts = ".tar.bz2"

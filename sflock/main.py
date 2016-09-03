@@ -11,7 +11,17 @@ from sflock.pick import picker
 from sflock.unpack import plugins
 
 def supported():
-    """Returns the supported unpackers for this machine."""
+    """Returns the supported extensions for this machine. Support for the
+    unpacking of numerous file extensions depends on different system packages
+    which should be installed on the machine."""
+    ret = []
+    for plugin in plugins.values():
+        if plugin.supported():
+            if isinstance(plugin.exts, basestring):
+                ret.append(plugin.exts)
+            else:
+                ret.extend(plugin.exts)
+    return ret
 
 def unpack(filepath, contents=None):
     """Unpacks the file or contents provided."""
