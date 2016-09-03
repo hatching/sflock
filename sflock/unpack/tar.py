@@ -11,7 +11,6 @@ from sflock.signatures import Signatures
 
 class Tarfile(Unpacker):
     name = "tarfile"
-    author = ["Jurriaan Bremer", "Sander Ferdinand"]
 
     def handles(self):
         if self.f.contents:

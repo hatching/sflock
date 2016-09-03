@@ -8,7 +8,6 @@ from sflock.abstracts import File, Unpacker
 
 class Rarfile(Unpacker):
     name = "rarfile"
-    author = ["Jurriaan Bremer"]
     unrar = "/usr/bin/unrar"
 
     def handles(self):

@@ -12,7 +12,6 @@ from sflock.signatures import Signatures
 class Unpacker(object):
     """Abstract class for Unpacker engines."""
     name = None
-    author = None
 
     # Initiated at runtime - contains each Unpacker subclass.
     plugins = {}

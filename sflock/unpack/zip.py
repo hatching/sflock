@@ -12,7 +12,6 @@ from sflock.signatures import Signatures
 
 class Zipfile(Unpacker):
     name = "zipfile"
-    author = ["Jurriaan Bremer", "Sander Ferdinand"]
 
     def init(self):
         self.known_passwords = set()
