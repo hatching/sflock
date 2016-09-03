@@ -53,7 +53,7 @@ class Tarfile(Unpacker):
                     continue
 
                 filepaths = [z.filepath for z in entries.children]
-                if not dirname in filepaths:
+                if dirname not in filepaths:
                     directory = Directory(filepath=dirname)
                     entries.children.append(directory)
 

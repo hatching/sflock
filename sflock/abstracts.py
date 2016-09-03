@@ -5,7 +5,6 @@
 import magic
 import hashlib
 import ntpath
-from StringIO import StringIO
 
 from sflock.signatures import Signatures
 
@@ -50,7 +49,7 @@ class Unpacker(object):
                              key=lambda entry: entry.filepath.count("/"), reverse=True)
 
         for directory in directories:
-            for file in [e for e in entries.files() \
+            for file in [e for e in entries.files()
                          if e.filepath.startswith(directory.filepath)]:
                 basepath = file.filepath[len(directory.filepath):]
                 if "/" not in basepath and basepath:
@@ -109,15 +108,8 @@ class File(object):
 
     @property
     def sha256(self):
-        if not self._sha256 and \
-            isinstance(self.contents, (str, unicode, bytes)) and \
-            len(self.contents) > 0:
-
-            sha256 = hashlib.sha256(StringIO(self.contents).getvalue()).hexdigest()
-            if not sha256:
-                hash = ""
-
-            self._sha256 = sha256
+        if not self._sha256:
+            self._sha256 = hashlib.sha256(self.contents).hexdigest()
         else:
             return ""
 
@@ -131,7 +123,7 @@ class File(object):
 
     @property
     def mime(self):
-        if not self._finger["mime"] and isinstance(self.contents,(str, unicode, bytes)):
+        if not self._finger["mime"] and isinstance(self.contents, (str, unicode, bytes)):
             self._finger["mime"] = magic.from_buffer(self.contents, mime=True)
         return self._finger["mime"]
 
@@ -185,7 +177,7 @@ class File(object):
             "filepath": self.filepath,
             "filename": self.filename,
             "duplicate": self.duplicate,
-            "size": len(self.contents),
+            "size": size,
             "children": self.children,
             "type": "container" if self.children else "file",
             "finger": {
