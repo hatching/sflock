@@ -2,11 +2,10 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
-import os
 import tarfile
 from StringIO import StringIO
 
-from sflock.abstracts import Unpacker, File, Directory, Entries
+from sflock.abstracts import Unpacker, File
 from sflock.pick import picker
 from sflock.signatures import Signatures
 
@@ -31,7 +30,7 @@ class TarFile(Unpacker):
 
         duplicates = duplicates or []
 
-        entries = Entries()
+        entries = []
         for entry in archive:
             # Ignore anything that's not a file for now.
             if not entry.isfile():
@@ -44,20 +43,7 @@ class TarFile(Unpacker):
             else:
                 f.duplicate = True
 
-            entries.children.append(f)
-
-            if "/" in entry.name:
-                dirname = os.path.dirname(entry.name)
-                if not dirname.endswith("/"):
-                    dirname += "/"
-
-                if not dirname or dirname == "/":
-                    continue
-
-                filepaths = [z.filepath for z in entries.children]
-                if dirname not in filepaths:
-                    directory = Directory(filepath=dirname)
-                    entries.children.append(directory)
+            entries.append(f)
 
         return self.process(entries, duplicates)
 

@@ -31,16 +31,17 @@ class Unpacker(object):
         raise NotImplementedError
 
     def process(self, entries, duplicates):
-        # tmp_data = []
-
-        # Go through all files and recursively unpack archives if required.
-        for entry in entries.files():
+        """Goes through all files and recursively unpacks embedded archives
+        if found."""
+        ret = []
+        for entry in entries:
             unpacker = picker(entry.filepath)
             if unpacker:
                 plugin = self.plugins[unpacker](entry)
                 entry.children = plugin.unpack(duplicates=duplicates)
 
-            yield entry
+            ret.append(entry)
+        return ret
 
 class File(object):
     """Abstract class for extracted files."""
@@ -152,48 +153,3 @@ class File(object):
             "password": self.password,
             "sha256": self.sha256,
         }
-
-class Directory(object):
-    def __init__(self, filepath):
-        self.filepath = filepath
-        self.children = []
-
-    def files(self):
-        for entry in self.children:
-            if isinstance(entry, File):
-                yield entry
-
-        for entry in self.directories():
-            for entry in entry.files():
-                yield entry
-
-    def directories(self):
-        for entry in self.children:
-            if isinstance(entry, Directory):
-                yield entry
-
-    def to_dict(self):
-        return {
-            "filepath": self.filepath,
-            "filename": ntpath.basename(self.filepath[:-1]),
-            "children": self.children,
-            "type": "directory",
-        }
-
-class Entries(object):
-    def __init__(self):
-        self.children = []
-
-    def files(self):
-        for entry in self.children:
-            if isinstance(entry, File):
-                yield entry
-
-        for entry in self.directories():
-            for entry in entry.files():
-                yield entry
-
-    def directories(self):
-        for entry in self.children:
-            if isinstance(entry, Directory):
-                yield entry

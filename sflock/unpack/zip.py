@@ -5,7 +5,7 @@
 import zipfile
 from StringIO import StringIO
 
-from sflock.abstracts import File, Unpacker, Directory, Entries
+from sflock.abstracts import File, Unpacker
 from sflock.config import iter_passwords
 from sflock.exception import UnpackException
 from sflock.pick import picker
@@ -67,20 +67,19 @@ class Zipfile(Unpacker):
         if not isinstance(duplicates, list):
             duplicates = []
 
-        entries = Entries()
+        entries = []
         for entry in archive.infolist():
             if entry.filename.endswith("/"):
-                directory = Directory(filepath=entry.filename)
-                entries.children.append(directory)
+                continue
+
+            f = self._decrypt(archive, entry, password)
+
+            if f.sha256 not in duplicates:
+                duplicates.append(f.sha256)
             else:
-                f = self._decrypt(archive, entry, password)
+                f.duplicate = True
 
-                if f.sha256 not in duplicates:
-                    duplicates.append(f.sha256)
-                else:
-                    f.duplicate = True
-
-                entries.children.append(f)
+            entries.append(f)
 
         return self.process(entries, duplicates)
 
