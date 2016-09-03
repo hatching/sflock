@@ -59,7 +59,7 @@ class TarFile(Unpacker):
                     directory = Directory(filepath=dirname)
                     entries.children.append(directory)
 
-        return self.parse_items(entries, duplicates)
+        return self.process(entries, duplicates)
 
     def _is_tarfile(self, contents):
         for k, v in Signatures.signatures.items():

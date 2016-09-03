@@ -6,6 +6,7 @@ import magic
 import hashlib
 import ntpath
 
+from sflock.pick import picker
 from sflock.signatures import Signatures
 
 class Unpacker(object):
@@ -28,52 +29,17 @@ class Unpacker(object):
     def unpack(self):
         raise NotImplementedError
 
-    def determine(self):
-        pass
+    def process(self, entries, duplicates):
+        # tmp_data = []
 
-    def parse_items(self, entries, duplicates):
-        tmp_data = []
-
+        # Go through all files and recursively unpack archives if required.
         for entry in entries.files():
-            if entry.filepath.endswith((".gz", ".tar", ".bz2", ".zip", ".tgz")):
-                f = File(contents=entry.contents)
-                signature = f.get_signature()
+            unpacker = picker(entry.filepath)
+            if unpacker:
+                plugin = self.plugins[unpacker](entry)
+                entry.children = plugin.unpack(duplicates=duplicates)
 
-                container = self.plugins[signature["unpacker"]](f)
-                entry.children = container.unpack(mode=signature["mode"],
-                                                  duplicates=duplicates)
-
-            tmp_data.append(entry)
-
-        directories = sorted(entries.directories(),
-                             key=lambda entry: entry.filepath.count("/"), reverse=True)
-
-        for directory in directories:
-            for file in [e for e in entries.files()
-                         if e.filepath.startswith(directory.filepath)]:
-                basepath = file.filepath[len(directory.filepath):]
-                if "/" not in basepath and basepath:
-                    directory.children.append(file)
-
-            # find parent directory of this directory
-            for tmp_directory in directories:
-                parent_path = "%s/" % "/".join(directory.filepath.split("/")[:-2])
-                if tmp_directory.filepath == parent_path:
-                    tmp_directory.children.append(directory)
-
-            tmp_data.append(directory)
-
-        # Remove duplicates from root list.
-        data = []
-        for entry in tmp_data:
-            if isinstance(entry, Directory):
-                if entry.filepath.count("/") == 1:
-                    data.append(entry)
-            elif isinstance(entry, File):
-                if "/" not in entry.filepath:
-                    data.append(entry)
-
-        return data
+            yield entry
 
 class File(object):
     """Abstract class for extracted files."""
@@ -185,6 +151,20 @@ class Directory(object):
         self.filepath = filepath
         self.children = []
 
+    def files(self):
+        for entry in self.children:
+            if isinstance(entry, File):
+                yield entry
+
+        for entry in self.directories():
+            for entry in entry.files():
+                yield entry
+
+    def directories(self):
+        for entry in self.children:
+            if isinstance(entry, Directory):
+                yield entry
+
     def to_dict(self):
         return {
             "filepath": self.filepath,
@@ -198,7 +178,15 @@ class Entries(object):
         self.children = []
 
     def files(self):
-        return [z for z in self.children if isinstance(z, File)]
+        for entry in self.children:
+            if isinstance(entry, File):
+                yield entry
+
+        for entry in self.directories():
+            for entry in entry.files():
+                yield entry
 
     def directories(self):
-        return [z for z in self.children if isinstance(z, Directory)]
+        for entry in self.children:
+            if isinstance(entry, Directory):
+                yield entry

@@ -2,7 +2,7 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
-from sflock.abstracts import File, Directory
+from sflock.abstracts import File
 from sflock.unpack import TarFile, TargzFile, Tarbz2File
 
 def f(filename):
@@ -78,10 +78,8 @@ class TestTarFile(object):
         assert t.handles() is True
         files = list(t.unpack())
         assert len(files) == 1
-        assert isinstance(files[0], Directory)
-        assert len(files[0].children) == 1
 
-        x = files[0].children[0]
+        x = files[0]
         assert x.filepath == "foo/bar.txt"
         assert x.contents == "hello world\n"
         assert not x.password
@@ -96,10 +94,8 @@ class TestTarFile(object):
         assert t.handles() is True
         files = list(t.unpack())
         assert len(files) == 1
-        assert isinstance(files[0], Directory)
-        assert len(files[0].children) == 1
 
-        x = files[0].children[0]
+        x = files[0]
         assert x.filepath == "foo/bar.txt"
         assert x.contents == "hello world\n"
         assert not x.password
@@ -114,10 +110,8 @@ class TestTarFile(object):
         assert t.handles() is True
         files = list(t.unpack())
         assert len(files) == 1
-        assert isinstance(files[0], Directory)
-        assert len(files[0].children) == 1
 
-        x = files[0].children[0]
+        x = files[0]
         assert x.filepath == "foo/bar.txt"
         assert x.contents == "hello world\n"
         assert not x.password

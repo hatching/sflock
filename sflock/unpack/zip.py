@@ -82,7 +82,7 @@ class Zipfile(Unpacker):
 
                 entries.children.append(f)
 
-        return self.parse_items(entries, duplicates)
+        return self.process(entries, duplicates)
 
     def _is_zipfile(self, contents):
         for k, v in Signatures.signatures.items():
