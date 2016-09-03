@@ -8,7 +8,7 @@ import tempfile
 from sflock.abstracts import Unpacker
 from sflock.exception import UnpackException
 
-class Rarfile(Unpacker):
+class RarFile(Unpacker):
     name = "rarfile"
     exe = "/usr/bin/rar"
     exts = ".rar"

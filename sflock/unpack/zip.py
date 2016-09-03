@@ -11,7 +11,7 @@ from sflock.exception import UnpackException
 from sflock.pick import picker
 from sflock.signatures import Signatures
 
-class Zipfile(Unpacker):
+class ZipFile(Unpacker):
     name = "zipfile"
     exts = ".zip"
 
