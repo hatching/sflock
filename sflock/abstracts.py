@@ -109,10 +109,7 @@ class File(object):
     @property
     def sha256(self):
         if not self._sha256:
-            self._sha256 = hashlib.sha256(self.contents).hexdigest()
-        else:
-            return ""
-
+            self._sha256 = hashlib.sha256(self.contents or "").hexdigest()
         return self._sha256
 
     @property
