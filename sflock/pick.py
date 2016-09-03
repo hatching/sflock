@@ -7,11 +7,17 @@ def picker(filename):
     if not filename:
         return
 
-    if filename.endswith((".tar", ".tar.gz", ".tar.bz2")):
+    if filename.endswith(".tar"):
         return "tarfile"
 
-    if filename.endswith((".zip")):
+    if filename.endswith(".tar.gz"):
+        return "targzfile"
+
+    if filename.endswith(".tar.bz2"):
+        return "tarbz2file"
+
+    if filename.endswith(".zip"):
         return "zipfile"
 
-    if filename.endswith((".rar")):
+    if filename.endswith(".rar"):
         return "rarfile"

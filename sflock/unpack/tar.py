@@ -10,11 +10,12 @@ from sflock.abstracts import Unpacker, File, Directory, Entries
 from sflock.pick import picker
 from sflock.signatures import Signatures
 
-class Tarfile(Unpacker):
+class TarFile(Unpacker):
     name = "tarfile"
+    mode = None
 
     def handles(self):
-        if picker(self.f.filepath) == "tarfile":
+        if picker(self.f.filepath) == self.name:
             return True
 
         if self.f.contents:
@@ -22,9 +23,9 @@ class Tarfile(Unpacker):
         else:
             return tarfile.is_tarfile(self.f.filepath)
 
-    def unpack(self, mode=None, duplicates=None):
+    def unpack(self, duplicates=None):
         if self.f.contents:
-            archive = self._open_stream(self.f.contents, mode=mode)
+            archive = self._open_stream(self.f.contents, mode=self.mode)
         else:
             archive = self._open_path(self.f.filepath)
 
@@ -62,7 +63,7 @@ class Tarfile(Unpacker):
 
     def _is_tarfile(self, contents):
         for k, v in Signatures.signatures.items():
-            if contents.startswith(k) and v["unpacker"] == "tarfile":
+            if contents.startswith(k) and v["unpacker"] == self.name:
                 return v
 
     def _open_stream(self, contents, mode):
@@ -90,3 +91,11 @@ class Tarfile(Unpacker):
                 archive = tarfile.TarFile.bz2open(filepath)
 
         return archive
+
+class TargzFile(TarFile, Unpacker):
+    name = "targzfile"
+    mode = "r:gz"
+
+class Tarbz2File(TarFile, Unpacker):
+    name = "tarbz2file"
+    mode = "r:bz2"

@@ -15,12 +15,12 @@ class Signatures:
             "family": "tar"
         },
         "\x42\x5a\x68": {
-            "unpacker": "tarfile",
+            "unpacker": "tarbz2file",
             "mode": "r:bz2",
             "family": "tar"
         },
         "\x1f\x8b": {
-            "unpacker": "tarfile",
+            "unpacker": "targzfile",
             "mode": "r:gz",
             "family": "tar"
         }

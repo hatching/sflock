@@ -3,15 +3,15 @@
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 from sflock.abstracts import File, Directory
-from sflock.unpack import Tarfile
+from sflock.unpack import TarFile, TargzFile, Tarbz2File
 
 def f(filename):
     return File.from_path("tests/files/%s" % filename)
 
-class TestTarfile(object):
+class TestTarFile(object):
     def test_tar_plain(self):
         assert "POSIX tar" in f("tar_plain.tar").magic
-        t = Tarfile(f("tar_plain.tar"))
+        t = TarFile(f("tar_plain.tar"))
         assert t.handles() is True
         files = list(t.unpack())
         assert len(files) == 1
@@ -26,7 +26,7 @@ class TestTarfile(object):
 
     def test_tar_plain2(self):
         assert "POSIX tar" in f("tar_plain2.tar").magic
-        t = Tarfile(f("tar_plain2.tar"))
+        t = TarFile(f("tar_plain2.tar"))
         assert t.handles() is True
         files = list(t.unpack())
         assert len(files) == 2
@@ -42,7 +42,7 @@ class TestTarfile(object):
 
     def test_tar_plain2_gz(self):
         assert "gzip compr" in f("tar_plain2.tar.gz").magic
-        t = Tarfile(f("tar_plain2.tar.gz"))
+        t = TargzFile(f("tar_plain2.tar.gz"))
         assert t.handles() is True
         files = list(t.unpack())
         assert len(files) == 2
@@ -54,11 +54,11 @@ class TestTarfile(object):
         assert files[1].magic == "ASCII text"
 
         s = f("tar_plain2.tar.gz").get_signature()
-        assert s == {"family": "tar", "mode": "r:gz", "unpacker": "tarfile"}
+        assert s == {"family": "tar", "mode": "r:gz", "unpacker": "targzfile"}
 
     def test_tar_plain2_bz2(self):
         assert "bzip2 compr" in f("tar_plain2.tar.bz2").magic
-        t = Tarfile(f("tar_plain2.tar.bz2"))
+        t = Tarbz2File(f("tar_plain2.tar.bz2"))
         assert t.handles() is True
         files = list(t.unpack())
         assert len(files) == 2
@@ -70,11 +70,11 @@ class TestTarfile(object):
         assert files[1].magic == "ASCII text"
 
         s = f("tar_plain2.tar.bz2").get_signature()
-        assert s == {"family": "tar", "mode": "r:bz2", "unpacker": "tarfile"}
+        assert s == {"family": "tar", "mode": "r:bz2", "unpacker": "tarbz2file"}
 
     def test_nested_plain(self):
         assert "POSIX tar archive" in f("tar_nested.tar").magic
-        t = Tarfile(f("tar_nested.tar"))
+        t = TarFile(f("tar_nested.tar"))
         assert t.handles() is True
         files = list(t.unpack())
         assert len(files) == 1
@@ -92,7 +92,7 @@ class TestTarfile(object):
 
     def test_nested_bzip2(self):
         assert "bzip2 compr" in f("tar_nested.tar.bz2").magic
-        t = Tarfile(f("tar_nested.tar.bz2"))
+        t = Tarbz2File(f("tar_nested.tar.bz2"))
         assert t.handles() is True
         files = list(t.unpack())
         assert len(files) == 1
@@ -106,11 +106,11 @@ class TestTarfile(object):
         assert x.magic == "ASCII text"
 
         s = f("tar_nested.tar.bz2").get_signature()
-        assert s == {"family": "tar", "mode": "r:bz2", "unpacker": "tarfile"}
+        assert s == {"family": "tar", "mode": "r:bz2", "unpacker": "tarbz2file"}
 
     def test_nested_gz(self):
         assert "gzip compr" in f("tar_nested.tar.gz").magic
-        t = Tarfile(f("tar_nested.tar.gz"))
+        t = TargzFile(f("tar_nested.tar.gz"))
         assert t.handles() is True
         files = list(t.unpack())
         assert len(files) == 1
@@ -124,4 +124,4 @@ class TestTarfile(object):
         assert x.magic == "ASCII text"
 
         s = f("tar_nested.tar.gz").get_signature()
-        assert s == {"family": "tar", "mode": "r:gz", "unpacker": "tarfile"}
+        assert s == {"family": "tar", "mode": "r:gz", "unpacker": "targzfile"}
