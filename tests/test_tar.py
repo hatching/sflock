@@ -86,12 +86,11 @@ class TestTarFile(object):
         files = list(t.unpack())
         assert len(files) == 1
 
-        x = files[0]
-        assert x.filepath == "foo/bar.txt"
-        assert x.parentdirs == ["foo"]
-        assert x.contents == "hello world\n"
-        assert not x.password
-        assert x.magic == "ASCII text"
+        assert files[0].filepath == "foo/bar.txt"
+        assert files[0].parentdirs == ["foo"]
+        assert files[0].contents == "hello world\n"
+        assert not files[0].password
+        assert files[0].magic == "ASCII text"
 
         s = f("tar_nested.tar").get_signature()
         assert s is None
@@ -103,12 +102,11 @@ class TestTarFile(object):
         files = list(t.unpack())
         assert len(files) == 1
 
-        x = files[0]
-        assert x.filepath == "foo/bar.txt"
-        assert x.parentdirs == ["foo"]
-        assert x.contents == "hello world\n"
-        assert not x.password
-        assert x.magic == "ASCII text"
+        assert files[0].filepath == "foo/bar.txt"
+        assert files[0].parentdirs == ["foo"]
+        assert files[0].contents == "hello world\n"
+        assert not files[0].password
+        assert files[0].magic == "ASCII text"
 
         s = f("tar_nested.tar.bz2").get_signature()
         assert s == {"family": "tar", "mode": "r:bz2", "unpacker": "tarbz2file"}
@@ -120,12 +118,11 @@ class TestTarFile(object):
         files = list(t.unpack())
         assert len(files) == 1
 
-        x = files[0]
-        assert x.filepath == "foo/bar.txt"
-        assert x.parentdirs == ["foo"]
-        assert x.contents == "hello world\n"
-        assert not x.password
-        assert x.magic == "ASCII text"
+        assert files[0].filepath == "foo/bar.txt"
+        assert files[0].parentdirs == ["foo"]
+        assert files[0].contents == "hello world\n"
+        assert not files[0].password
+        assert files[0].magic == "ASCII text"
 
         s = f("tar_nested.tar.gz").get_signature()
         assert s == {"family": "tar", "mode": "r:gz", "unpacker": "targzfile"}
@@ -137,12 +134,11 @@ class TestTarFile(object):
         files = list(t.unpack())
         assert len(files) == 1
 
-        x = files[0]
-        assert x.filepath == "deepfoo/foo/bar.txt"
-        assert x.parentdirs == ["deepfoo", "foo"]
-        assert x.contents == "hello world\n"
-        assert not x.password
-        assert x.magic == "ASCII text"
+        assert files[0].filepath == "deepfoo/foo/bar.txt"
+        assert files[0].parentdirs == ["deepfoo", "foo"]
+        assert files[0].contents == "hello world\n"
+        assert not files[0].password
+        assert files[0].magic == "ASCII text"
 
         s = f("tar_nested2.tar").get_signature()
         assert s is None

@@ -70,12 +70,11 @@ class TestZipfile(object):
         files = list(z.unpack())
         assert len(files) == 1
 
-        x = files[0]
-        assert x.filepath == "foo/bar.txt"
-        assert x.parentdirs == ["foo"]
-        assert x.contents == "hello world\n"
-        assert not x.password
-        assert x.magic == "ASCII text"
+        assert files[0].filepath == "foo/bar.txt"
+        assert files[0].parentdirs == ["foo"]
+        assert files[0].contents == "hello world\n"
+        assert not files[0].password
+        assert files[0].magic == "ASCII text"
 
         s = f("zip_nested.zip").get_signature()
         assert s == {"family": "zip", "mode": "", "unpacker": "zipfile"}
@@ -87,12 +86,11 @@ class TestZipfile(object):
         files = list(z.unpack())
         assert len(files) == 1
 
-        x = files[0]
-        assert x.filepath == "deepfoo/foo/bar.txt"
-        assert x.parentdirs == ["deepfoo", "foo"]
-        assert x.contents == "hello world\n"
-        assert not x.password
-        assert x.magic == "ASCII text"
+        assert files[0].filepath == "deepfoo/foo/bar.txt"
+        assert files[0].parentdirs == ["deepfoo", "foo"]
+        assert files[0].contents == "hello world\n"
+        assert not files[0].password
+        assert files[0].magic == "ASCII text"
 
         s = f("zip_nested2.zip").get_signature()
         assert s == {"family": "zip", "mode": "", "unpacker": "zipfile"}
