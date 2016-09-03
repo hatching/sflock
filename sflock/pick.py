@@ -3,15 +3,15 @@
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 def picker(filename):
-    """Guesses the type of file based on its extension."""
+    """Guesses the unpacker for this file based on its filename extension."""
     if not filename:
         return
 
     if filename.endswith((".tar", ".tar.gz", ".tar.bz2")):
-        return "tar"
+        return "tarfile"
 
     if filename.endswith((".zip")):
-        return "zip"
+        return "zipfile"
 
     if filename.endswith((".rar")):
-        return "rar"
+        return "rarfile"

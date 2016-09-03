@@ -14,7 +14,7 @@ class Tarfile(Unpacker):
     name = "tarfile"
 
     def handles(self):
-        if picker(self.f.filepath) == "tar":
+        if picker(self.f.filepath) == "tarfile":
             return True
 
         if self.f.contents:
@@ -33,6 +33,10 @@ class Tarfile(Unpacker):
 
         entries = Entries()
         for entry in archive:
+            # Ignore anything that's not a file for now.
+            if not entry.isfile():
+                continue
+
             _entry = File(entry.path, archive.extractfile(entry).read())
             _hash = _entry.sha256
 

@@ -2,7 +2,7 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
-from sflock.abstracts import File
+from sflock.abstracts import File, Directory
 from sflock.unpack import Tarfile
 
 def f(filename):
@@ -71,3 +71,57 @@ class TestTarfile(object):
 
         s = f("tar_plain2.tar.bz2").get_signature()
         assert s == {"family": "tar", "mode": "r:bz2", "unpacker": "tarfile"}
+
+    def test_nested_plain(self):
+        assert "POSIX tar archive" in f("tar_nested.tar").magic
+        t = Tarfile(f("tar_nested.tar"))
+        assert t.handles() is True
+        files = list(t.unpack())
+        assert len(files) == 1
+        assert isinstance(files[0], Directory)
+        assert len(files[0].children) == 1
+
+        x = files[0].children[0]
+        assert x.filepath == "foo/bar.txt"
+        assert x.contents == "hello world\n"
+        assert not x.password
+        assert x.magic == "ASCII text"
+
+        s = f("tar_nested.tar").get_signature()
+        assert s is None
+
+    def test_nested_bzip2(self):
+        assert "bzip2 compr" in f("tar_nested.tar.bz2").magic
+        t = Tarfile(f("tar_nested.tar.bz2"))
+        assert t.handles() is True
+        files = list(t.unpack())
+        assert len(files) == 1
+        assert isinstance(files[0], Directory)
+        assert len(files[0].children) == 1
+
+        x = files[0].children[0]
+        assert x.filepath == "foo/bar.txt"
+        assert x.contents == "hello world\n"
+        assert not x.password
+        assert x.magic == "ASCII text"
+
+        s = f("tar_nested.tar.bz2").get_signature()
+        assert s == {"family": "tar", "mode": "r:bz2", "unpacker": "tarfile"}
+
+    def test_nested_gz(self):
+        assert "gzip compr" in f("tar_nested.tar.gz").magic
+        t = Tarfile(f("tar_nested.tar.gz"))
+        assert t.handles() is True
+        files = list(t.unpack())
+        assert len(files) == 1
+        assert isinstance(files[0], Directory)
+        assert len(files[0].children) == 1
+
+        x = files[0].children[0]
+        assert x.filepath == "foo/bar.txt"
+        assert x.contents == "hello world\n"
+        assert not x.password
+        assert x.magic == "ASCII text"
+
+        s = f("tar_nested.tar.gz").get_signature()
+        assert s == {"family": "tar", "mode": "r:gz", "unpacker": "tarfile"}

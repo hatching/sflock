@@ -18,7 +18,7 @@ class Zipfile(Unpacker):
         self.known_passwords = set()
 
     def handles(self):
-        if picker(self.f.filepath) == "zip":
+        if picker(self.f.filepath) == "zipfile":
             return True
 
         if self.f.contents:

@@ -2,7 +2,7 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
-from sflock.abstracts import File
+from sflock.abstracts import File, Directory
 from sflock.unpack import Zipfile
 
 def f(filename):
@@ -57,4 +57,22 @@ class TestZipfile(object):
         assert files[0].magic == "ASCII text"
 
         s = f("zip_encrypted2.zip").get_signature()
+        assert s == {"family": "zip", "mode": "", "unpacker": "zipfile"}
+
+    def test_nested(self):
+        assert "Zip archive" in f("zip_nested.zip").magic
+        z = Zipfile(f("zip_nested.zip"))
+        assert z.handles() is True
+        files = list(z.unpack())
+        assert len(files) == 1
+        assert isinstance(files[0], Directory)
+        assert len(files[0].children) == 1
+
+        x = files[0].children[0]
+        assert x.filepath == "foo/bar.txt"
+        assert x.contents == "hello world\n"
+        assert not x.password
+        assert x.magic == "ASCII text"
+
+        s = f("zip_nested.zip").get_signature()
         assert s == {"family": "zip", "mode": "", "unpacker": "zipfile"}
