@@ -4,7 +4,9 @@
 
 import click
 import glob
+import io
 import os.path
+import zipfile
 
 from sflock.abstracts import File
 from sflock.pick import picker
@@ -41,6 +43,17 @@ def unpack(filepath, contents=None):
     if unpacker:
         f.children = plugins[unpacker](f).unpack()
     return f
+
+def zipify(f):
+    """Turns any type of archive into an equivalent .zip file."""
+    r = io.BytesIO()
+    z = zipfile.ZipFile(r, "w")
+
+    for entry in f.children:
+        z.writestr(entry.filepath, entry.contents)
+
+    z.close()
+    return r.getvalue()
 
 def process_file(filepath):
     f = unpack(filepath)

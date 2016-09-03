@@ -1,0 +1,35 @@
+# Copyright (C) 2016 Jurriaan Bremer.
+# This file is part of SFlock - http://www.sflock.org/.
+# See the file 'docs/LICENSE.txt' for copying permission.
+
+from sflock.main import unpack, zipify
+
+def test_zipify1():
+    a = unpack("tests/files/tar_plain.tar")
+    b = unpack("foo.zip", zipify(a))
+    assert len(a.children) == len(b.children)
+    assert a.children[0].filepath == b.children[0].filepath
+    assert a.children[0].contents == b.children[0].contents
+
+def test_zipify2():
+    a = unpack("tests/files/zip_nested.zip")
+    b = unpack("foo.zip", zipify(a))
+    assert len(a.children) == len(b.children)
+    assert a.children[0].filepath == b.children[0].filepath
+    assert a.children[0].contents == b.children[0].contents
+
+def test_zipify3():
+    a = unpack("tests/files/7z_nested2.7z")
+    b = unpack("foo.zip", zipify(a))
+    assert len(a.children) == len(b.children)
+    assert a.children[0].filepath == b.children[0].filepath
+    assert a.children[0].contents == b.children[0].contents
+
+def test_zipify4():
+    a = unpack("tests/files/tar_plain2.tar")
+    b = unpack("foo.zip", zipify(a))
+    assert len(a.children) == len(b.children)
+    assert a.children[0].filepath == b.children[0].filepath
+    assert a.children[0].contents == b.children[0].contents
+    assert a.children[1].filepath == b.children[1].filepath
+    assert a.children[1].contents == b.children[1].contents
