@@ -8,6 +8,7 @@ from StringIO import StringIO
 from sflock.abstracts import File, Unpacker, Directory, Entries
 from sflock.config import iter_passwords
 from sflock.exception import UnpackException
+from sflock.pick import picker
 from sflock.signatures import Signatures
 
 class Zipfile(Unpacker):
@@ -17,6 +18,9 @@ class Zipfile(Unpacker):
         self.known_passwords = set()
 
     def handles(self):
+        if picker(self.f.filepath) == "zip":
+            return True
+
         if self.f.contents:
             return self._is_zipfile(self.f.contents)
         else:

@@ -15,9 +15,9 @@ class TestTarfile(object):
         assert t.handles() is True
         files = list(t.unpack())
         assert len(files) == 1
-        assert files[0]["file"].filepath == "sflock.txt"
-        assert files[0]["file"].contents == "sflock_plain_tar\n"
-        assert files[0]["file"].magic == "ASCII text"
+        assert files[0].filepath == "sflock.txt"
+        assert files[0].contents == "sflock_plain_tar\n"
+        assert files[0].magic == "ASCII text"
 
         # TODO A combination of file extension, file magic, and initial bytes
         # signature should be used instead of just the bytes (as this call
@@ -30,12 +30,12 @@ class TestTarfile(object):
         assert t.handles() is True
         files = list(t.unpack())
         assert len(files) == 2
-        assert files[0]["file"].filepath == "sflock.txt"
-        assert files[0]["file"].contents == "sflock_plain_tar\n"
-        assert files[0]["file"].magic == "ASCII text"
-        assert files[1]["file"].filepath == "sflock2.txt"
-        assert files[1]["file"].contents == "sflock_plain_tar2\n"
-        assert files[1]["file"].magic == "ASCII text"
+        assert files[0].filepath == "sflock.txt"
+        assert files[0].contents == "sflock_plain_tar\n"
+        assert files[0].magic == "ASCII text"
+        assert files[1].filepath == "sflock2.txt"
+        assert files[1].contents == "sflock_plain_tar2\n"
+        assert files[1].magic == "ASCII text"
 
         # TODO See item above for tar_plain.tar.
         assert f("tar_plain2.tar").get_signature() is None
@@ -46,12 +46,12 @@ class TestTarfile(object):
         assert t.handles() is True
         files = list(t.unpack())
         assert len(files) == 2
-        assert files[0]["file"].filepath == "sflock.txt"
-        assert files[0]["file"].contents == "sflock_plain_tar\n"
-        assert files[0]["file"].magic == "ASCII text"
-        assert files[1]["file"].filepath == "sflock2.txt"
-        assert files[1]["file"].contents == "sflock_plain_tar2\n"
-        assert files[1]["file"].magic == "ASCII text"
+        assert files[0].filepath == "sflock.txt"
+        assert files[0].contents == "sflock_plain_tar\n"
+        assert files[0].magic == "ASCII text"
+        assert files[1].filepath == "sflock2.txt"
+        assert files[1].contents == "sflock_plain_tar2\n"
+        assert files[1].magic == "ASCII text"
 
         s = f("tar_plain2.tar.gz").get_signature()
         assert s == {"family": "tar", "mode": "r:gz", "unpacker": "tarfile"}
@@ -62,12 +62,12 @@ class TestTarfile(object):
         assert t.handles() is True
         files = list(t.unpack())
         assert len(files) == 2
-        assert files[0]["file"].filepath == "sflock.txt"
-        assert files[0]["file"].contents == "sflock_plain_tar\n"
-        assert files[0]["file"].magic == "ASCII text"
-        assert files[1]["file"].filepath == "sflock2.txt"
-        assert files[1]["file"].contents == "sflock_plain_tar2\n"
-        assert files[1]["file"].magic == "ASCII text"
+        assert files[0].filepath == "sflock.txt"
+        assert files[0].contents == "sflock_plain_tar\n"
+        assert files[0].magic == "ASCII text"
+        assert files[1].filepath == "sflock2.txt"
+        assert files[1].contents == "sflock_plain_tar2\n"
+        assert files[1].magic == "ASCII text"
 
         s = f("tar_plain2.tar.bz2").get_signature()
         assert s == {"family": "tar", "mode": "r:bz2", "unpacker": "tarfile"}

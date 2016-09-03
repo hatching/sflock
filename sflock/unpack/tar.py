@@ -7,12 +7,16 @@ import tarfile
 from StringIO import StringIO
 
 from sflock.abstracts import Unpacker, File, Directory, Entries
+from sflock.pick import picker
 from sflock.signatures import Signatures
 
 class Tarfile(Unpacker):
     name = "tarfile"
 
     def handles(self):
+        if picker(self.f.filepath) == "tar":
+            return True
+
         if self.f.contents:
             return self._is_tarfile(contents=self.f.contents)
         else:
