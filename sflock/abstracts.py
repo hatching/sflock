@@ -7,6 +7,8 @@ import hashlib
 import os.path
 import ntpath
 
+import sflock
+
 from sflock.pick import picker
 from sflock.signatures import Signatures
 
@@ -27,6 +29,12 @@ class Unpacker(object):
 
     def supported(self):
         return os.path.exists(self.exe)
+
+    @property
+    def zipjail(self):
+        return os.path.abspath(os.path.join(
+            sflock.__path__[0], "data", "zipjail"
+        ))
 
     def handles(self):
         raise NotImplementedError
@@ -50,9 +58,9 @@ class Unpacker(object):
 class File(object):
     """Abstract class for extracted files."""
 
-    def __init__(self, filepath=None, contents=None, mode=None,
+    def __init__(self, filepath=None, contents=None, filename=None, mode=None,
                  password=None, description=None):
-        self.filepath = filepath
+        self.filepath = filename or filepath
         self.contents = contents
         self.mode = mode
         self.description = description
@@ -70,8 +78,8 @@ class File(object):
         }
 
     @classmethod
-    def from_path(self, filepath):
-        return File(filepath, open(filepath, "rb").read())
+    def from_path(self, filepath, filename=None):
+        return File(filename or filepath, open(filepath, "rb").read())
 
     def get_signature(self):
         for k, v in Signatures.signatures.iteritems():
