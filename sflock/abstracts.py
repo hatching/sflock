@@ -13,6 +13,7 @@ from sflock.signatures import Signatures
 class Unpacker(object):
     """Abstract class for Unpacker engines."""
     name = None
+    exe = None
 
     # Initiated at runtime - contains each Unpacker subclass.
     plugins = {}
@@ -24,9 +25,8 @@ class Unpacker(object):
     def init(self):
         pass
 
-    @staticmethod
-    def supported():
-        raise NotImplementedError
+    def supported(self):
+        return os.path.exists(self.exe)
 
     def handles(self):
         raise NotImplementedError

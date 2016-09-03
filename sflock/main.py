@@ -16,7 +16,7 @@ def supported():
     which should be installed on the machine."""
     ret = []
     for plugin in plugins.values():
-        if plugin.supported():
+        if plugin(None).supported():
             if isinstance(plugin.exts, basestring):
                 ret.append(plugin.exts)
             else:
