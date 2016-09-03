@@ -28,8 +28,7 @@ class Tarfile(Unpacker):
         else:
             archive = self._open_path(self.f.filepath)
 
-        if not isinstance(duplicates, list):
-            duplicates = []
+        duplicates = duplicates or []
 
         entries = Entries()
         for entry in archive:
@@ -37,16 +36,14 @@ class Tarfile(Unpacker):
             if not entry.isfile():
                 continue
 
-            _entry = File(entry.path, archive.extractfile(entry).read())
-            _hash = _entry.sha256
+            f = File(entry.path, archive.extractfile(entry).read())
 
-            if _hash:
-                if _hash not in duplicates:
-                    duplicates.append(_hash)
-                else:
-                    _entry.duplicate = True
+            if f.sha256 not in duplicates:
+                duplicates.append(f.sha256)
+            else:
+                f.duplicate = True
 
-            entries.children.append(_entry)
+            entries.children.append(f)
 
             if "/" in entry.name:
                 dirname = os.path.dirname(entry.name)

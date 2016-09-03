@@ -73,16 +73,14 @@ class Zipfile(Unpacker):
                 directory = Directory(filepath=entry.filename)
                 entries.children.append(directory)
             else:
-                _entry = self._decrypt(archive, entry, password)
-                _hash = _entry.sha256
+                f = self._decrypt(archive, entry, password)
 
-                if _hash:
-                    if _hash not in duplicates:
-                        duplicates.append(_hash)
-                    else:
-                        _entry.duplicate = True
+                if f.sha256 not in duplicates:
+                    duplicates.append(f.sha256)
+                else:
+                    f.duplicate = True
 
-                entries.children.append(_entry)
+                entries.children.append(f)
 
         return self.parse_items(entries, duplicates)
 

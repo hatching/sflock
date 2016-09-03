@@ -63,7 +63,7 @@ class Unpacker(object):
 
             tmp_data.append(directory)
 
-        # remove duplicates from root list
+        # Remove duplicates from root list.
         data = []
         for entry in tmp_data:
             if isinstance(entry, Directory):
@@ -78,8 +78,8 @@ class Unpacker(object):
 class File(object):
     """Abstract class for extracted files."""
 
-    def __init__(self, filepath=None, contents=None, mode=None, password=None,
-                 description=None):
+    def __init__(self, filepath=None, contents=None, mode=None,
+                 password=None, description=None):
         self.filepath = filepath
         self.contents = contents
         self.mode = mode
@@ -114,13 +114,13 @@ class File(object):
 
     @property
     def magic(self):
-        if not self._finger["magic"] and isinstance(self.contents, (str, unicode, bytes)):
+        if not self._finger["magic"] and self.contents:
             self._finger["magic"] = magic.from_buffer(self.contents)
         return self._finger["magic"]
 
     @property
     def mime(self):
-        if not self._finger["mime"] and isinstance(self.contents, (str, unicode, bytes)):
+        if not self._finger["mime"] and self.contents:
             self._finger["mime"] = magic.from_buffer(self.contents, mime=True)
         return self._finger["mime"]
 
@@ -133,8 +133,7 @@ class File(object):
             magic = self.magic
             if "," in magic:
                 spl = magic.split(",")
-                magic = "%s (%s)" % (spl[0],
-                                     ",".join(spl[1:3]).strip())
+                magic = "%s (%s)" % (spl[0], ",".join(spl[1:3]).strip())
 
             self._finger["magic_human"] = magic
         return self._finger["magic_human"]
@@ -161,30 +160,24 @@ class File(object):
     def filename(self):
         if not self._filename and not self.filepath.endswith("/"):
             self._filename = ntpath.basename(self.filepath)
-
         return self._filename
 
     def to_dict(self):
-        if not self.contents:
-            size = 0
-        else:
-            size = len(self.contents)
-
         return {
             "filepath": self.filepath,
             "filename": self.filename,
             "duplicate": self.duplicate,
-            "size": size,
+            "size": len(self.contents) if self.contents else 0,
             "children": self.children,
             "type": "container" if self.children else "file",
             "finger": {
                 "magic": self.magic,
                 "mime": self.mime,
                 "mime_human": self.mime_human,
-                "magic_human": self.magic_human
+                "magic_human": self.magic_human,
             },
             "password": self.password,
-            "sha256": self.sha256
+            "sha256": self.sha256,
         }
 
 class Directory(object):
@@ -197,7 +190,7 @@ class Directory(object):
             "filepath": self.filepath,
             "filename": ntpath.basename(self.filepath[:-1]),
             "children": self.children,
-            "type": "directory"
+            "type": "directory",
         }
 
 class Entries(object):
