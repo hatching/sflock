@@ -27,3 +27,6 @@ def picker(filename):
 
     if filename.endswith(".ace"):
         return "acefile"
+
+    if filename.endswith(".eml"):
+        return "emlfile"
