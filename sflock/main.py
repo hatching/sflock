@@ -5,6 +5,7 @@
 import click
 import glob
 import io
+import json
 import os.path
 import zipfile
 
@@ -61,7 +62,7 @@ def zipify(f):
 def process_file(filepath):
     f = unpack(filepath)
     for entry in f.children:
-        print entry.to_dict()
+        print json.dumps(entry.to_dict())
 
 def process_directory(dirpath):
     for rootpath, directories, filenames in os.walk(dirpath):

@@ -185,7 +185,7 @@ class File(object):
             "filename": self.filename,
             "duplicate": self.duplicate,
             "size": self.filesize,
-            "children": self.children,
+            "children": [child.to_dict() for child in self.children],
             "type": "container" if self.children else "file",
             "finger": {
                 "magic": self.magic,
