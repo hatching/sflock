@@ -63,7 +63,7 @@ class ZipFile(Unpacker):
                  description="Error decrypting file")
         )
 
-    def unpack(self, mode=None, password=None, duplicates=None):
+    def unpack(self, password=None, duplicates=None):
         if self.f.contents:
             archive = zipfile.ZipFile(StringIO(self.f.contents))
         else:
