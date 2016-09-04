@@ -5,6 +5,7 @@
 import pytest
 
 from sflock.abstracts import File
+from sflock.exception import UnpackException
 from sflock.unpack import RarFile
 
 def f(filename):
@@ -60,9 +61,18 @@ class TestRarFile:
         s = f("rar_nested2.rar").get_signature()
         assert s is None
 
+    def test_garbage(self):
+        t = RarFile(f("garbage.bin"))
+        assert t.handles() is False
+
+        with pytest.raises(UnpackException):
+            t.unpack()
+
 @pytest.mark.skipif("RarFile(None).supported()")
 def test_norar_plain():
     assert "RAR archive" in f("rar_plain.rar").magic
     t = RarFile(f("rar_plain.rar"))
     assert t.handles() is True
-    assert not t.unpack()
+
+    with pytest.raises(UnpackException):
+        t.unpack()

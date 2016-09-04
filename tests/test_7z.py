@@ -5,6 +5,7 @@
 import pytest
 
 from sflock.abstracts import File
+from sflock.exception import UnpackException
 from sflock.unpack import Zip7File
 
 def f(filename):
@@ -60,9 +61,18 @@ class Test7zFile(object):
         s = f("7z_nested2.7z").get_signature()
         assert s is None
 
+    def test_garbage(self):
+        t = Zip7File(f("garbage.bin"))
+        assert t.handles() is False
+
+        with pytest.raises(UnpackException):
+            t.unpack()
+
 @pytest.mark.skipif("Zip7File(None).supported()")
 def test_no7z_plain():
     assert "7-zip archive" in f("7z_plain.7z").magic
     t = Zip7File(f("7z_plain.7z"))
     assert t.handles() is True
-    assert not t.unpack()
+
+    with pytest.raises(UnpackException):
+        t.unpack()

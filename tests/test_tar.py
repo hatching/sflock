@@ -2,7 +2,10 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import pytest
+
 from sflock.abstracts import File
+from sflock.exception import UnpackException
 from sflock.unpack import TarFile, TargzFile, Tarbz2File
 
 def f(filename):
@@ -142,3 +145,10 @@ class TestTarFile(object):
 
         s = f("tar_nested2.tar").get_signature()
         assert s is None
+
+    def test_garbage(self):
+        t = TarFile(f("garbage.bin"))
+        assert t.handles() is False
+
+        with pytest.raises(UnpackException):
+            t.unpack()

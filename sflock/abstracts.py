@@ -10,6 +10,7 @@ import shutil
 
 import sflock
 
+from sflock.exception import UnpackException
 from sflock.pick import picker
 from sflock.signatures import Signatures
 
@@ -55,6 +56,8 @@ class Unpacker(object):
                     entry.children = plugin.unpack(duplicates=duplicates)
 
             ret.append(entry)
+        if not ret:
+            raise UnpackException("No files unpacked")
         return ret
 
     def process_directory(self, dirpath, duplicates):

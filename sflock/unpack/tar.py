@@ -33,6 +33,9 @@ class TarFile(Unpacker):
         else:
             archive = self._open_path(self.f.filepath)
 
+        if not archive:
+            return self.process([], duplicates)
+
         duplicates = duplicates or []
 
         entries = []
@@ -56,6 +59,7 @@ class TarFile(Unpacker):
         for k, v in Signatures.signatures.items():
             if contents.startswith(k) and v["unpacker"] == self.name:
                 return v
+        return False
 
     def _open_stream(self, contents, mode):
         fileobj = StringIO(contents)

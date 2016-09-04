@@ -2,7 +2,10 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import pytest
+
 from sflock.abstracts import File
+from sflock.exception import UnpackException
 from sflock.unpack import EmlFile
 
 def f(filename):
@@ -43,3 +46,10 @@ def test_eml_nested_eml():
     assert files[1].filepath == "att1"
     assert "UTF-8 Unicode" in files[1].magic
     assert files[1].contents == "\xe6\x83\xa1\xe6\x84\x8f\xe8\xbb\x9f\xe9\xab\x94"
+
+def test_garbage():
+    t = EmlFile(f("garbage.bin"))
+    assert t.handles() is False
+
+    with pytest.raises(UnpackException):
+        t.unpack()

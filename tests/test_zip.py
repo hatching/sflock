@@ -2,7 +2,10 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import pytest
+
 from sflock.abstracts import File
+from sflock.exception import UnpackException
 from sflock.unpack import ZipFile
 
 def f(filename):
@@ -94,3 +97,10 @@ class TestZipfile(object):
 
         s = f("zip_nested2.zip").get_signature()
         assert s == {"family": "zip", "mode": "", "unpacker": "zipfile"}
+
+    def test_garbage(self):
+        t = ZipFile(f("garbage.bin"))
+        assert t.handles() is False
+
+        with pytest.raises(UnpackException):
+            t.unpack()

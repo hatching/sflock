@@ -21,8 +21,7 @@ class EmlFile(Unpacker):
         return True
 
     def handles(self):
-        if picker(self.f.filepath) == self.name:
-            return True
+        return picker(self.f.filepath) == self.name
 
     def unpack(self, duplicates=None):
         entries = []

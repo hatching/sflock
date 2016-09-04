@@ -64,10 +64,13 @@ class ZipFile(Unpacker):
         )
 
     def unpack(self, password=None, duplicates=None):
-        if self.f.contents:
-            archive = zipfile.ZipFile(StringIO(self.f.contents))
-        else:
-            archive = zipfile.ZipFile(self.f.filepath)
+        try:
+            if self.f.contents:
+                archive = zipfile.ZipFile(StringIO(self.f.contents))
+            else:
+                archive = zipfile.ZipFile(self.f.filepath)
+        except zipfile.BadZipfile:
+            return self.process([], duplicates)
 
         if not isinstance(duplicates, list):
             duplicates = []
@@ -92,3 +95,4 @@ class ZipFile(Unpacker):
         for k, v in Signatures.signatures.items():
             if contents.startswith(k) and v["unpacker"] == "zipfile":
                 return v
+        return False

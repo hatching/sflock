@@ -5,6 +5,7 @@
 import pytest
 
 from sflock.abstracts import File
+from sflock.exception import UnpackException
 from sflock.unpack import AceFile
 
 def f(filename):
@@ -60,9 +61,18 @@ class TestAceFile(object):
         s = f("ace_nested2.ace").get_signature()
         assert s is None
 
+    def test_garbage(self):
+        t = AceFile(f("garbage.bin"))
+        assert t.handles() is False
+
+        with pytest.raises(UnpackException):
+            t.unpack()
+
 @pytest.mark.skipif("AceFile(None).supported()")
 def test_noace_plain():
     assert "ACE archive" in f("ace_plain.ace").magic
     t = AceFile(f("ace_plain.ace"))
     assert t.handles() is True
-    assert not t.unpack()
+
+    with pytest.raises(UnpackException):
+        t.unpack()
