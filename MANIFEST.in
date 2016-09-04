@@ -1,0 +1,3 @@
+graft sflock
+include sflock/data/zipjail
+include sflock/data/password.txt

@@ -25,7 +25,7 @@ setup(
     description="Sample staging and detonation utility",
     include_package_data=True,
     package_data={
-        "sflock.data": ["*.*"],
+        "sflock.data": ["*"],
     },
     install_requires=[
         "click==6.6",
