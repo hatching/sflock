@@ -33,6 +33,8 @@ def unpack(filepath, contents=None):
     else:
         f = File.from_path(filepath)
 
+    duplicates = []
+
     # Determine how we're going to unpack this file (if at all). It may not
     # have a file extension, e.g., when its filename is a hash. In those cases
     # we're going to take a look at the contents of the file.
@@ -44,7 +46,7 @@ def unpack(filepath, contents=None):
     if unpacker:
         plugin = plugins[unpacker](f)
         if plugin.supported():
-            f.children = plugin.unpack()
+            f.children = plugin.unpack(duplicates=duplicates)
 
     return f
 

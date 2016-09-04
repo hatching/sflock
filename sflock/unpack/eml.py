@@ -25,7 +25,6 @@ class EmlFile(Unpacker):
 
     def unpack(self, duplicates=None):
         entries = []
-        duplicates = duplicates or []
 
         e = email.message_from_string(self.f.contents)
         for part in e.walk():
@@ -46,13 +45,6 @@ class EmlFile(Unpacker):
                     email.header.decode_header(filename)
                 ))
 
-            f = File(filename or "att1", payload)
-
-            if f.sha256 not in duplicates:
-                duplicates.append(f.sha256)
-            else:
-                f.duplicate = True
-
-            entries.append(f)
+            entries.append(File(filename or "att1", payload))
 
         return self.process(entries, duplicates)

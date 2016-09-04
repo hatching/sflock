@@ -72,22 +72,12 @@ class ZipFile(Unpacker):
         except zipfile.BadZipfile:
             return self.process([], duplicates)
 
-        if not isinstance(duplicates, list):
-            duplicates = []
-
         entries = []
         for entry in archive.infolist():
             if entry.filename.endswith("/"):
                 continue
 
-            f = self._decrypt(archive, entry, password)
-
-            if f.sha256 not in duplicates:
-                duplicates.append(f.sha256)
-            else:
-                f.duplicate = True
-
-            entries.append(f)
+            entries.append(self._decrypt(archive, entry, password))
 
         return self.process(entries, duplicates)
 

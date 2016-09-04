@@ -36,22 +36,15 @@ class TarFile(Unpacker):
         if not archive:
             return self.process([], duplicates)
 
-        duplicates = duplicates or []
-
         entries = []
         for entry in archive:
             # Ignore anything that's not a file for now.
             if not entry.isfile():
                 continue
 
-            f = File(entry.path, archive.extractfile(entry).read())
-
-            if f.sha256 not in duplicates:
-                duplicates.append(f.sha256)
-            else:
-                f.duplicate = True
-
-            entries.append(f)
+            entries.append(
+                File(entry.path, archive.extractfile(entry).read())
+            )
 
         return self.process(entries, duplicates)
 

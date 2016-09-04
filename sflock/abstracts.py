@@ -41,19 +41,25 @@ class Unpacker(object):
     def handles(self):
         raise NotImplementedError
 
-    def unpack(self):
+    def unpack(self, duplicates=None):
         raise NotImplementedError
 
     def process(self, entries, duplicates):
         """Goes through all files and recursively unpacks embedded archives
         if found."""
         ret = []
+        duplicates = duplicates or []
         for entry in entries:
             unpacker = picker(entry.filepath)
             if unpacker:
                 plugin = self.plugins[unpacker](entry)
                 if plugin.supported():
                     entry.children = plugin.unpack(duplicates=duplicates)
+
+            if entry.sha256 not in duplicates:
+                duplicates.append(entry.sha256)
+            else:
+                entry.duplicate = True
 
             ret.append(entry)
         if not ret:
@@ -71,11 +77,6 @@ class Unpacker(object):
                 f = File.from_path(
                     filepath, filename=filepath[len(dirpath)+1:],
                 )
-
-                if f.sha256 not in duplicates:
-                    duplicates.append(f.sha256)
-                else:
-                    f.duplicate = True
 
                 entries.append(f)
 
