@@ -3,6 +3,7 @@
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 import email
+import email.header
 
 from sflock.abstracts import Unpacker, File
 from sflock.pick import picker
@@ -32,14 +33,21 @@ class EmlFile(Unpacker):
             if part.is_multipart():
                 continue
 
-            if part.get_content_type() in self.whitelisted_content_type:
+            if not part.get_filename() and \
+                    part.get_content_type() in self.whitelisted_content_type:
                 continue
 
             payload = part.get_payload(decode=True)
             if not payload:
                 continue
 
-            f = File(part.get_filename(), payload)
+            filename = part.get_filename()
+            if filename:
+                filename = unicode(email.header.make_header(
+                    email.header.decode_header(filename)
+                ))
+
+            f = File(filename or "att1", payload)
 
             if f.sha256 not in duplicates:
                 duplicates.append(f.sha256)

@@ -171,13 +171,17 @@ class File(object):
             self._filename = ntpath.basename(self.filepath)
         return self._filename
 
+    @property
+    def filesize(self):
+        return len(self.contents) if self.contents else 0
+
     def to_dict(self):
         return {
             "filepath": self.filepath,
             "parentdirs": self.parentdirs,
             "filename": self.filename,
             "duplicate": self.duplicate,
-            "size": len(self.contents) if self.contents else 0,
+            "size": self.filesize,
             "children": self.children,
             "type": "container" if self.children else "file",
             "finger": {
