@@ -9,7 +9,7 @@ def f(filename):
     return File.from_path("tests/files/%s" % filename)
 
 def test_eml_tar_nested2():
-    assert "SMTP mail" in f("eml_tar_nested2.eml").magic
+    assert "smtp mail" in f("eml_tar_nested2.eml").magic.lower()
     t = EmlFile(f("eml_tar_nested2.eml"))
     assert t.handles() is True
     files = list(t.unpack())
