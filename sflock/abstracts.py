@@ -139,11 +139,8 @@ class File(object):
 
     @property
     def magic_human(self):
-        if not self._finger["magic"]:
-            self.magic()
-
         if not self._finger["magic_human"]:
-            magic = self.magic
+            magic = self.magic or ""
             if "," in magic:
                 spl = magic.split(",")
                 magic = "%s (%s)" % (spl[0], ",".join(spl[1:3]).strip())
@@ -153,11 +150,8 @@ class File(object):
 
     @property
     def mime_human(self):
-        if not self._finger["mime"]:
-            self.mime()
-
         if not self._finger["mime_human"]:
-            mime = self.mime
+            mime = self.mime or ""
             if "/" in mime:
                 mime = mime.split("/", 1)[1]
 
