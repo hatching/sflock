@@ -4,18 +4,19 @@ python:
     - 2.7
 
 install:
-    - sudo python setup.py install
+    - python setup.py install
+    - pip install pytest
 
 script:
-    - python -c "import sflock ; exit(len(sflock.supported()) == 4)"
+    - python -c "import sflock ; exit(len(sflock.supported()) != 4)"
 
-    - sudo apt install p7zip-full
-    - python -c "import sflock ; exit(len(sflock.supported()) == 5)"
+    - sudo apt-get -y install p7zip-full
+    - python -c "import sflock ; exit(len(sflock.supported()) != 5)"
 
-    - sudo apt install unrar
-    - python -c "import sflock ; exit(len(sflock.supported()) == 6)"
+    - sudo apt-get -y install rar
+    - python -c "import sflock ; exit(len(sflock.supported()) != 6)"
 
-    - sudo apt install unace-nonfree
-    - python -c "import sflock ; exit(len(sflock.supported()) == 7)"
+    - sudo apt-get -y install unace-nonfree
+    - python -c "import sflock ; exit(len(sflock.supported()) != 7)"
 
     - py.test
