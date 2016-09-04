@@ -24,3 +24,6 @@ def picker(filename):
 
     if filename.endswith(".7z"):
         return "7zfile"
+
+    if filename.endswith(".ace"):
+        return "acefile"

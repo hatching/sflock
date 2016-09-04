@@ -13,3 +13,4 @@ def test_extensions():
     assert picker("a.zip") == "zipfile"
     assert picker("a.rar") == "rarfile"
     assert picker("a.7z") == "7zfile"
+    assert picker("a.ace") == "acefile"
