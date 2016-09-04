@@ -2,12 +2,15 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import pytest
+
 from sflock.abstracts import File
 from sflock.unpack import AceFile
 
 def f(filename):
     return File.from_path("tests/files/%s" % filename)
 
+@pytest.mark.skipif("not AceFile(None).supported()")
 class TestAceFile(object):
     def test_ace_plain(self):
         assert "ACE archive" in f("ace_plain.ace").magic
@@ -56,3 +59,10 @@ class TestAceFile(object):
 
         s = f("ace_nested2.ace").get_signature()
         assert s is None
+
+@pytest.mark.skipif("AceFile(None).supported()")
+def test_noace_plain():
+    assert "ACE archive" in f("ace_plain.ace").magic
+    t = AceFile(f("ace_plain.ace"))
+    assert t.handles() is True
+    assert not t.unpack()

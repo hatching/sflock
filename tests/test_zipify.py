@@ -2,6 +2,8 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import pytest
+
 from sflock.main import unpack, zipify
 
 def test_zipify1():
@@ -18,6 +20,7 @@ def test_zipify2():
     assert a.children[0].filepath == b.children[0].filepath
     assert a.children[0].contents == b.children[0].contents
 
+@pytest.mark.skipif("not Zip7File(None).supported()")
 def test_zipify3():
     a = unpack("tests/files/7z_nested2.7z")
     b = unpack("foo.zip", zipify(a))

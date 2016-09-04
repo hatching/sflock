@@ -41,7 +41,10 @@ def unpack(filepath, contents=None):
 
     # Actually unpack any embedded files in this archive.
     if unpacker:
-        f.children = plugins[unpacker](f).unpack()
+        plugin = plugins[unpacker](f)
+        if plugin.supported():
+            f.children = plugin.unpack()
+
     return f
 
 def zipify(f):

@@ -2,12 +2,15 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import pytest
+
 from sflock.abstracts import File
 from sflock.unpack import RarFile
 
 def f(filename):
     return File.from_path("tests/files/%s" % filename)
 
+@pytest.mark.skipif("not RarFile(None).supported()")
 class TestRarFile:
     def test_plain(self):
         assert "RAR archive" in f("rar_plain.rar").magic
@@ -56,3 +59,10 @@ class TestRarFile:
 
         s = f("rar_nested2.rar").get_signature()
         assert s is None
+
+@pytest.mark.skipif("RarFile(None).supported()")
+def test_norar_plain():
+    assert "RAR archive" in f("rar_plain.rar").magic
+    t = RarFile(f("rar_plain.rar"))
+    assert t.handles() is True
+    assert not t.unpack()

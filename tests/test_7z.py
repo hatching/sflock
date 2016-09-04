@@ -2,12 +2,15 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import pytest
+
 from sflock.abstracts import File
 from sflock.unpack import Zip7File
 
 def f(filename):
     return File.from_path("tests/files/%s" % filename)
 
+@pytest.mark.skipif("not Zip7File(None).supported()")
 class Test7zFile(object):
     def test_7z_plain(self):
         assert "7-zip archive" in f("7z_plain.7z").magic
@@ -56,3 +59,10 @@ class Test7zFile(object):
 
         s = f("7z_nested2.7z").get_signature()
         assert s is None
+
+@pytest.mark.skipif("Zip7File(None).supported()")
+def test_no7z_plain():
+    assert "7-zip archive" in f("7z_plain.7z").magic
+    t = Zip7File(f("7z_plain.7z"))
+    assert t.handles() is True
+    assert not t.unpack()

@@ -51,7 +51,8 @@ class Unpacker(object):
             unpacker = picker(entry.filepath)
             if unpacker:
                 plugin = self.plugins[unpacker](entry)
-                entry.children = plugin.unpack(duplicates=duplicates)
+                if plugin.supported():
+                    entry.children = plugin.unpack(duplicates=duplicates)
 
             ret.append(entry)
         return ret
