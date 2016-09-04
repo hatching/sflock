@@ -16,8 +16,15 @@ class Zip7File(Unpacker):
     def handles(self):
         return "7-zip archive" in self.f.magic
 
-    def unpack(self, duplicates=None):
+    def unpack(self, password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()
+
+        if password:
+            raise UnpackException(
+                "Currently password-protected .7z files are not supported "
+                "due to a ZipJail-related monitoring issue (namely, due to "
+                "7z calling clone(2) when a password has been provided)."
+            )
 
         try:
             subprocess.check_call([

@@ -61,6 +61,20 @@ class Test7zFile(object):
         s = f("7z_nested2.7z").get_signature()
         assert s is None
 
+    """
+    def test_zip_encrypted(self):
+        assert "7-zip archive" in f("6z_encrypted.7z").magic
+        z = Zip7File(f("7z_encrypted.7z"))
+        assert z.handles() is True
+        files = list(z.unpack("infected"))
+        assert len(files) == 1
+        assert files[0].filepath == "bar.txt"
+        assert files[0].contents == "hello world\n"
+        assert files[0].password == "infected"
+        assert files[0].magic == "ASCII text"
+        assert files[0].parentdirs == []
+    """
+
     def test_garbage(self):
         t = Zip7File(f("garbage.bin"))
         assert t.handles() is False

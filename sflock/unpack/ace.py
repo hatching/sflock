@@ -18,7 +18,7 @@ class AceFile(Unpacker):
     def handles(self):
         return "ACE archive" in self.f.magic
 
-    def unpack(self, duplicates=None):
+    def unpack(self, password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()
         filepath = os.path.abspath(self.f.filepath)
 

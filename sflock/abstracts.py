@@ -41,7 +41,7 @@ class Unpacker(object):
     def handles(self):
         raise NotImplementedError
 
-    def unpack(self, duplicates=None):
+    def unpack(self, password=None, duplicates=None):
         raise NotImplementedError
 
     def process(self, entries, duplicates):
@@ -66,7 +66,7 @@ class Unpacker(object):
             raise UnpackException("No files unpacked")
         return ret
 
-    def process_directory(self, dirpath, duplicates):
+    def process_directory(self, dirpath, duplicates, password=None):
         """Enumerates a directory, removes the directory, and returns data
         after calling the process function."""
         entries = []
@@ -76,6 +76,7 @@ class Unpacker(object):
                 filepath = os.path.join(dirpath2, filepath)
                 f = File.from_path(
                     filepath, filename=filepath[len(dirpath)+1:],
+                    password=password,
                 )
 
                 entries.append(f)
@@ -106,8 +107,12 @@ class File(object):
         }
 
     @classmethod
-    def from_path(self, filepath, filename=None):
-        return File(filename or filepath, open(filepath, "rb").read())
+    def from_path(self, filepath, filename=None, password=None):
+        return File(
+            filename or filepath,
+            open(filepath, "rb").read(),
+            password=password
+        )
 
     def get_signature(self):
         for k, v in Signatures.signatures.iteritems():

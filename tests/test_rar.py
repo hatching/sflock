@@ -61,6 +61,18 @@ class TestRarFile:
         s = f("rar_nested2.rar").get_signature()
         assert s is None
 
+    def test_rar_encrypted(self):
+        assert "RAR archive" in f("sflock_encrypted.rar").magic
+        z = RarFile(f("sflock_encrypted.rar"))
+        assert z.handles() is True
+        files = list(z.unpack("infected"))
+        assert len(files) == 1
+        assert files[0].filepath == "sflock.txt"
+        assert files[0].contents == "sflock_encrypted_rar"
+        assert files[0].password == "infected"
+        assert "ASCII text" in files[0].magic
+        assert files[0].parentdirs == []
+
     def test_garbage(self):
         t = RarFile(f("garbage.bin"))
         assert t.handles() is False

@@ -16,15 +16,16 @@ class RarFile(Unpacker):
     def handles(self):
         return "RAR archive" in self.f.magic
 
-    def unpack(self, duplicates=None):
+    def unpack(self, password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()
 
         try:
             subprocess.check_call([
                 self.zipjail, self.f.filepath, dirpath,
-                self.exe, "x", "-mt1", self.f.filepath, dirpath,
+                self.exe, "x", "-mt1", "-p%s" % (password or "-"),
+                self.f.filepath, dirpath,
             ])
         except subprocess.CalledProcessError as e:
             raise UnpackException(e)
 
-        return self.process_directory(dirpath, duplicates)
+        return self.process_directory(dirpath, duplicates, password)

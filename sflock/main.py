@@ -26,7 +26,7 @@ def supported():
                 ret.extend(plugin.exts)
     return ret
 
-def unpack(filepath, contents=None):
+def unpack(filepath, contents=None, password=None):
     """Unpacks the file or contents provided."""
     if contents:
         f = File(filepath, contents)
@@ -46,7 +46,7 @@ def unpack(filepath, contents=None):
     if unpacker:
         plugin = plugins[unpacker](f)
         if plugin.supported():
-            f.children = plugin.unpack(duplicates=duplicates)
+            f.children = plugin.unpack(password, duplicates)
 
     return f
 

@@ -23,7 +23,7 @@ class EmlFile(Unpacker):
     def handles(self):
         return picker(self.f.filepath) == self.name
 
-    def unpack(self, duplicates=None):
+    def unpack(self, password=None, duplicates=None):
         entries = []
 
         e = email.message_from_string(self.f.contents)

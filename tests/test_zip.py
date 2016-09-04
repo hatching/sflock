@@ -55,7 +55,7 @@ class TestZipfile(object):
 
         z = ZipFile(f("zip_encrypted2.zip"))
         assert z.handles() is True
-        files = list(z.unpack(password="sflock"))
+        files = list(z.unpack("sflock"))
         assert len(files) == 1
         assert files[0].filepath == "sflock.txt"
         assert files[0].contents == "sflock_encrypted_zip\n"

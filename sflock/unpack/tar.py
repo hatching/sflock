@@ -27,7 +27,7 @@ class TarFile(Unpacker):
         else:
             return tarfile.is_tarfile(self.f.filepath)
 
-    def unpack(self, duplicates=None):
+    def unpack(self, password=None, duplicates=None):
         if self.f.contents:
             archive = self._open_stream(self.f.contents, mode=self.mode)
         else:
