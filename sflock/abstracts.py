@@ -196,3 +196,15 @@ class File(object):
             "password": self.password,
             "sha256": self.sha256,
         }
+
+    def astree(self):
+        ret = {
+            "__sha256__": self.sha256,
+        }
+        for child in self.children:
+            entry = ret
+            for part in child.parentdirs:
+                entry[part] = entry.get(part, {})
+                entry = entry[part]
+            entry[child.filename] = child.astree()
+        return ret
