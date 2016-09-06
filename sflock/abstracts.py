@@ -197,14 +197,44 @@ class File(object):
             "sha256": self.sha256,
         }
 
-    def astree(self):
+    def astree(self, root=True):
         ret = {
-            "__sha256__": self.sha256,
+            "duplicate": self.duplicate,
+            "password": self.password,
+            "finger": {
+                "mime": self.mime,
+                "mime_human": self.mime_human,
+                "magic": self.magic,
+                "magic_human": self.magic_human,
+            },
+            "filename": self.filename,
+            "filepath": self.filepath,
+            "size": self.filesize,
+            "type": "container" if self.children else "file",
+            "children": [],
         }
+
+        def findentry(entry, name):
+            for idx in xrange(len(entry)):
+                if entry[idx]["filename"] == name:
+                    return entry[idx]
+
+            entry.append({
+                "type": "directory",
+                "filename": name,
+                "children": [],
+            })
+            return entry[-1]
+
         for child in self.children:
-            entry = ret
+            entry = ret["children"]
             for part in child.parentdirs:
-                entry[part] = entry.get(part, {})
-                entry = entry[part]
-            entry[child.filename] = child.astree()
+                entry = findentry(entry, part)["children"]
+            entry.append(child.astree(root=False))
+
+        if root:
+            return {
+                self.sha256: ret,
+            }
+
         return ret
