@@ -62,9 +62,7 @@ def zipify(f):
     return r.getvalue()
 
 def process_file(filepath):
-    f = unpack(filepath)
-    for entry in f.children:
-        print json.dumps(entry.to_dict())
+    print json.dumps(unpack(filepath).astree())
 
 def process_directory(dirpath):
     for rootpath, directories, filenames in os.walk(dirpath):
