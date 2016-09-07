@@ -50,7 +50,7 @@ class TestZipfile(object):
         assert len(files) == 1
         assert files[0].mode == "failed"
         assert files[0].description == "Error decrypting file"
-        assert files[0].magic is None
+        assert files[0].magic is ""
         assert files[0].parentdirs == []
 
         z = ZipFile(f("zip_encrypted2.zip"))

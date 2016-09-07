@@ -129,13 +129,13 @@ class File(object):
     def magic(self):
         if not self._finger["magic"] and self.contents:
             self._finger["magic"] = magic.from_buffer(self.contents)
-        return self._finger["magic"]
+        return self._finger["magic"] or ""
 
     @property
     def mime(self):
         if not self._finger["mime"] and self.contents:
             self._finger["mime"] = magic.from_buffer(self.contents, mime=True)
-        return self._finger["mime"]
+        return self._finger["mime"] or ""
 
     @property
     def magic_human(self):
@@ -146,7 +146,7 @@ class File(object):
                 magic = "%s (%s)" % (spl[0], ",".join(spl[1:3]).strip())
 
             self._finger["magic_human"] = magic
-        return self._finger["magic_human"]
+        return self._finger["magic_human"] or ""
 
     @property
     def mime_human(self):
@@ -161,7 +161,7 @@ class File(object):
                 mime = mime.replace("-", " ")
 
             self._finger["mime_human"] = mime
-        return self._finger["mime_human"]
+        return self._finger["mime_human"] or ""
 
     @property
     def parentdirs(self):
