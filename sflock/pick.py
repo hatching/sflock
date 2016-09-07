@@ -7,6 +7,8 @@ def picker(filename):
     if not filename:
         return
 
+    filename = filename.lower()
+
     if filename.endswith(".tar"):
         return "tarfile"
 

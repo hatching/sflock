@@ -15,3 +15,6 @@ def test_extensions():
     assert picker("a.7z") == "7zfile"
     assert picker("a.ace") == "acefile"
     assert picker("a.eml") == "emlfile"
+
+def test_case():
+    assert picker("A.ZIP") == "zipfile"
