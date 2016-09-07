@@ -56,3 +56,10 @@ def test_package():
     assert File("a.wsf").package == "wsf"
     assert File("a.htm").package == "ie"
     assert File("a.html").package == "ie"
+
+def test_case():
+    assert File("A.PDF").package == "pdf"
+    assert File("A.RTF").package == "doc"
+    assert File("A.DOC").package == "doc"
+    assert File("A.PUB").package == "pub"
+    assert File("A.JAR").package == "jar"
