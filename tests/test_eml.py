@@ -39,13 +39,16 @@ def test_eml_nested_eml():
 
     assert files[0].children[0].filepath == u"\u60e1\u610f\u8edf\u9ad4.doc"
     assert files[0].children[0].filesize == 12
+    assert files[0].children[0].package == "doc"
 
     assert files[0].children[1].filepath == "cuckoo.png"
     assert files[0].children[1].filesize == 11970
+    assert files[0].children[1].package is None
 
     assert files[1].filepath == "att1"
     assert "UTF-8 Unicode" in files[1].magic
     assert files[1].contents == "\xe6\x83\xa1\xe6\x84\x8f\xe8\xbb\x9f\xe9\xab\x94"
+    assert files[1].package is None
 
 def test_garbage():
     t = EmlFile(f("garbage.bin"))

@@ -27,19 +27,14 @@ def test_unpack4():
 
 def test_astree1():
     f = unpack("tests/files/zip_nested2.zip")
-    assert f.astree() == {
+    assert f.astree(finger=False) == {
         "fafd83b0a5f0f3ef5247fe9d196341b6a13e8c258b63921a59fef83ce711dc1d": {
             "duplicate": False,
             "password": None,
-            "finger": {
-                "magic": "Zip archive data, at least v1.0 to extract",
-                "magic_human": "Zip archive data (at least v1.0 to extract)",
-                "mime": "application/zip",
-                "mime_human": "zip",
-            },
             "filename": "zip_nested2.zip",
             "filepath": "tests/files/zip_nested2.zip",
             "size": 496,
+            "package": None,
             "type": "container",
             "children": [
                 {
@@ -55,13 +50,8 @@ def test_astree1():
                                     "filepath": "deepfoo/foo/bar.txt",
                                     "duplicate": False,
                                     "password": None,
-                                    "finger": {
-                                          "magic": "ASCII text",
-                                          "magic_human": "ASCII text",
-                                          "mime": "text/plain",
-                                          "mime_human": "plain",
-                                    },
                                     "size": 12,
+                                    "package": None,
                                     "type": "file",
                                     "children": [],
                                 },
@@ -75,34 +65,24 @@ def test_astree1():
 
 def test_astree2():
     f = unpack("tests/files/eml_tar_nested2.eml")
-    assert f.astree() == {
+    assert f.astree(finger=False) == {
         "0c4a1d51e8f2ca75afaeb506bfec85e2b6195bcfe617081659bf1b758f05a953": {
             "password": None,
-            "finger": {
-                "magic": "SMTP mail, ASCII text, with CRLF line terminators",
-                "magic_human": "SMTP mail (ASCII text, with CRLF line terminators)",
-                "mime": "message/rfc822",
-                "mime_human": "rfc822",
-            },
             "duplicate": False,
             "filename": "eml_tar_nested2.eml",
             "filepath": "tests/files/eml_tar_nested2.eml",
             "size": 15035,
             "password": None,
+            "package": None,
             "type": "container",
             "children": [
                 {
                     "type": "container",
                     "password": None,
-                    "finger": {
-                        "magic": "POSIX tar archive (GNU)",
-                        "magic_human": "POSIX tar archive (GNU)",
-                        "mime": "application/x-tar",
-                        "mime_human": "tar",
-                    },
                     "duplicate": False,
                     "filename": u"tar_nested2.tar",
                     "filepath": u"tar_nested2.tar",
+                    "package": None,
                     "size": 10240,
                     "children": [
                         {
@@ -118,23 +98,74 @@ def test_astree2():
                                             "size": 12,
                                             "children": [],
                                             "password": None,
-                                            "finger": {
-                                                "magic": "ASCII text",
-                                                "magic_human": "ASCII text",
-                                                "mime": "text/plain",
-                                                "mime_human": "plain",
-                                            },
                                             "duplicate": False,
+                                            "package": None,
                                             "filename": "bar.txt",
                                             "filepath": "deepfoo/foo/bar.txt"
                                         },
                                     ],
                                 },
                             ],
+                        },
+                    ],
+                },
+            ],
+        },
+    }
+
+def test_astree3():
+    f = unpack("tests/files/eml_nested_eml.eml")
+    assert f.astree(finger=False) == {
+        "78df974998868d10682fc3693bdfbbd61337923805b360394fae5e8371063f69": {
+            "duplicate": False,
+            "filename": "eml_nested_eml.eml",
+            "filepath": "tests/files/eml_nested_eml.eml",
+            "package": None,
+            "password": None,
+            "size": 24607,
+            "type": "container",
+            "children": [
+                {
+                    "duplicate": False,
+                    "filename": u"multipart.eml",
+                    "filepath": u"multipart.eml",
+                    "package": None,
+                    "password": None,
+                    "size": 17482,
+                    "type": "container",
+                    "children": [
+                        {
+                            "duplicate": False,
+                            "filename": u"\u60e1\u610f\u8edf\u9ad4.doc",
+                            "filepath": u"\u60e1\u610f\u8edf\u9ad4.doc",
+                            "package": "doc",
+                            "password": None,
+                            "size": 12,
+                            "type": "file",
+                            "children": [],
+                        },
+                        {
+                            "duplicate": False,
+                            "filename": u"cuckoo.png",
+                            "filepath": u"cuckoo.png",
+                            "package": None,
+                            "password": None,
+                            "size": 11970,
+                            "type": "file",
+                            "children": [],
                         }
                     ],
-                }
+                },
+                {
+                    "duplicate": False,
+                    "filename": "att1",
+                    "filepath": "att1",
+                    "package": None,
+                    "password": None,
+                    "size": 12,
+                    "type": "file",
+                    "children": [],
+                },
             ],
-
         },
     }
