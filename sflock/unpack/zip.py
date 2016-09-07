@@ -23,7 +23,7 @@ class ZipFile(Unpacker):
         return True
 
     def handles(self):
-        if picker(self.f.filepath) == "zipfile":
+        if picker(self.f.filepath) == self.name:
             return True
 
         if self.f.contents:
