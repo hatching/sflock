@@ -35,3 +35,6 @@ def picker(filename):
 
     if filename.endswith(".msg"):
         return "msgfile"
+
+    if filename.endswith(".mso"):
+        return "msofile"

@@ -2,6 +2,7 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import hashlib
 import pytest
 
 from sflock.abstracts import File
@@ -21,14 +22,24 @@ def test_msg_embedded():
     assert files[0].filepath == "image003.emz"
     assert files[0].filesize == 1137
     assert files[0].package is None
+    assert not files[0].children
 
     assert files[1].filepath == "image004.png"
     assert files[1].filesize == 1132
     assert files[1].package is None
+    assert not files[1].children
 
     assert files[2].filepath == "oledata.mso"
     assert files[2].filesize == 234898
     assert files[2].package == "doc"
+
+    assert len(files[2].children) == 1
+    assert files[2].children[0].filename == "Firefox Setup Stub 43.0.1.exe"
+    assert files[2].children[0].filesize == 249336
+
+    assert hashlib.md5(
+        files[2].children[0].contents
+    ).hexdigest() == "c8cd8eb88f1848cf456725d67baaaa35"
 
 def test_garbage():
     m = MsgFile(f("garbage.bin"))

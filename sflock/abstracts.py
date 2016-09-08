@@ -97,7 +97,7 @@ class File(object):
         self.children = []
         self.duplicate = False
 
-        self._filename = None
+        self._filename = filename
         self._sha256 = None
         self._finger = {
             "mime": None,

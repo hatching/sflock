@@ -169,3 +169,60 @@ def test_astree3():
             ],
         },
     }
+
+def test_astree4():
+    f = unpack("tests/files/msg_invoice.msg")
+    assert f.astree(finger=False) == {
+        "ec226fcd63e0803deb1b99622c774247fec651b2645929341ebc837b9ed7eeb5": {
+            "filepath": "tests/files/msg_invoice.msg",
+            "filename": "msg_invoice.msg",
+            "size": 270848,
+            "duplicate": False,
+            "package": None,
+            "password": None,
+            "type": "container",
+            "children": [
+                {
+                    "duplicate": False,
+                    "filename": u"image003.emz",
+                    "filepath": u"image003.emz",
+                    "package": None,
+                    "password": None,
+                    "size": 1137,
+                    "type": "file",
+                    "children": [],
+                },
+                {
+                    "duplicate": False,
+                    "filename": u"image004.png",
+                    "filepath": u"image004.png",
+                    "package": None,
+                    "password": None,
+                    "size": 1132,
+                    "type": "file",
+                    "children": [],
+                },
+                {
+                    "duplicate": False,
+                    "filename": u"oledata.mso",
+                    "filepath": u"oledata.mso",
+                    "package": "doc",
+                    "password": None,
+                    "size": 234898,
+                    "type": "container",
+                    "children": [
+                        {
+                            "duplicate": False,
+                            "filename": "Firefox Setup Stub 43.0.1.exe",
+                            "filepath": "Firefox Setup Stub 43.0.1.exe",
+                            "package": "exe",
+                            "password": None,
+                            "size": 249336,
+                            "type": "file",
+                            "children": [],
+                        },
+                    ],
+                },
+            ],
+        },
+    }
