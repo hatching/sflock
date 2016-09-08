@@ -2,7 +2,6 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
-import io
 import os
 import subprocess
 import tempfile
