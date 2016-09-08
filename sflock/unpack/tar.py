@@ -14,8 +14,7 @@ class TarFile(Unpacker):
     mode = None
     exts = ".tar"
 
-    @staticmethod
-    def supported():
+    def supported(self):
         return True
 
     def handles(self):

@@ -18,8 +18,7 @@ class ZipFile(Unpacker):
     def init(self):
         self.known_passwords = set()
 
-    @staticmethod
-    def supported():
+    def supported(self):
         return True
 
     def handles(self):
