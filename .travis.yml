@@ -8,17 +8,17 @@ install:
     - pip install pytest
 
 script:
-    - python -c "import sflock ; exit(len(sflock.supported()) != 5)"
-    - py.test
-
-    - sudo apt-get -y install p7zip-full
-    - python -c "import sflock ; exit(len(sflock.supported()) != 6)"
-    - py.test
-
-    - sudo apt-get -y install rar
     - python -c "import sflock ; exit(len(sflock.supported()) != 7)"
     - py.test
 
-    - sudo apt-get -y install unace-nonfree
+    - sudo apt-get -y install p7zip-full
     - python -c "import sflock ; exit(len(sflock.supported()) != 8)"
+    - py.test
+
+    - sudo apt-get -y install rar
+    - python -c "import sflock ; exit(len(sflock.supported()) != 9)"
+    - py.test
+
+    - sudo apt-get -y install unace-nonfree
+    - python -c "import sflock ; exit(len(sflock.supported()) != 10)"
     - py.test
