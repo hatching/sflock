@@ -289,7 +289,7 @@ class File(object):
                 "mime_human": self.mime_human,
                 "magic": self.magic,
                 "magic_human": self.magic_human,
-            },
+            }
 
         def findentry(entry, name):
             for idx in xrange(len(entry)):
