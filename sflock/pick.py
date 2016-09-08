@@ -32,3 +32,6 @@ def picker(filename):
 
     if filename.endswith(".eml"):
         return "emlfile"
+
+    if filename.endswith(".msg"):
+        return "msgfile"
