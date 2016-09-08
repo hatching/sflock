@@ -271,7 +271,7 @@ class File(object):
             "sha256": self.sha256,
         }
 
-    def astree(self, root=True, finger=True):
+    def astree(self, finger=True):
         ret = {
             "duplicate": self.duplicate,
             "password": self.password,
@@ -307,11 +307,6 @@ class File(object):
             entry = ret["children"]
             for part in child.parentdirs:
                 entry = findentry(entry, part)["children"]
-            entry.append(child.astree(root=False, finger=finger))
-
-        if root:
-            return {
-                self.sha256: ret,
-            }
+            entry.append(child.astree(finger=finger))
 
         return ret
