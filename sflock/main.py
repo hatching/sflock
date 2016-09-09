@@ -38,9 +38,7 @@ def unpack(filepath, contents=None, password=None):
     # Determine how we're going to unpack this file (if at all). It may not
     # have a file extension, e.g., when its filename is a hash. In those cases
     # we're going to take a look at the contents of the file.
-    unpacker = picker(filepath)
-    if not unpacker and f.get_signature():
-        unpacker = f.get_signature()["unpacker"]
+    unpacker = picker(f)
 
     # Actually unpack any embedded files in this archive.
     if unpacker:

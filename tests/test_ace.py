@@ -26,11 +26,6 @@ class TestAceFile(object):
         assert files[0].parentdirs == []
         assert not files[0].selected
 
-        # TODO A combination of file extension, file magic, and initial bytes
-        # signature should be used instead of just the bytes (as this call
-        # should not yield None).
-        assert f("ace_plain.ace").get_signature() is None
-
     def test_nested_plain(self):
         assert "ACE archive" in f("ace_nested.ace").magic
         t = AceFile(f("ace_nested.ace"))
@@ -46,9 +41,6 @@ class TestAceFile(object):
         assert "ASCII text" in files[0].magic
         assert not files[0].selected
 
-        s = f("ace_nested.ace").get_signature()
-        assert s is None
-
     def test_nested2_plain(self):
         assert "ACE archive" in f("ace_nested2.ace").magic
         t = AceFile(f("ace_nested2.ace"))
@@ -63,9 +55,6 @@ class TestAceFile(object):
         assert not files[0].password
         assert "ASCII text" in files[0].magic
         assert not files[0].selected
-
-        s = f("ace_nested2.ace").get_signature()
-        assert s is None
 
     def test_garbage(self):
         t = AceFile(f("garbage.bin"))

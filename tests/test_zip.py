@@ -26,9 +26,6 @@ class TestZipfile(object):
         assert files[0].parentdirs == []
         assert not files[0].selected
 
-        s = f("zip_plain.zip").get_signature()
-        assert s == {"family": "zip", "mode": "", "unpacker": "zipfile"}
-
     def test_zip_encrypted(self):
         assert "Zip archive" in f("zip_encrypted.zip").magic
         z = ZipFile(f("zip_encrypted.zip"))
@@ -42,9 +39,6 @@ class TestZipfile(object):
         assert files[0].magic == "ASCII text"
         assert files[0].parentdirs == []
         assert not files[0].selected
-
-        s = f("zip_encrypted.zip").get_signature()
-        assert s == {"family": "zip", "mode": "", "unpacker": "zipfile"}
 
     def test_zip_encrypted2(self):
         assert "Zip archive" in f("zip_encrypted2.zip").magic
@@ -71,9 +65,6 @@ class TestZipfile(object):
         assert files[0].parentdirs == []
         assert not files[0].selected
 
-        s = f("zip_encrypted2.zip").get_signature()
-        assert s == {"family": "zip", "mode": "", "unpacker": "zipfile"}
-
     def test_nested(self):
         assert "Zip archive" in f("zip_nested.zip").magic
         z = ZipFile(f("zip_nested.zip"))
@@ -89,9 +80,6 @@ class TestZipfile(object):
         assert files[0].magic == "ASCII text"
         assert not files[0].selected
 
-        s = f("zip_nested.zip").get_signature()
-        assert s == {"family": "zip", "mode": "", "unpacker": "zipfile"}
-
     def test_nested2(self):
         assert "Zip archive" in f("zip_nested2.zip").magic
         z = ZipFile(f("zip_nested2.zip"))
@@ -106,9 +94,6 @@ class TestZipfile(object):
         assert not files[0].password
         assert files[0].magic == "ASCII text"
         assert not files[0].selected
-
-        s = f("zip_nested2.zip").get_signature()
-        assert s == {"family": "zip", "mode": "", "unpacker": "zipfile"}
 
     def test_garbage(self):
         t = ZipFile(f("garbage.bin"))

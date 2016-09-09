@@ -12,9 +12,7 @@ class RarFile(Unpacker):
     name = "rarfile"
     exe = "/usr/bin/rar"
     exts = ".rar"
-
-    def handles(self):
-        return "RAR archive" in self.f.magic
+    magic = "RAR archive"
 
     def unpack(self, password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()

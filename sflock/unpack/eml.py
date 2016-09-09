@@ -6,7 +6,6 @@ import email
 import email.header
 
 from sflock.abstracts import Unpacker, File
-from sflock.pick import picker
 
 class EmlFile(Unpacker):
     name = "emlfile"
@@ -18,9 +17,6 @@ class EmlFile(Unpacker):
 
     def supported(self):
         return True
-
-    def handles(self):
-        return picker(self.f.filepath) == self.name
 
     def unpack(self, password=None, duplicates=None):
         entries = []

@@ -12,12 +12,13 @@ import sflock
 
 from sflock.exception import UnpackException
 from sflock.pick import picker
-from sflock.signatures import Signatures
 
 class Unpacker(object):
     """Abstract class for Unpacker engines."""
     name = None
     exe = None
+    exts = []
+    magic = None
 
     # Initiated at runtime - contains each Unpacker subclass.
     plugins = {}
@@ -39,7 +40,13 @@ class Unpacker(object):
         ))
 
     def handles(self):
-        raise NotImplementedError
+        if picker(self.f) == self.name:
+            return True
+
+        if self.magic and self.magic in self.f.magic:
+            return True
+
+        return False
 
     def unpack(self, password=None, duplicates=None):
         raise NotImplementedError
@@ -50,7 +57,7 @@ class Unpacker(object):
         ret = []
         duplicates = duplicates or []
         for entry in entries:
-            unpacker = picker(entry.filepath)
+            unpacker = picker(entry)
             if unpacker:
                 plugin = self.plugins[unpacker](entry)
                 if plugin.supported():
@@ -114,11 +121,6 @@ class File(object):
             open(filepath, "rb").read(),
             password=password
         )
-
-    def get_signature(self):
-        for k, v in Signatures.signatures.iteritems():
-            if self.contents.startswith(k):
-                return v
 
     @property
     def sha256(self):

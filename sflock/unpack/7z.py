@@ -12,9 +12,7 @@ class Zip7File(Unpacker):
     name = "7zfile"
     exe = "/usr/bin/7z"
     exts = ".7z"
-
-    def handles(self):
-        return "7-zip archive" in self.f.magic
+    magic = "7-zip archive"
 
     def unpack(self, password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()

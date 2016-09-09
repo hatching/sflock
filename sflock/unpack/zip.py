@@ -8,27 +8,17 @@ from StringIO import StringIO
 from sflock.abstracts import File, Unpacker
 from sflock.config import iter_passwords
 from sflock.exception import UnpackException
-from sflock.pick import picker
-from sflock.signatures import Signatures
 
 class ZipFile(Unpacker):
     name = "zipfile"
     exts = ".zip"
+    magic = "Zip archive data"
 
     def init(self):
         self.known_passwords = set()
 
     def supported(self):
         return True
-
-    def handles(self):
-        if picker(self.f.filepath) == self.name:
-            return True
-
-        if self.f.contents:
-            return self._is_zipfile(self.f.contents)
-        else:
-            return zipfile.is_zipfile(self.f.filepath)
 
     def _bruteforce(self, archive, entry, passwords):
         for password in passwords:
@@ -79,9 +69,3 @@ class ZipFile(Unpacker):
             entries.append(self._decrypt(archive, entry, password))
 
         return self.process(entries, duplicates)
-
-    def _is_zipfile(self, contents):
-        for k, v in Signatures.signatures.items():
-            if contents.startswith(k) and v["unpacker"] == "zipfile":
-                return v
-        return False

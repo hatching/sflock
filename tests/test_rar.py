@@ -26,11 +26,6 @@ class TestRarFile:
         assert files[0].parentdirs == []
         assert not files[0].selected
 
-        # TODO A combination of file extension, file magic, and initial bytes
-        # signature should be used instead of just the bytes (as this call
-        # should not yield None).
-        assert f("rar_plain.rar").get_signature() is None
-
     def test_nested_plain(self):
         assert "RAR archive" in f("rar_nested.rar").magic
         t = RarFile(f("rar_nested.rar"))
@@ -46,9 +41,6 @@ class TestRarFile:
         assert files[0].magic == "ASCII text"
         assert not files[0].selected
 
-        s = f("rar_nested.rar").get_signature()
-        assert s is None
-
     def test_nested2_plain(self):
         assert "RAR archive" in f("rar_nested2.rar").magic
         t = RarFile(f("rar_nested2.rar"))
@@ -63,9 +55,6 @@ class TestRarFile:
         assert not files[0].password
         assert files[0].magic == "ASCII text"
         assert not files[0].selected
-
-        s = f("rar_nested2.rar").get_signature()
-        assert s is None
 
     def test_rar_encrypted(self):
         assert "RAR archive" in f("sflock_encrypted.rar").magic

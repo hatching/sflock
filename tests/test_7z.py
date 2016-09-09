@@ -26,11 +26,6 @@ class Test7zFile(object):
         assert files[0].parentdirs == []
         assert not files[0].selected
 
-        # TODO A combination of file extension, file magic, and initial bytes
-        # signature should be used instead of just the bytes (as this call
-        # should not yield None).
-        assert f("7z_plain.7z").get_signature() is None
-
     def test_nested_plain(self):
         assert "7-zip archive" in f("7z_nested.7z").magic
         t = Zip7File(f("7z_nested.7z"))
@@ -45,9 +40,6 @@ class Test7zFile(object):
         assert not files[0].password
         assert files[0].magic == "ASCII text"
         assert not files[0].selected
-
-        s = f("7z_nested.7z").get_signature()
-        assert s is None
 
     def test_nested2_plain(self):
         assert "7-zip archive" in f("7z_nested2.7z").magic
@@ -64,12 +56,9 @@ class Test7zFile(object):
         assert files[0].magic == "ASCII text"
         assert not files[0].selected
 
-        s = f("7z_nested2.7z").get_signature()
-        assert s is None
-
     """
     def test_zip_encrypted(self):
-        assert "7-zip archive" in f("6z_encrypted.7z").magic
+        assert "7-zip archive" in f("7z_encrypted.7z").magic
         z = Zip7File(f("7z_encrypted.7z"))
         assert z.handles() is True
         assert not t.f.selected

@@ -10,7 +10,6 @@ import zlib
 
 from sflock.abstracts import Unpacker, File
 from sflock.exception import UnpackException
-from sflock.pick import picker
 
 class MsoFile(Unpacker):
     name = "msofile"
@@ -18,9 +17,6 @@ class MsoFile(Unpacker):
 
     def supported(self):
         return True
-
-    def handles(self):
-        return picker(self.f.filepath) == self.name
 
     def get_stream(self, ole, *filename):
         if ole.exists(os.path.join(*filename)):

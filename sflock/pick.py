@@ -2,12 +2,12 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
-def picker(filename):
+def picker(f):
     """Guesses the unpacker for this file based on its filename extension."""
-    if not filename:
+    if not f.filename:
         return
 
-    filename = filename.lower()
+    filename = f.filename.lower()
 
     if filename.endswith(".tar"):
         return "tarfile"

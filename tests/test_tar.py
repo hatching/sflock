@@ -25,11 +25,6 @@ class TestTarFile(object):
         assert files[0].parentdirs == []
         assert not files[0].selected
 
-        # TODO A combination of file extension, file magic, and initial bytes
-        # signature should be used instead of just the bytes (as this call
-        # should not yield None).
-        assert f("tar_plain.tar").get_signature() is None
-
     def test_tar_plain2(self):
         assert "POSIX tar" in f("tar_plain2.tar").magic
         t = TarFile(f("tar_plain2.tar"))
@@ -47,9 +42,6 @@ class TestTarFile(object):
         assert files[1].magic == "ASCII text"
         assert files[1].parentdirs == []
         assert not files[1].selected
-
-        # TODO See item above for tar_plain.tar.
-        assert f("tar_plain2.tar").get_signature() is None
 
     def test_tar_plain2_gz(self):
         assert "gzip compr" in f("tar_plain2.tar.gz").magic
@@ -69,9 +61,6 @@ class TestTarFile(object):
         assert files[1].parentdirs == []
         assert not files[1].selected
 
-        s = f("tar_plain2.tar.gz").get_signature()
-        assert s == {"family": "tar", "mode": "r:gz", "unpacker": "targzfile"}
-
     def test_tar_plain2_bz2(self):
         assert "bzip2 compr" in f("tar_plain2.tar.bz2").magic
         t = Tarbz2File(f("tar_plain2.tar.bz2"))
@@ -90,9 +79,6 @@ class TestTarFile(object):
         assert files[1].parentdirs == []
         assert not files[1].selected
 
-        s = f("tar_plain2.tar.bz2").get_signature()
-        assert s == {"family": "tar", "mode": "r:bz2", "unpacker": "tarbz2file"}
-
     def test_nested_plain(self):
         assert "POSIX tar archive" in f("tar_nested.tar").magic
         t = TarFile(f("tar_nested.tar"))
@@ -107,9 +93,6 @@ class TestTarFile(object):
         assert not files[0].password
         assert files[0].magic == "ASCII text"
         assert not files[0].selected
-
-        s = f("tar_nested.tar").get_signature()
-        assert s is None
 
     def test_nested_bzip2(self):
         assert "bzip2 compr" in f("tar_nested.tar.bz2").magic
@@ -126,9 +109,6 @@ class TestTarFile(object):
         assert files[0].magic == "ASCII text"
         assert not files[0].selected
 
-        s = f("tar_nested.tar.bz2").get_signature()
-        assert s == {"family": "tar", "mode": "r:bz2", "unpacker": "tarbz2file"}
-
     def test_nested_gz(self):
         assert "gzip compr" in f("tar_nested.tar.gz").magic
         t = TargzFile(f("tar_nested.tar.gz"))
@@ -144,9 +124,6 @@ class TestTarFile(object):
         assert files[0].magic == "ASCII text"
         assert not files[0].selected
 
-        s = f("tar_nested.tar.gz").get_signature()
-        assert s == {"family": "tar", "mode": "r:gz", "unpacker": "targzfile"}
-
     def test_nested2_plain(self):
         assert "POSIX tar archive" in f("tar_nested2.tar").magic
         t = TarFile(f("tar_nested2.tar"))
@@ -161,9 +138,6 @@ class TestTarFile(object):
         assert not files[0].password
         assert files[0].magic == "ASCII text"
         assert not files[0].selected
-
-        s = f("tar_nested2.tar").get_signature()
-        assert s is None
 
     def test_garbage(self):
         t = TarFile(f("garbage.bin"))

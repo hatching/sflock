@@ -9,7 +9,6 @@ import olefile
 
 from sflock.abstracts import Unpacker, File
 from sflock.exception import UnpackException
-from sflock.pick import picker
 
 class BupFile(Unpacker):
     name = "bupfile"
@@ -17,9 +16,6 @@ class BupFile(Unpacker):
 
     def supported(self):
         return True
-
-    def handles(self):
-        return picker(self.f.filepath) == self.name
 
     def decrypt(self, content):
         return "".join(chr(ord(ch) ^ 0x6a) for ch in content)

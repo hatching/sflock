@@ -8,7 +8,6 @@ import os.path
 
 from sflock.abstracts import Unpacker, File
 from sflock.exception import UnpackException
-from sflock.pick import picker
 
 class MsgFile(Unpacker):
     name = "msgfile"
@@ -16,9 +15,6 @@ class MsgFile(Unpacker):
 
     def supported(self):
         return True
-
-    def handles(self):
-        return picker(self.f.filepath) == self.name
 
     def get_stream(self, *filename):
         if self.ole.exists(os.path.join(*filename)):
