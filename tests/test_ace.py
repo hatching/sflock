@@ -17,12 +17,14 @@ class TestAceFile(object):
         assert "ACE archive" in f("ace_plain.ace").magic
         t = AceFile(f("ace_plain.ace"))
         assert t.handles() is True
+        assert not t.f.selected
         files = list(t.unpack())
         assert len(files) == 1
         assert files[0].filepath == "ace.txt"
         assert files[0].contents == "wow .ace"
         assert "ASCII text" in files[0].magic
         assert files[0].parentdirs == []
+        assert not files[0].selected
 
         # TODO A combination of file extension, file magic, and initial bytes
         # signature should be used instead of just the bytes (as this call
@@ -33,6 +35,7 @@ class TestAceFile(object):
         assert "ACE archive" in f("ace_nested.ace").magic
         t = AceFile(f("ace_nested.ace"))
         assert t.handles() is True
+        assert not t.f.selected
         files = list(t.unpack())
         assert len(files) == 1
 
@@ -41,6 +44,7 @@ class TestAceFile(object):
         assert files[0].contents == "wow .ace"
         assert not files[0].password
         assert "ASCII text" in files[0].magic
+        assert not files[0].selected
 
         s = f("ace_nested.ace").get_signature()
         assert s is None
@@ -49,6 +53,7 @@ class TestAceFile(object):
         assert "ACE archive" in f("ace_nested2.ace").magic
         t = AceFile(f("ace_nested2.ace"))
         assert t.handles() is True
+        assert not t.f.selected
         files = list(t.unpack())
         assert len(files) == 1
 
@@ -57,6 +62,7 @@ class TestAceFile(object):
         assert files[0].contents == "wow .ace"
         assert not files[0].password
         assert "ASCII text" in files[0].magic
+        assert not files[0].selected
 
         s = f("ace_nested2.ace").get_signature()
         assert s is None
@@ -64,6 +70,7 @@ class TestAceFile(object):
     def test_garbage(self):
         t = AceFile(f("garbage.bin"))
         assert t.handles() is False
+        assert not t.f.selected
 
         with pytest.raises(UnpackException):
             t.unpack()
@@ -73,6 +80,7 @@ def test_noace_plain():
     assert "ACE archive" in f("ace_plain.ace").magic
     t = AceFile(f("ace_plain.ace"))
     assert t.handles() is True
+    assert not t.f.selected
 
     with pytest.raises(UnpackException):
         t.unpack()

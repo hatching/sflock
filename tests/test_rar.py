@@ -17,12 +17,14 @@ class TestRarFile:
         assert "RAR archive" in f("rar_plain.rar").magic
         t = RarFile(f("rar_plain.rar"))
         assert t.handles() is True
+        assert not t.f.selected
         files = list(t.unpack())
         assert len(files) == 1
         assert files[0].filepath == "bar.txt"
         assert files[0].contents == "hello world\n"
         assert files[0].magic == "ASCII text"
         assert files[0].parentdirs == []
+        assert not files[0].selected
 
         # TODO A combination of file extension, file magic, and initial bytes
         # signature should be used instead of just the bytes (as this call
@@ -33,6 +35,7 @@ class TestRarFile:
         assert "RAR archive" in f("rar_nested.rar").magic
         t = RarFile(f("rar_nested.rar"))
         assert t.handles() is True
+        assert not t.f.selected
         files = list(t.unpack())
         assert len(files) == 1
 
@@ -41,6 +44,7 @@ class TestRarFile:
         assert files[0].contents == "hello world\n"
         assert not files[0].password
         assert files[0].magic == "ASCII text"
+        assert not files[0].selected
 
         s = f("rar_nested.rar").get_signature()
         assert s is None
@@ -49,6 +53,7 @@ class TestRarFile:
         assert "RAR archive" in f("rar_nested2.rar").magic
         t = RarFile(f("rar_nested2.rar"))
         assert t.handles() is True
+        assert not t.f.selected
         files = list(t.unpack())
         assert len(files) == 1
 
@@ -57,6 +62,7 @@ class TestRarFile:
         assert files[0].contents == "hello world\n"
         assert not files[0].password
         assert files[0].magic == "ASCII text"
+        assert not files[0].selected
 
         s = f("rar_nested2.rar").get_signature()
         assert s is None
@@ -65,6 +71,7 @@ class TestRarFile:
         assert "RAR archive" in f("sflock_encrypted.rar").magic
         z = RarFile(f("sflock_encrypted.rar"))
         assert z.handles() is True
+        assert not z.f.selected
         files = list(z.unpack("infected"))
         assert len(files) == 1
         assert files[0].filepath == "sflock.txt"
@@ -72,10 +79,12 @@ class TestRarFile:
         assert files[0].password == "infected"
         assert "ASCII text" in files[0].magic
         assert files[0].parentdirs == []
+        assert not files[0].selected
 
     def test_garbage(self):
         t = RarFile(f("garbage.bin"))
         assert t.handles() is False
+        assert not t.f.selected
 
         with pytest.raises(UnpackException):
             t.unpack()
@@ -85,6 +94,7 @@ def test_norar_plain():
     assert "RAR archive" in f("rar_plain.rar").magic
     t = RarFile(f("rar_plain.rar"))
     assert t.handles() is True
+    assert not t.f.selected
 
     with pytest.raises(UnpackException):
         t.unpack()

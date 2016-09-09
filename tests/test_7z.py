@@ -17,12 +17,14 @@ class Test7zFile(object):
         assert "7-zip archive" in f("7z_plain.7z").magic
         t = Zip7File(f("7z_plain.7z"))
         assert t.handles() is True
+        assert not t.f.selected
         files = list(t.unpack())
         assert len(files) == 1
         assert files[0].filepath == "bar.txt"
         assert files[0].contents == "hello world\n"
         assert files[0].magic == "ASCII text"
         assert files[0].parentdirs == []
+        assert not files[0].selected
 
         # TODO A combination of file extension, file magic, and initial bytes
         # signature should be used instead of just the bytes (as this call
@@ -33,6 +35,7 @@ class Test7zFile(object):
         assert "7-zip archive" in f("7z_nested.7z").magic
         t = Zip7File(f("7z_nested.7z"))
         assert t.handles() is True
+        assert not t.f.selected
         files = list(t.unpack())
         assert len(files) == 1
 
@@ -41,6 +44,7 @@ class Test7zFile(object):
         assert files[0].contents == "hello world\n"
         assert not files[0].password
         assert files[0].magic == "ASCII text"
+        assert not files[0].selected
 
         s = f("7z_nested.7z").get_signature()
         assert s is None
@@ -49,6 +53,7 @@ class Test7zFile(object):
         assert "7-zip archive" in f("7z_nested2.7z").magic
         t = Zip7File(f("7z_nested2.7z"))
         assert t.handles() is True
+        assert not t.f.selected
         files = list(t.unpack())
         assert len(files) == 1
 
@@ -57,6 +62,7 @@ class Test7zFile(object):
         assert files[0].contents == "hello world\n"
         assert not files[0].password
         assert files[0].magic == "ASCII text"
+        assert not files[0].selected
 
         s = f("7z_nested2.7z").get_signature()
         assert s is None
@@ -66,6 +72,7 @@ class Test7zFile(object):
         assert "7-zip archive" in f("6z_encrypted.7z").magic
         z = Zip7File(f("7z_encrypted.7z"))
         assert z.handles() is True
+        assert not t.f.selected
         files = list(z.unpack("infected"))
         assert len(files) == 1
         assert files[0].filepath == "bar.txt"
@@ -73,11 +80,13 @@ class Test7zFile(object):
         assert files[0].password == "infected"
         assert files[0].magic == "ASCII text"
         assert files[0].parentdirs == []
+        assert not files[0].selected
     """
 
     def test_garbage(self):
         t = Zip7File(f("garbage.bin"))
         assert t.handles() is False
+        assert not t.f.selected
 
         with pytest.raises(UnpackException):
             t.unpack()

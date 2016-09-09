@@ -16,6 +16,7 @@ class TestZipfile(object):
         assert "Zip archive" in f("zip_plain.zip").magic
         z = ZipFile(f("zip_plain.zip"))
         assert z.handles() is True
+        assert not z.f.selected
         files = list(z.unpack())
         assert len(files) == 1
         assert files[0].filepath == "sflock.txt"
@@ -23,6 +24,7 @@ class TestZipfile(object):
         assert files[0].password is None
         assert files[0].magic == "ASCII text"
         assert files[0].parentdirs == []
+        assert not files[0].selected
 
         s = f("zip_plain.zip").get_signature()
         assert s == {"family": "zip", "mode": "", "unpacker": "zipfile"}
@@ -31,6 +33,7 @@ class TestZipfile(object):
         assert "Zip archive" in f("zip_encrypted.zip").magic
         z = ZipFile(f("zip_encrypted.zip"))
         assert z.handles() is True
+        assert not z.f.selected
         files = list(z.unpack())
         assert len(files) == 1
         assert files[0].filepath == "sflock.txt"
@@ -38,6 +41,7 @@ class TestZipfile(object):
         assert files[0].password == "infected"
         assert files[0].magic == "ASCII text"
         assert files[0].parentdirs == []
+        assert not files[0].selected
 
         s = f("zip_encrypted.zip").get_signature()
         assert s == {"family": "zip", "mode": "", "unpacker": "zipfile"}
@@ -46,15 +50,18 @@ class TestZipfile(object):
         assert "Zip archive" in f("zip_encrypted2.zip").magic
         z = ZipFile(f("zip_encrypted2.zip"))
         assert z.handles() is True
+        assert not z.f.selected
         files = list(z.unpack())
         assert len(files) == 1
         assert files[0].mode == "failed"
         assert files[0].description == "Error decrypting file"
         assert files[0].magic is ""
         assert files[0].parentdirs == []
+        assert not files[0].selected
 
         z = ZipFile(f("zip_encrypted2.zip"))
         assert z.handles() is True
+        assert not z.f.selected
         files = list(z.unpack("sflock"))
         assert len(files) == 1
         assert files[0].filepath == "sflock.txt"
@@ -62,6 +69,7 @@ class TestZipfile(object):
         assert files[0].password == "sflock"
         assert files[0].magic == "ASCII text"
         assert files[0].parentdirs == []
+        assert not files[0].selected
 
         s = f("zip_encrypted2.zip").get_signature()
         assert s == {"family": "zip", "mode": "", "unpacker": "zipfile"}
@@ -70,6 +78,7 @@ class TestZipfile(object):
         assert "Zip archive" in f("zip_nested.zip").magic
         z = ZipFile(f("zip_nested.zip"))
         assert z.handles() is True
+        assert not z.f.selected
         files = list(z.unpack())
         assert len(files) == 1
 
@@ -78,6 +87,7 @@ class TestZipfile(object):
         assert files[0].contents == "hello world\n"
         assert not files[0].password
         assert files[0].magic == "ASCII text"
+        assert not files[0].selected
 
         s = f("zip_nested.zip").get_signature()
         assert s == {"family": "zip", "mode": "", "unpacker": "zipfile"}
@@ -86,6 +96,7 @@ class TestZipfile(object):
         assert "Zip archive" in f("zip_nested2.zip").magic
         z = ZipFile(f("zip_nested2.zip"))
         assert z.handles() is True
+        assert not z.f.selected
         files = list(z.unpack())
         assert len(files) == 1
 
@@ -94,6 +105,7 @@ class TestZipfile(object):
         assert files[0].contents == "hello world\n"
         assert not files[0].password
         assert files[0].magic == "ASCII text"
+        assert not files[0].selected
 
         s = f("zip_nested2.zip").get_signature()
         assert s == {"family": "zip", "mode": "", "unpacker": "zipfile"}
@@ -101,6 +113,7 @@ class TestZipfile(object):
     def test_garbage(self):
         t = ZipFile(f("garbage.bin"))
         assert t.handles() is False
+        assert not t.f.selected
 
         with pytest.raises(UnpackException):
             t.unpack()

@@ -14,6 +14,7 @@ def f(filename):
 def test_garbage():
     m = MsoFile(f("garbage.bin"))
     assert m.handles() is False
+    assert not m.f.selected
 
     with pytest.raises(UnpackException):
         m.unpack()

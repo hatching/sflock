@@ -88,7 +88,7 @@ class File(object):
     """Abstract class for extracted files."""
 
     def __init__(self, filepath=None, contents=None, filename=None, mode=None,
-                 password=None, description=None):
+                 password=None, description=None, selected=None):
         self.filepath = filename or filepath
         self.contents = contents
         self.mode = mode
@@ -97,6 +97,7 @@ class File(object):
         self.children = []
         self.duplicate = False
 
+        self._selected = selected
         self._filename = filename
         self._sha256 = None
         self._finger = {
@@ -252,6 +253,22 @@ class File(object):
         if "HTML" in self.magic or filename.endswith((".htm", ".html")):
             return "ie"
 
+    @property
+    def selected(self):
+        # TODO Later on we might be deselecting certain files depending on
+        # their "environment". E.g., if a .mso file contains multiple
+        # executables, should those executables be selected or should we
+        # simply analyze the .mso file itself. (The latter being the more
+        # obvious solution).
+        if self._selected is None:
+            self._selected = bool(self.package)
+
+        return self._selected
+
+    @selected.setter
+    def selected(self, selected):
+        self._selected = selected
+
     def to_dict(self):
         return {
             "filepath": self.filepath,
@@ -269,6 +286,8 @@ class File(object):
             },
             "password": self.password,
             "sha256": self.sha256,
+            "package": self.package,
+            "selected": self.selected,
         }
 
     def astree(self, finger=True):
@@ -279,6 +298,7 @@ class File(object):
             "filepath": self.filepath,
             "size": self.filesize,
             "package": self.package,
+            "selected": self.selected,
             "type": "container" if self.children else "file",
             "children": [],
         }

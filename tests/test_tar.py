@@ -16,12 +16,14 @@ class TestTarFile(object):
         assert "POSIX tar" in f("tar_plain.tar").magic
         t = TarFile(f("tar_plain.tar"))
         assert t.handles() is True
+        assert not t.f.selected
         files = list(t.unpack())
         assert len(files) == 1
         assert files[0].filepath == "sflock.txt"
         assert files[0].contents == "sflock_plain_tar\n"
         assert files[0].magic == "ASCII text"
         assert files[0].parentdirs == []
+        assert not files[0].selected
 
         # TODO A combination of file extension, file magic, and initial bytes
         # signature should be used instead of just the bytes (as this call
@@ -32,16 +34,19 @@ class TestTarFile(object):
         assert "POSIX tar" in f("tar_plain2.tar").magic
         t = TarFile(f("tar_plain2.tar"))
         assert t.handles() is True
+        assert not t.f.selected
         files = list(t.unpack())
         assert len(files) == 2
         assert files[0].filepath == "sflock.txt"
         assert files[0].contents == "sflock_plain_tar\n"
         assert files[0].magic == "ASCII text"
         assert files[0].parentdirs == []
+        assert not files[0].selected
         assert files[1].filepath == "sflock2.txt"
         assert files[1].contents == "sflock_plain_tar2\n"
         assert files[1].magic == "ASCII text"
         assert files[1].parentdirs == []
+        assert not files[1].selected
 
         # TODO See item above for tar_plain.tar.
         assert f("tar_plain2.tar").get_signature() is None
@@ -50,16 +55,19 @@ class TestTarFile(object):
         assert "gzip compr" in f("tar_plain2.tar.gz").magic
         t = TargzFile(f("tar_plain2.tar.gz"))
         assert t.handles() is True
+        assert not t.f.selected
         files = list(t.unpack())
         assert len(files) == 2
         assert files[0].filepath == "sflock.txt"
         assert files[0].contents == "sflock_plain_tar\n"
         assert files[0].magic == "ASCII text"
         assert files[0].parentdirs == []
+        assert not files[0].selected
         assert files[1].filepath == "sflock2.txt"
         assert files[1].contents == "sflock_plain_tar2\n"
         assert files[1].magic == "ASCII text"
         assert files[1].parentdirs == []
+        assert not files[1].selected
 
         s = f("tar_plain2.tar.gz").get_signature()
         assert s == {"family": "tar", "mode": "r:gz", "unpacker": "targzfile"}
@@ -68,16 +76,19 @@ class TestTarFile(object):
         assert "bzip2 compr" in f("tar_plain2.tar.bz2").magic
         t = Tarbz2File(f("tar_plain2.tar.bz2"))
         assert t.handles() is True
+        assert not t.f.selected
         files = list(t.unpack())
         assert len(files) == 2
         assert files[0].filepath == "sflock.txt"
         assert files[0].contents == "sflock_plain_tar\n"
         assert files[0].magic == "ASCII text"
         assert files[0].parentdirs == []
+        assert not files[0].selected
         assert files[1].filepath == "sflock2.txt"
         assert files[1].contents == "sflock_plain_tar2\n"
         assert files[1].magic == "ASCII text"
         assert files[1].parentdirs == []
+        assert not files[1].selected
 
         s = f("tar_plain2.tar.bz2").get_signature()
         assert s == {"family": "tar", "mode": "r:bz2", "unpacker": "tarbz2file"}
@@ -86,6 +97,7 @@ class TestTarFile(object):
         assert "POSIX tar archive" in f("tar_nested.tar").magic
         t = TarFile(f("tar_nested.tar"))
         assert t.handles() is True
+        assert not t.f.selected
         files = list(t.unpack())
         assert len(files) == 1
 
@@ -94,6 +106,7 @@ class TestTarFile(object):
         assert files[0].contents == "hello world\n"
         assert not files[0].password
         assert files[0].magic == "ASCII text"
+        assert not files[0].selected
 
         s = f("tar_nested.tar").get_signature()
         assert s is None
@@ -102,6 +115,7 @@ class TestTarFile(object):
         assert "bzip2 compr" in f("tar_nested.tar.bz2").magic
         t = Tarbz2File(f("tar_nested.tar.bz2"))
         assert t.handles() is True
+        assert not t.f.selected
         files = list(t.unpack())
         assert len(files) == 1
 
@@ -110,6 +124,7 @@ class TestTarFile(object):
         assert files[0].contents == "hello world\n"
         assert not files[0].password
         assert files[0].magic == "ASCII text"
+        assert not files[0].selected
 
         s = f("tar_nested.tar.bz2").get_signature()
         assert s == {"family": "tar", "mode": "r:bz2", "unpacker": "tarbz2file"}
@@ -118,6 +133,7 @@ class TestTarFile(object):
         assert "gzip compr" in f("tar_nested.tar.gz").magic
         t = TargzFile(f("tar_nested.tar.gz"))
         assert t.handles() is True
+        assert not t.f.selected
         files = list(t.unpack())
         assert len(files) == 1
 
@@ -126,6 +142,7 @@ class TestTarFile(object):
         assert files[0].contents == "hello world\n"
         assert not files[0].password
         assert files[0].magic == "ASCII text"
+        assert not files[0].selected
 
         s = f("tar_nested.tar.gz").get_signature()
         assert s == {"family": "tar", "mode": "r:gz", "unpacker": "targzfile"}
@@ -134,6 +151,7 @@ class TestTarFile(object):
         assert "POSIX tar archive" in f("tar_nested2.tar").magic
         t = TarFile(f("tar_nested2.tar"))
         assert t.handles() is True
+        assert not t.f.selected
         files = list(t.unpack())
         assert len(files) == 1
 
@@ -142,6 +160,7 @@ class TestTarFile(object):
         assert files[0].contents == "hello world\n"
         assert not files[0].password
         assert files[0].magic == "ASCII text"
+        assert not files[0].selected
 
         s = f("tar_nested2.tar").get_signature()
         assert s is None
@@ -149,6 +168,7 @@ class TestTarFile(object):
     def test_garbage(self):
         t = TarFile(f("garbage.bin"))
         assert t.handles() is False
+        assert not t.f.selected
 
         with pytest.raises(UnpackException):
             t.unpack()
