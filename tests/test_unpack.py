@@ -223,7 +223,7 @@ def test_astree4():
                         "filename": "Firefox Setup Stub 43.0.1.exe",
                         "filepath": "Firefox Setup Stub 43.0.1.exe",
                         "package": "exe",
-                        "selected": True,
+                        "selected": False,
                         "password": None,
                         "size": 249336,
                         "type": "file",

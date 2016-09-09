@@ -255,14 +255,8 @@ class File(object):
 
     @property
     def selected(self):
-        # TODO Later on we might be deselecting certain files depending on
-        # their "environment". E.g., if a .mso file contains multiple
-        # executables, should those executables be selected or should we
-        # simply analyze the .mso file itself. (The latter being the more
-        # obvious solution).
         if self._selected is None:
             self._selected = bool(self.package)
-
         return self._selected
 
     @selected.setter

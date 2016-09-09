@@ -61,7 +61,8 @@ class MsoFile(Unpacker):
         embed = struct.unpack("I", stream[off:off+4])[0]
         self.entries.append(File(
             filepath=filepath, filename=filename,
-            contents=stream[off+4:off+4+embed]
+            contents=stream[off+4:off+4+embed],
+            selected=False
         ))
 
     def walk_ole(self, ole):

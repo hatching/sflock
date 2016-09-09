@@ -40,7 +40,7 @@ def test_msg_embedded():
     assert len(files[2].children) == 1
     assert files[2].children[0].filename == "Firefox Setup Stub 43.0.1.exe"
     assert files[2].children[0].filesize == 249336
-    assert files[2].children[0].selected is True
+    assert files[2].children[0].selected is False
 
     assert hashlib.md5(
         files[2].children[0].contents
