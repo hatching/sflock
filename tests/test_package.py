@@ -56,6 +56,7 @@ def test_package():
     assert File(filename="a.wsf").package == "wsf"
     assert File(filename="a.htm").package == "ie"
     assert File(filename="a.html").package == "ie"
+    assert File(filename="a.bat").package == "generic"
 
 def test_case():
     assert File(filename="A.PDF").package == "pdf"
