@@ -11,7 +11,6 @@ import shutil
 import sflock
 
 from sflock.exception import UnpackException
-from sflock.pick import picker
 
 class Unpacker(object):
     """Abstract class for Unpacker engines."""
@@ -40,7 +39,7 @@ class Unpacker(object):
         ))
 
     def handles(self):
-        if picker(self.f) == self.name:
+        if self.f.filename.lower().endswith(self.exts):
             return True
 
         if self.magic and self.magic in self.f.magic:
@@ -48,27 +47,33 @@ class Unpacker(object):
 
         return False
 
+    @staticmethod
+    def guess(f):
+        """Guesses the unpacker based on the filename and/or contents."""
+        for plugin in Unpacker.plugins.values():
+            if plugin(f).handles():
+                return plugin.name
+
     def unpack(self, password=None, duplicates=None):
         raise NotImplementedError
 
     def process(self, entries, duplicates):
-        """Goes through all files and recursively unpacks embedded archives
-        if found."""
+        """Recursively unpacks embedded archives if found."""
         ret = []
         duplicates = duplicates or []
-        for entry in entries:
-            unpacker = picker(entry)
-            if unpacker:
-                plugin = self.plugins[unpacker](entry)
+        for f in entries:
+            f.unpacker = Unpacker.guess(f)
+            if f.unpacker:
+                plugin = self.plugins[f.unpacker](f)
                 if plugin.supported():
-                    entry.children = plugin.unpack(duplicates=duplicates)
+                    f.children = plugin.unpack(duplicates=duplicates)
 
-            if entry.sha256 not in duplicates:
-                duplicates.append(entry.sha256)
+            if f.sha256 not in duplicates:
+                duplicates.append(f.sha256)
             else:
-                entry.duplicate = True
+                f.duplicate = True
 
-            ret.append(entry)
+            ret.append(f)
         if not ret:
             raise UnpackException("No files unpacked")
         return ret
@@ -110,6 +115,7 @@ class File(object):
         self.password = password
         self.children = []
         self.duplicate = False
+        self.unpacker = None
 
         # Extract the filename from any of the available path components.
         self.filename = ntpath.basename(

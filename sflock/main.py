@@ -9,8 +9,7 @@ import json
 import os.path
 import zipfile
 
-from sflock.abstracts import File
-from sflock.pick import picker
+from sflock.abstracts import File, Unpacker
 from sflock.unpack import plugins
 
 def supported():
@@ -38,11 +37,11 @@ def unpack(filepath, contents=None, password=None):
     # Determine how we're going to unpack this file (if at all). It may not
     # have a file extension, e.g., when its filename is a hash. In those cases
     # we're going to take a look at the contents of the file.
-    unpacker = picker(f)
+    f.unpacker = Unpacker.guess(f)
 
     # Actually unpack any embedded files in this archive.
-    if unpacker:
-        plugin = plugins[unpacker](f)
+    if f.unpacker:
+        plugin = plugins[f.unpacker](f)
         if plugin.supported():
             f.children = plugin.unpack(password, duplicates)
 

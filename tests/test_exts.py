@@ -2,21 +2,20 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
-from sflock.abstracts import File
-from sflock.pick import picker
+from sflock.abstracts import File, Unpacker
 
 def test_extensions():
-    assert picker(File("a.tar")) == "tarfile"
-    assert picker(File("a.tar.gz")) == "targzfile"
-    assert picker(File("a.tar.bz2")) == "tarbz2file"
-    assert picker(File("a.zip")) == "zipfile"
-    assert picker(File("a.rar")) == "rarfile"
-    assert picker(File("a.7z")) == "7zfile"
-    assert picker(File("a.ace")) == "acefile"
-    assert picker(File("a.eml")) == "emlfile"
-    assert picker(File("a.msg")) == "msgfile"
-    assert picker(File("a.mso")) == "msofile"
-    assert picker(File("a.bup")) == "bupfile"
+    assert Unpacker.guess(File(filename="a.tar")) == "tarfile"
+    assert Unpacker.guess(File(filename="a.tar.gz")) == "targzfile"
+    assert Unpacker.guess(File(filename="a.tar.bz2")) == "tarbz2file"
+    assert Unpacker.guess(File(filename="a.zip")) == "zipfile"
+    assert Unpacker.guess(File(filename="a.rar")) == "rarfile"
+    assert Unpacker.guess(File(filename="a.7z")) == "7zfile"
+    assert Unpacker.guess(File(filename="a.ace")) == "acefile"
+    assert Unpacker.guess(File(filename="a.eml")) == "emlfile"
+    assert Unpacker.guess(File(filename="a.msg")) == "msgfile"
+    assert Unpacker.guess(File(filename="a.mso")) == "msofile"
+    assert Unpacker.guess(File(filename="a.bup")) == "bupfile"
 
 def test_case():
-    assert picker(File("A.ZIP")) == "zipfile"
+    assert Unpacker.guess(File(filename="A.ZIP")) == "zipfile"
