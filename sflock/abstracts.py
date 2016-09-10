@@ -60,8 +60,10 @@ class Unpacker(object):
 
     def process(self, entries, duplicates):
         """Recursively unpacks embedded archives if found."""
+        if duplicates is None:
+            duplicates = []
+
         ret = []
-        duplicates = duplicates or []
         for f in entries:
             f.unpacker = Unpacker.guess(f)
             if f.unpacker:

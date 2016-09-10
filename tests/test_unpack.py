@@ -173,7 +173,7 @@ def test_astree3():
                 ],
             },
             {
-                "duplicate": False,
+                "duplicate": True,
                 "filename": "att1",
                 "relapath": "att1",
                 "filepath": None,
