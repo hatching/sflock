@@ -25,7 +25,7 @@ class Zip7File(Unpacker):
             )
 
         try:
-            subprocess.check_call([
+            subprocess.check_output([
                 self.zipjail, self.f.filepath, dirpath,
                 self.exe, "x", "-mmt=off", "-o%s" % dirpath, self.f.filepath,
             ])

@@ -23,7 +23,7 @@ class AceFile(Unpacker):
             subprocess.check_call([
                 self.zipjail, filepath, dirpath,
                 self.exe, "x", filepath, dirpath + os.sep,
-            ], stdin=subprocess.PIPE)
+            ], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         except subprocess.CalledProcessError as e:
             raise UnpackException(e)
 

@@ -18,7 +18,7 @@ class RarFile(Unpacker):
         dirpath = tempfile.mkdtemp()
 
         try:
-            subprocess.check_call([
+            subprocess.check_output([
                 self.zipjail, self.f.filepath, dirpath,
                 self.exe, "x", "-mt1", "-p%s" % (password or "-"),
                 self.f.filepath, dirpath,
