@@ -7,7 +7,6 @@ import olefile
 import os.path
 
 from sflock.abstracts import Unpacker, File
-from sflock.exception import UnpackException
 
 class MsgFile(Unpacker):
     name = "msgfile"
@@ -44,7 +43,9 @@ class MsgFile(Unpacker):
         try:
             self.ole = olefile.OleFileIO(io.BytesIO(self.f.contents))
         except IOError as e:
-            raise UnpackException(e)
+            self.f.mode = "failed"
+            self.f.error = e
+            return []
 
         for dirname in self.ole.listdir():
             if dirname[0].startswith("__attach") and dirname[0] not in seen:

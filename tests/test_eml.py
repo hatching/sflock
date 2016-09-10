@@ -2,10 +2,7 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
-import pytest
-
 from sflock.abstracts import File
-from sflock.exception import UnpackException
 from sflock.unpack import EmlFile
 
 def f(filename):
@@ -62,6 +59,4 @@ def test_garbage():
     t = EmlFile(f("garbage.bin"))
     assert t.handles() is False
     assert not t.f.selected
-
-    with pytest.raises(UnpackException):
-        t.unpack()
+    assert not t.unpack()

@@ -8,7 +8,6 @@ import ntpath
 import olefile
 
 from sflock.abstracts import Unpacker, File
-from sflock.exception import UnpackException
 
 class BupFile(Unpacker):
     name = "bupfile"
@@ -26,7 +25,9 @@ class BupFile(Unpacker):
         try:
             ole = olefile.OleFileIO(io.BytesIO(self.f.contents))
         except IOError as e:
-            raise UnpackException(e)
+            self.f.mode = "failed"
+            self.f.error = e
+            return []
 
         details = self.decrypt(ole.openstream("Details").read())
         config = ConfigParser.ConfigParser()

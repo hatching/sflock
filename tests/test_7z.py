@@ -5,7 +5,6 @@
 import pytest
 
 from sflock.abstracts import File
-from sflock.exception import UnpackException
 from sflock.main import unpack
 from sflock.unpack import Zip7File
 
@@ -77,9 +76,8 @@ class Test7zFile(object):
         t = Zip7File(f("garbage.bin"))
         assert t.handles() is False
         assert not t.f.selected
-
-        with pytest.raises(UnpackException):
-            t.unpack()
+        assert not t.unpack()
+        assert t.f.mode == "failed"
 
     def test_heuristics(self):
         t = unpack("tests/files/7z_plain.7z", filename="foo")
@@ -105,6 +103,4 @@ def test_no7z_plain():
     assert "7-zip archive" in f("7z_plain.7z").magic
     t = Zip7File(f("7z_plain.7z"))
     assert t.handles() is True
-
-    with pytest.raises(UnpackException):
-        t.unpack()
+    assert not t.unpack()

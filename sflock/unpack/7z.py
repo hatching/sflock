@@ -30,6 +30,7 @@ class Zip7File(Unpacker):
                 self.exe, "x", "-mmt=off", "-o%s" % dirpath, self.f.filepath,
             ])
         except subprocess.CalledProcessError as e:
-            raise UnpackException(e)
+            self.f.mode = "failed"
+            self.f.error = e
 
         return self.process_directory(dirpath, duplicates)

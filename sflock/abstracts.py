@@ -78,8 +78,6 @@ class Unpacker(object):
 
             f.parent = self.f
             ret.append(f)
-        if not ret:
-            raise UnpackException("No files unpacked")
         return ret
 
     def process_directory(self, dirpath, duplicates, password=None):
@@ -87,6 +85,11 @@ class Unpacker(object):
         after calling the process function."""
         entries = []
         duplicates = duplicates or []
+
+        if not os.listdir(dirpath):
+            self.f.mode = "failed"
+            self.f.error = "no files extracted"
+
         for dirpath2, dirnames, filepaths in os.walk(dirpath):
             for filepath in filepaths:
                 filepath = os.path.join(dirpath2, filepath)
@@ -116,6 +119,7 @@ class File(object):
         self.filepath = filepath
         self.relapath = relapath
         self.mode = mode
+        self.error = None
         self.description = description
         self.password = password
         self.children = []

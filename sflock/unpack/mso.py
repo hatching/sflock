@@ -71,5 +71,11 @@ class MsoFile(Unpacker):
 
     def unpack(self, password=None, duplicates=None):
         self.entries = []
-        self.walk_ole(self.locate_ole(self.f.contents))
+
+        try:
+            self.walk_ole(self.locate_ole(self.f.contents))
+        except UnpackException as e:
+            self.f.mode = "failed"
+            self.f.error = e
+
         return self.process(self.entries, duplicates)

@@ -23,8 +23,10 @@ class TarFile(Unpacker):
             archive = tarfile.open(
                 mode=self.mode, fileobj=io.BytesIO(self.f.contents)
             )
-        except tarfile.ReadError:
-            return self.process([], duplicates)
+        except tarfile.ReadError as e:
+            self.f.mode = "failed"
+            self.f.error = e
+            return []
 
         entries = []
         for entry in archive:

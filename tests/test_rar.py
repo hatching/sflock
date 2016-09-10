@@ -5,7 +5,6 @@
 import pytest
 
 from sflock.abstracts import File
-from sflock.exception import UnpackException
 from sflock.main import unpack
 from sflock.unpack import RarFile
 
@@ -96,9 +95,8 @@ class TestRarFile:
         t = RarFile(f("garbage.bin"))
         assert t.handles() is False
         assert not t.f.selected
-
-        with pytest.raises(UnpackException):
-            t.unpack()
+        assert not t.unpack()
+        assert t.f.mode == "failed"
 
 @pytest.mark.skipif("RarFile(None).supported()")
 def test_norar_plain():
@@ -106,6 +104,4 @@ def test_norar_plain():
     t = RarFile(f("rar_plain.rar"))
     assert t.handles() is True
     assert not t.f.selected
-
-    with pytest.raises(UnpackException):
-        t.unpack()
+    assert not t.unpack()

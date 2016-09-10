@@ -6,7 +6,6 @@ import subprocess
 import tempfile
 
 from sflock.abstracts import Unpacker
-from sflock.exception import UnpackException
 
 class RarFile(Unpacker):
     name = "rarfile"
@@ -24,6 +23,7 @@ class RarFile(Unpacker):
                 self.f.filepath, dirpath,
             ])
         except subprocess.CalledProcessError as e:
-            raise UnpackException(e)
+            self.f.mode = "failed"
+            self.f.error = e
 
         return self.process_directory(dirpath, duplicates, password)

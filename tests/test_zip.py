@@ -2,10 +2,7 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
-import pytest
-
 from sflock.abstracts import File
-from sflock.exception import UnpackException
 from sflock.main import unpack
 from sflock.unpack import ZipFile
 
@@ -121,6 +118,5 @@ class TestZipfile(object):
         t = ZipFile(f("garbage.bin"))
         assert t.handles() is False
         assert not t.f.selected
-
-        with pytest.raises(UnpackException):
-            t.unpack()
+        assert not t.unpack()
+        assert t.f.mode == "failed"

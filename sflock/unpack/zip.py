@@ -64,8 +64,10 @@ class ZipFile(Unpacker):
     def unpack(self, password=None, duplicates=None):
         try:
             archive = zipfile.ZipFile(io.BytesIO(self.f.contents))
-        except zipfile.BadZipfile:
-            return self.process([], duplicates)
+        except zipfile.BadZipfile as e:
+            self.f.mode = "failed"
+            self.f.error = e
+            return []
 
         entries = []
         for entry in archive.infolist():

@@ -7,7 +7,6 @@ import subprocess
 import tempfile
 
 from sflock.abstracts import Unpacker
-from sflock.exception import UnpackException
 
 class AceFile(Unpacker):
     name = "acefile"
@@ -25,6 +24,7 @@ class AceFile(Unpacker):
                 self.exe, "x", filepath, dirpath + os.sep,
             ], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         except subprocess.CalledProcessError as e:
-            raise UnpackException(e)
+            self.f.mode = "failed"
+            self.f.error = e
 
         return self.process_directory(dirpath, duplicates)
