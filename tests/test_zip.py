@@ -6,6 +6,7 @@ import pytest
 
 from sflock.abstracts import File
 from sflock.exception import UnpackException
+from sflock.main import unpack
 from sflock.unpack import ZipFile
 
 def f(filename):
@@ -94,6 +95,22 @@ class TestZipfile(object):
         assert not files[0].password
         assert files[0].magic == "ASCII text"
         assert not files[0].selected
+
+    def test_heuristics(self):
+        t = unpack("tests/files/zip_plain.zip", filename="foo")
+        assert t.unpacker == "zipfile"
+
+        t = unpack("tests/files/zip_nested.zip", filename="foo")
+        assert t.unpacker == "zipfile"
+
+        t = unpack("tests/files/zip_nested2.zip", filename="foo")
+        assert t.unpacker == "zipfile"
+
+        t = unpack("tests/files/zip_encrypted.zip", filename="foo")
+        assert t.unpacker == "zipfile"
+
+        t = unpack("tests/files/zip_encrypted2.zip", filename="foo")
+        assert t.unpacker == "zipfile"
 
     def test_garbage(self):
         t = ZipFile(f("garbage.bin"))

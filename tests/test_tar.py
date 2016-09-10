@@ -6,6 +6,7 @@ import pytest
 
 from sflock.abstracts import File
 from sflock.exception import UnpackException
+from sflock.main import unpack
 from sflock.unpack import TarFile, TargzFile, Tarbz2File
 
 def f(filename):
@@ -138,6 +139,31 @@ class TestTarFile(object):
         assert not files[0].password
         assert files[0].magic == "ASCII text"
         assert not files[0].selected
+
+    def test_heuristics(self):
+        t = unpack("tests/files/tar_plain.tar", filename="foo")
+        assert t.unpacker == "tarfile"
+
+        t = unpack("tests/files/tar_plain2.tar", filename="foo")
+        assert t.unpacker == "tarfile"
+
+        t = unpack("tests/files/tar_plain2.tar.gz", filename="foo")
+        assert t.unpacker == "targzfile"
+
+        t = unpack("tests/files/tar_plain2.tar.bz2", filename="foo")
+        assert t.unpacker == "tarbz2file"
+
+        t = unpack("tests/files/tar_nested.tar", filename="foo")
+        assert t.unpacker == "tarfile"
+
+        t = unpack("tests/files/tar_nested.tar.gz", filename="foo")
+        assert t.unpacker == "targzfile"
+
+        t = unpack("tests/files/tar_nested.tar.bz2", filename="foo")
+        assert t.unpacker == "tarbz2file"
+
+        t = unpack("tests/files/tar_nested2.tar", filename="foo")
+        assert t.unpacker == "tarfile"
 
     def test_garbage(self):
         t = TarFile(f("garbage.bin"))

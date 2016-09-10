@@ -25,12 +25,12 @@ def supported():
                 ret.extend(plugin.exts)
     return ret
 
-def unpack(filepath, contents=None, password=None):
+def unpack(filepath, contents=None, password=None, filename=None):
     """Unpacks the file or contents provided."""
     if contents:
-        f = File(filepath, contents)
+        f = File(filepath, contents, filename=filename)
     else:
-        f = File.from_path(filepath)
+        f = File.from_path(filepath, filename=filename)
 
     duplicates = []
 

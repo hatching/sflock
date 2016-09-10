@@ -6,6 +6,7 @@ import pytest
 
 from sflock.abstracts import File
 from sflock.exception import UnpackException
+from sflock.main import unpack
 from sflock.unpack import Zip7File
 
 def f(filename):
@@ -79,6 +80,21 @@ class Test7zFile(object):
 
         with pytest.raises(UnpackException):
             t.unpack()
+
+    def test_heuristics(self):
+        t = unpack("tests/files/7z_plain.7z", filename="foo")
+        assert t.unpacker == "7zfile"
+
+        t = unpack("tests/files/7z_nested.7z", filename="foo")
+        assert t.unpacker == "7zfile"
+
+        t = unpack("tests/files/7z_nested2.7z", filename="foo")
+        assert t.unpacker == "7zfile"
+
+        """
+        t = unpack("tests/files/7z_encrypted.7z", filename="foo")
+        assert t.unpacker == "7zfile"
+        """
 
 @pytest.mark.skipif("Zip7File(None).supported()")
 def test_no7z_plain():

@@ -6,6 +6,7 @@ import pytest
 
 from sflock.abstracts import File
 from sflock.exception import UnpackException
+from sflock.main import unpack
 from sflock.unpack import RarFile
 
 def f(filename):
@@ -69,6 +70,23 @@ class TestRarFile:
         assert "ASCII text" in files[0].magic
         assert files[0].parentdirs == []
         assert not files[0].selected
+
+    def test_heuristics(self):
+        t = unpack("tests/files/rar_plain.rar", filename="foo")
+        assert t.unpacker == "rarfile"
+
+        t = unpack("tests/files/rar_nested.rar", filename="foo")
+        assert t.unpacker == "rarfile"
+
+        t = unpack("tests/files/rar_nested2.rar", filename="foo")
+        assert t.unpacker == "rarfile"
+
+        t = unpack(
+            "tests/files/sflock_encrypted.rar",
+            filename="foo",
+            password="infected"
+        )
+        assert t.unpacker == "rarfile"
 
     def test_garbage(self):
         t = RarFile(f("garbage.bin"))

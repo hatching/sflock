@@ -6,6 +6,7 @@ import pytest
 
 from sflock.abstracts import File
 from sflock.exception import UnpackException
+from sflock.main import unpack
 from sflock.unpack import AceFile
 
 def f(filename):
@@ -55,6 +56,16 @@ class TestAceFile(object):
         assert not files[0].password
         assert "ASCII text" in files[0].magic
         assert not files[0].selected
+
+    def test_heuristics(self):
+        t = unpack("tests/files/ace_plain.ace", filename="foo")
+        assert t.unpacker == "acefile"
+
+        t = unpack("tests/files/ace_nested.ace", filename="foo")
+        assert t.unpacker == "acefile"
+
+        t = unpack("tests/files/ace_nested2.ace", filename="foo")
+        assert t.unpacker == "acefile"
 
     def test_garbage(self):
         t = AceFile(f("garbage.bin"))

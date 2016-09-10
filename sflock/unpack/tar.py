@@ -3,9 +3,9 @@
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 import bz2
+import gzip
 import io
 import tarfile
-import zlib
 
 from sflock.abstracts import Unpacker, File
 
@@ -52,8 +52,9 @@ class TargzFile(TarFile, Unpacker):
             return False
 
         try:
-            f = File(contents=zlib.decompress(self.f.contents))
-        except zlib.error:
+            contents = gzip.GzipFile(fileobj=io.BytesIO(self.f.contents))
+            f = File(contents=contents.read())
+        except IOError:
             return False
 
         return self.magic in f.magic

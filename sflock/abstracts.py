@@ -2,10 +2,10 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
-import magic
 import hashlib
-import os.path
+import magic
 import ntpath
+import os.path
 import shutil
 
 import sflock
