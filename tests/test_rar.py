@@ -98,6 +98,15 @@ class TestRarFile:
         assert not t.unpack()
         assert t.f.mode == "failed"
 
+    def test_garbage2(self):
+        t = RarFile(f("rar_garbage.rar"))
+        assert t.handles() is True
+        assert not t.f.selected
+        files = t.unpack()
+        assert len(files) == 1
+        assert not files[0].children
+        assert files[0].mode == "failed"
+
 @pytest.mark.skipif("RarFile(None).supported()")
 def test_norar_plain():
     assert "RAR archive" in f("rar_plain.rar").magic
