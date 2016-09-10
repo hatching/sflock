@@ -82,8 +82,9 @@ class Unpacker(object):
             for filepath in filepaths:
                 filepath = os.path.join(dirpath2, filepath)
                 f = File.from_path(
-                    filepath, filename=filepath[len(dirpath)+1:],
-                    password=password,
+                    filepath=filepath,
+                    relapath=filepath[len(dirpath)+1:],
+                    password=password
                 )
 
                 entries.append(f)
@@ -92,20 +93,31 @@ class Unpacker(object):
         return self.process(entries, duplicates)
 
 class File(object):
-    """Abstract class for extracted files."""
+    """Abstract class for all file operations.
 
-    def __init__(self, filepath=None, contents=None, filename=None, mode=None,
-                 password=None, description=None, selected=None):
-        self.filepath = filename or filepath
-        self.contents = contents
+    The `filepath` represents any filepath accessible on the disk.
+    The `relapath` is a relative path representative for the archive file.
+    The `filename` is the actual filename of the file.
+    """
+
+    def __init__(self, filepath=None, contents=None, relapath=None,
+                 filename=None, mode=None, password=None, description=None,
+                 selected=None):
+        self.filepath = filepath
+        self.relapath = relapath
         self.mode = mode
         self.description = description
         self.password = password
         self.children = []
         self.duplicate = False
 
+        # Extract the filename from any of the available path components.
+        self.filename = ntpath.basename(
+            filename or self.relapath or self.filepath or ""
+        ) or None
+
+        self._contents = contents
         self._selected = selected
-        self._filename = filename
         self._sha256 = None
         self._mime = None
         self._magic = None
@@ -113,12 +125,18 @@ class File(object):
         self._magic_human = None
 
     @classmethod
-    def from_path(self, filepath, filename=None, password=None):
+    def from_path(self, filepath, relapath=None, filename=None,
+                  password=None):
         return File(
-            filename or filepath,
-            open(filepath, "rb").read(),
-            password=password
+            filepath=filepath, contents=open(filepath, "rb").read(),
+            relapath=relapath, filename=filename, password=password
         )
+
+    @property
+    def contents(self):
+        if self._contents is None and self.filepath:
+            self._contents = open(self.filepath, "rb").read()
+        return self._contents
 
     @property
     def sha256(self):
@@ -166,14 +184,11 @@ class File(object):
 
     @property
     def parentdirs(self):
-        dirname = os.path.dirname(self.filepath.replace("\\", "/"))
-        return dirname.split("/") if dirname else []
+        if not self.relapath:
+            return []
 
-    @property
-    def filename(self):
-        if not self._filename and not self.filepath.endswith("/"):
-            self._filename = ntpath.basename(self.filepath)
-        return self._filename
+        dirname = os.path.dirname(self.relapath.replace("\\", "/"))
+        return dirname.split("/") if dirname else []
 
     @property
     def filesize(self):
@@ -265,9 +280,10 @@ class File(object):
 
     def to_dict(self):
         return {
+            "filename": self.filename,
+            "relapath": self.relapath,
             "filepath": self.filepath,
             "parentdirs": self.parentdirs,
-            "filename": self.filename,
             "duplicate": self.duplicate,
             "size": self.filesize,
             "children": [child.to_dict() for child in self.children],
@@ -289,6 +305,7 @@ class File(object):
             "duplicate": self.duplicate,
             "password": self.password,
             "filename": self.filename,
+            "relapath": self.relapath,
             "filepath": self.filepath,
             "size": self.filesize,
             "package": self.package,

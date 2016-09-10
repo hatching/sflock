@@ -20,7 +20,7 @@ class TestRarFile:
         assert not t.f.selected
         files = list(t.unpack())
         assert len(files) == 1
-        assert files[0].filepath == "bar.txt"
+        assert files[0].relapath == "bar.txt"
         assert files[0].contents == "hello world\n"
         assert files[0].magic == "ASCII text"
         assert files[0].parentdirs == []
@@ -34,7 +34,7 @@ class TestRarFile:
         files = list(t.unpack())
         assert len(files) == 1
 
-        assert files[0].filepath == "foo/bar.txt"
+        assert files[0].relapath == "foo/bar.txt"
         assert files[0].parentdirs == ["foo"]
         assert files[0].contents == "hello world\n"
         assert not files[0].password
@@ -49,7 +49,7 @@ class TestRarFile:
         files = list(t.unpack())
         assert len(files) == 1
 
-        assert files[0].filepath == "deepfoo/foo/bar.txt"
+        assert files[0].relapath == "deepfoo/foo/bar.txt"
         assert files[0].parentdirs == ["deepfoo", "foo"]
         assert files[0].contents == "hello world\n"
         assert not files[0].password
@@ -63,7 +63,7 @@ class TestRarFile:
         assert not z.f.selected
         files = list(z.unpack("infected"))
         assert len(files) == 1
-        assert files[0].filepath == "sflock.txt"
+        assert files[0].relapath == "sflock.txt"
         assert files[0].contents == "sflock_encrypted_rar"
         assert files[0].password == "infected"
         assert "ASCII text" in files[0].magic

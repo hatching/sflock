@@ -20,25 +20,25 @@ def test_msg_embedded():
     files = list(m.unpack())
 
     assert len(files) == 3
-    assert files[0].filepath == "image003.emz"
+    assert files[0].relapath == "image003.emz"
     assert files[0].filesize == 1137
     assert files[0].package is None
     assert not files[0].children
     assert not files[0].selected
 
-    assert files[1].filepath == "image004.png"
+    assert files[1].relapath == "image004.png"
     assert files[1].filesize == 1132
     assert files[1].package is None
     assert not files[1].children
     assert not files[1].selected
 
-    assert files[2].filepath == "oledata.mso"
+    assert files[2].relapath == "oledata.mso"
     assert files[2].filesize == 234898
     assert files[2].package == "doc"
     assert files[2].selected is True
 
     assert len(files[2].children) == 1
-    assert files[2].children[0].filename == "Firefox Setup Stub 43.0.1.exe"
+    assert files[2].children[0].relapath == "Firefox Setup Stub 43.0.1.exe"
     assert files[2].children[0].filesize == 249336
     assert files[2].children[0].selected is False
 

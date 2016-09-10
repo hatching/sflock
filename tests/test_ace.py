@@ -20,7 +20,7 @@ class TestAceFile(object):
         assert not t.f.selected
         files = list(t.unpack())
         assert len(files) == 1
-        assert files[0].filepath == "ace.txt"
+        assert files[0].relapath == "ace.txt"
         assert files[0].contents == "wow .ace"
         assert "ASCII text" in files[0].magic
         assert files[0].parentdirs == []
@@ -34,7 +34,7 @@ class TestAceFile(object):
         files = list(t.unpack())
         assert len(files) == 1
 
-        assert files[0].filepath == "b00/ace.txt"
+        assert files[0].relapath == "b00/ace.txt"
         assert files[0].parentdirs == ["b00"]
         assert files[0].contents == "wow .ace"
         assert not files[0].password
@@ -49,7 +49,7 @@ class TestAceFile(object):
         files = list(t.unpack())
         assert len(files) == 1
 
-        assert files[0].filepath == "derp/b00/ace.txt"
+        assert files[0].relapath == "derp/b00/ace.txt"
         assert files[0].parentdirs == ["derp", "b00"]
         assert files[0].contents == "wow .ace"
         assert not files[0].password

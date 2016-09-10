@@ -24,8 +24,11 @@ class ZipFile(Unpacker):
         for password in passwords:
             try:
                 archive.setpassword(password)
-                ret = File(entry.filename, archive.read(entry),
-                           password=password)
+                ret = File(
+                    relapath=entry.filename,
+                    contents=archive.read(entry),
+                    password=password
+                )
                 self.known_passwords.add(password)
                 return ret
             except (RuntimeError, zipfile.BadZipfile) as e:
@@ -36,8 +39,11 @@ class ZipFile(Unpacker):
     def _decrypt(self, archive, entry, password):
         try:
             archive.setpassword(password)
-            return File(entry.filename, archive.read(entry),
-                        password=password)
+            return File(
+                relapath=entry.filename,
+                contents=archive.read(entry),
+                password=password
+            )
         except RuntimeError as e:
             if "password required" not in e.args[0] and \
                     "Bad password" not in e.args[0]:
@@ -48,8 +54,11 @@ class ZipFile(Unpacker):
         return (
             self._bruteforce(archive, entry, self.known_passwords) or
             self._bruteforce(archive, entry, iter_passwords()) or
-            File(entry.filename, None, mode="failed",
-                 description="Error decrypting file")
+            File(
+                relapath=entry.filename,
+                mode="failed",
+                description="Error decrypting file"
+            )
         )
 
     def unpack(self, password=None, duplicates=None):

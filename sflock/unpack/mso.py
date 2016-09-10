@@ -56,7 +56,7 @@ class MsoFile(Unpacker):
         off, tempname = parse_string(off + 8)
         embed = struct.unpack("I", stream[off:off+4])[0]
         self.entries.append(File(
-            filepath=filepath, filename=filename,
+            relapath=filename,
             contents=stream[off+4:off+4+embed],
             selected=False
         ))

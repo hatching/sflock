@@ -19,7 +19,7 @@ class TestTarFile(object):
         assert not t.f.selected
         files = list(t.unpack())
         assert len(files) == 1
-        assert files[0].filepath == "sflock.txt"
+        assert files[0].relapath == "sflock.txt"
         assert files[0].contents == "sflock_plain_tar\n"
         assert files[0].magic == "ASCII text"
         assert files[0].parentdirs == []
@@ -32,12 +32,12 @@ class TestTarFile(object):
         assert not t.f.selected
         files = list(t.unpack())
         assert len(files) == 2
-        assert files[0].filepath == "sflock.txt"
+        assert files[0].relapath == "sflock.txt"
         assert files[0].contents == "sflock_plain_tar\n"
         assert files[0].magic == "ASCII text"
         assert files[0].parentdirs == []
         assert not files[0].selected
-        assert files[1].filepath == "sflock2.txt"
+        assert files[1].relapath == "sflock2.txt"
         assert files[1].contents == "sflock_plain_tar2\n"
         assert files[1].magic == "ASCII text"
         assert files[1].parentdirs == []
@@ -50,12 +50,12 @@ class TestTarFile(object):
         assert not t.f.selected
         files = list(t.unpack())
         assert len(files) == 2
-        assert files[0].filepath == "sflock.txt"
+        assert files[0].relapath == "sflock.txt"
         assert files[0].contents == "sflock_plain_tar\n"
         assert files[0].magic == "ASCII text"
         assert files[0].parentdirs == []
         assert not files[0].selected
-        assert files[1].filepath == "sflock2.txt"
+        assert files[1].relapath == "sflock2.txt"
         assert files[1].contents == "sflock_plain_tar2\n"
         assert files[1].magic == "ASCII text"
         assert files[1].parentdirs == []
@@ -68,12 +68,12 @@ class TestTarFile(object):
         assert not t.f.selected
         files = list(t.unpack())
         assert len(files) == 2
-        assert files[0].filepath == "sflock.txt"
+        assert files[0].relapath == "sflock.txt"
         assert files[0].contents == "sflock_plain_tar\n"
         assert files[0].magic == "ASCII text"
         assert files[0].parentdirs == []
         assert not files[0].selected
-        assert files[1].filepath == "sflock2.txt"
+        assert files[1].relapath == "sflock2.txt"
         assert files[1].contents == "sflock_plain_tar2\n"
         assert files[1].magic == "ASCII text"
         assert files[1].parentdirs == []
@@ -87,7 +87,7 @@ class TestTarFile(object):
         files = list(t.unpack())
         assert len(files) == 1
 
-        assert files[0].filepath == "foo/bar.txt"
+        assert files[0].relapath == "foo/bar.txt"
         assert files[0].parentdirs == ["foo"]
         assert files[0].contents == "hello world\n"
         assert not files[0].password
@@ -102,7 +102,7 @@ class TestTarFile(object):
         files = list(t.unpack())
         assert len(files) == 1
 
-        assert files[0].filepath == "foo/bar.txt"
+        assert files[0].relapath == "foo/bar.txt"
         assert files[0].parentdirs == ["foo"]
         assert files[0].contents == "hello world\n"
         assert not files[0].password
@@ -117,7 +117,7 @@ class TestTarFile(object):
         files = list(t.unpack())
         assert len(files) == 1
 
-        assert files[0].filepath == "foo/bar.txt"
+        assert files[0].relapath == "foo/bar.txt"
         assert files[0].parentdirs == ["foo"]
         assert files[0].contents == "hello world\n"
         assert not files[0].password
@@ -132,7 +132,7 @@ class TestTarFile(object):
         files = list(t.unpack())
         assert len(files) == 1
 
-        assert files[0].filepath == "deepfoo/foo/bar.txt"
+        assert files[0].relapath == "deepfoo/foo/bar.txt"
         assert files[0].parentdirs == ["deepfoo", "foo"]
         assert files[0].contents == "hello world\n"
         assert not files[0].password

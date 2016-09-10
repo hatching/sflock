@@ -2,8 +2,10 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import bz2
 import io
 import tarfile
+import zlib
 
 from sflock.abstracts import Unpacker, File
 
@@ -30,9 +32,10 @@ class TarFile(Unpacker):
             if not entry.isfile():
                 continue
 
-            entries.append(
-                File(entry.path, archive.extractfile(entry).read())
-            )
+            entries.append(File(
+                relapath=entry.path,
+                contents=archive.extractfile(entry).read()
+            ))
 
         return self.process(entries, duplicates)
 
@@ -40,10 +43,36 @@ class TargzFile(TarFile, Unpacker):
     name = "targzfile"
     mode = "r:gz"
     exts = ".tar.gz"
-    magic = "gzip compressed data"
+
+    def handles(self):
+        if self.f.filename.lower().endswith(self.exts):
+            return True
+
+        if not self.f.contents:
+            return False
+
+        try:
+            f = File(contents=zlib.decompress(self.f.contents))
+        except zlib.error:
+            return False
+
+        return self.magic in f.magic
 
 class Tarbz2File(TarFile, Unpacker):
     name = "tarbz2file"
     mode = "r:bz2"
     exts = ".tar.bz2"
-    magic = "bzip2 compressed data"
+
+    def handles(self):
+        if self.f.filename.lower().endswith(self.exts):
+            return True
+
+        if not self.f.contents:
+            return False
+
+        try:
+            f = File(contents=bz2.decompress(self.f.contents))
+        except IOError:
+            return False
+
+        return self.magic in f.magic

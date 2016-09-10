@@ -53,8 +53,8 @@ def zipify(f):
     r = io.BytesIO()
     z = zipfile.ZipFile(r, "w")
 
-    for entry in f.children:
-        z.writestr(entry.filepath, entry.contents)
+    for child in f.children:
+        z.writestr(child.relapath, child.contents)
 
     z.close()
     return r.getvalue()

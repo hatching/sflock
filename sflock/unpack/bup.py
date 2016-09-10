@@ -37,8 +37,10 @@ class BupFile(Unpacker):
                 continue
 
             entries.append(File(
-                ntpath.basename(config.get(filename[0], "OriginalName")),
-                self.decrypt(ole.openstream(filename[0]).read())
+                relapath=ntpath.basename(
+                    config.get(filename[0], "OriginalName")
+                ),
+                contents=self.decrypt(ole.openstream(filename[0]).read())
             ))
 
         return self.process(entries, duplicates)

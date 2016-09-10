@@ -19,7 +19,7 @@ class TestZipfile(object):
         assert not z.f.selected
         files = list(z.unpack())
         assert len(files) == 1
-        assert files[0].filepath == "sflock.txt"
+        assert files[0].relapath == "sflock.txt"
         assert files[0].contents == "sflock_plain_zip\n"
         assert files[0].password is None
         assert files[0].magic == "ASCII text"
@@ -33,7 +33,7 @@ class TestZipfile(object):
         assert not z.f.selected
         files = list(z.unpack())
         assert len(files) == 1
-        assert files[0].filepath == "sflock.txt"
+        assert files[0].relapath == "sflock.txt"
         assert files[0].contents == "sflock_encrypted_zip\n"
         assert files[0].password == "infected"
         assert files[0].magic == "ASCII text"
@@ -58,7 +58,7 @@ class TestZipfile(object):
         assert not z.f.selected
         files = list(z.unpack("sflock"))
         assert len(files) == 1
-        assert files[0].filepath == "sflock.txt"
+        assert files[0].relapath == "sflock.txt"
         assert files[0].contents == "sflock_encrypted_zip\n"
         assert files[0].password == "sflock"
         assert files[0].magic == "ASCII text"
@@ -73,7 +73,7 @@ class TestZipfile(object):
         files = list(z.unpack())
         assert len(files) == 1
 
-        assert files[0].filepath == "foo/bar.txt"
+        assert files[0].relapath == "foo/bar.txt"
         assert files[0].parentdirs == ["foo"]
         assert files[0].contents == "hello world\n"
         assert not files[0].password
@@ -88,7 +88,7 @@ class TestZipfile(object):
         files = list(z.unpack())
         assert len(files) == 1
 
-        assert files[0].filepath == "deepfoo/foo/bar.txt"
+        assert files[0].relapath == "deepfoo/foo/bar.txt"
         assert files[0].parentdirs == ["deepfoo", "foo"]
         assert files[0].contents == "hello world\n"
         assert not files[0].password

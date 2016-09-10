@@ -40,6 +40,8 @@ class EmlFile(Unpacker):
                     email.header.decode_header(filename)
                 ))
 
-            entries.append(File(filename or "att1", payload))
+            entries.append(File(
+                relapath=filename or "att1", contents=payload
+            ))
 
         return self.process(entries, duplicates)
