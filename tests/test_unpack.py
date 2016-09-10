@@ -2,6 +2,9 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import os.path
+import tempfile
+
 from sflock.main import unpack
 
 def test_unpack1():
@@ -248,3 +251,27 @@ def test_astree4():
             },
         ],
     }
+
+def test_extract1():
+    unpack("tests/files/tar_plain.tar").extract("/tmp")
+    assert open("/tmp/sflock.txt", "rb").read() == "sflock_plain_tar\n"
+
+def test_extract2():
+    unpack("tests/files/zip_nested2.zip").extract("/tmp")
+    assert open("/tmp/bar.txt", "rb").read() == "hello world\n"
+
+def test_extract3():
+    dirpath = tempfile.mkdtemp()
+    f = unpack("tests/files/bup_test.bup").children[0]
+
+    f.extract(dirpath, "404.exe")
+    assert not os.path.exists(
+        os.path.join(dirpath, "404.exe")
+    )
+    assert not os.path.exists(
+        os.path.join(dirpath, "efax_9057733019_pdf.scr")
+    )
+
+    f.extract(dirpath, "efax_9057733019_pdf.scr")
+    filepath = os.path.join(dirpath, "efax_9057733019_pdf.scr")
+    assert len(open(filepath, "rb").read()) == 377856

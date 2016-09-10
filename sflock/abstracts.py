@@ -281,3 +281,14 @@ class File(object):
             entry.append(child.astree(finger=finger))
 
         return ret
+
+    def extract(self, dirpath, filename=None):
+        """Extract one or all files into a directory, note that directory
+        hierarchy is not preserved with this function."""
+        for child in self.children:
+            if filename and child.relapath != filename:
+                continue
+
+            filepath = os.path.join(dirpath, child.filename)
+            open(filepath, "wb").write(child.contents or "")
+            child.extract(dirpath)

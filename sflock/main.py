@@ -58,20 +58,24 @@ def zipify(f):
     z.close()
     return r.getvalue()
 
-def process_file(filepath):
-    print json.dumps(unpack(filepath).astree())
+def process_file(filepath, extract):
+    f = unpack(filepath)
+    print json.dumps(f.astree())
 
-def process_directory(dirpath):
+    extract and f.extract(extract)
+
+def process_directory(dirpath, extract):
     for rootpath, directories, filenames in os.walk(dirpath):
         for filename in filenames:
-            process_file(os.path.join(rootpath, filename))
+            process_file(os.path.join(rootpath, filename), extract)
 
 @click.command()
 @click.argument("files", nargs=-1)
-def main(files):
+@click.option("-e", "--extract", type=click.Path(file_okay=False))
+def main(files, extract):
     for pattern in files:
         for path in glob.iglob(pattern):
             if os.path.isdir(path):
-                process_directory(path)
+                process_directory(path, extract)
             else:
-                process_file(path)
+                process_file(path, extract)
