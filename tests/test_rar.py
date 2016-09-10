@@ -74,12 +74,15 @@ class TestRarFile:
     def test_heuristics(self):
         t = unpack("tests/files/rar_plain.rar", filename="foo")
         assert t.unpacker == "rarfile"
+        assert t.filename == "foo"
 
         t = unpack("tests/files/rar_nested.rar", filename="foo")
         assert t.unpacker == "rarfile"
+        assert t.filename == "foo"
 
         t = unpack("tests/files/rar_nested2.rar", filename="foo")
         assert t.unpacker == "rarfile"
+        assert t.filename == "foo"
 
         t = unpack(
             "tests/files/sflock_encrypted.rar",
@@ -87,6 +90,7 @@ class TestRarFile:
             password="infected"
         )
         assert t.unpacker == "rarfile"
+        assert t.filename == "foo"
 
     def test_garbage(self):
         t = RarFile(f("garbage.bin"))

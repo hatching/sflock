@@ -60,12 +60,15 @@ class TestAceFile(object):
     def test_heuristics(self):
         t = unpack("tests/files/ace_plain.ace", filename="foo")
         assert t.unpacker == "acefile"
+        assert t.filename == "foo"
 
         t = unpack("tests/files/ace_nested.ace", filename="foo")
         assert t.unpacker == "acefile"
+        assert t.filename == "foo"
 
         t = unpack("tests/files/ace_nested2.ace", filename="foo")
         assert t.unpacker == "acefile"
+        assert t.filename == "foo"
 
     def test_garbage(self):
         t = AceFile(f("garbage.bin"))

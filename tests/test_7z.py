@@ -84,16 +84,20 @@ class Test7zFile(object):
     def test_heuristics(self):
         t = unpack("tests/files/7z_plain.7z", filename="foo")
         assert t.unpacker == "7zfile"
+        assert t.filename == "foo"
 
         t = unpack("tests/files/7z_nested.7z", filename="foo")
         assert t.unpacker == "7zfile"
+        assert t.filename == "foo"
 
         t = unpack("tests/files/7z_nested2.7z", filename="foo")
         assert t.unpacker == "7zfile"
+        assert t.filename == "foo"
 
         """
         t = unpack("tests/files/7z_encrypted.7z", filename="foo")
         assert t.unpacker == "7zfile"
+        assert t.filename == "foo"
         """
 
 @pytest.mark.skipif("Zip7File(None).supported()")

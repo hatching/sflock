@@ -143,27 +143,35 @@ class TestTarFile(object):
     def test_heuristics(self):
         t = unpack("tests/files/tar_plain.tar", filename="foo")
         assert t.unpacker == "tarfile"
+        assert t.filename == "foo"
 
         t = unpack("tests/files/tar_plain2.tar", filename="foo")
         assert t.unpacker == "tarfile"
+        assert t.filename == "foo"
 
         t = unpack("tests/files/tar_plain2.tar.gz", filename="foo")
         assert t.unpacker == "targzfile"
+        assert t.filename == "foo"
 
         t = unpack("tests/files/tar_plain2.tar.bz2", filename="foo")
         assert t.unpacker == "tarbz2file"
+        assert t.filename == "foo"
 
         t = unpack("tests/files/tar_nested.tar", filename="foo")
         assert t.unpacker == "tarfile"
+        assert t.filename == "foo"
 
         t = unpack("tests/files/tar_nested.tar.gz", filename="foo")
         assert t.unpacker == "targzfile"
+        assert t.filename == "foo"
 
         t = unpack("tests/files/tar_nested.tar.bz2", filename="foo")
         assert t.unpacker == "tarbz2file"
+        assert t.filename == "foo"
 
         t = unpack("tests/files/tar_nested2.tar", filename="foo")
         assert t.unpacker == "tarfile"
+        assert t.filename == "foo"
 
     def test_garbage(self):
         t = TarFile(f("garbage.bin"))

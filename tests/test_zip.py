@@ -99,18 +99,23 @@ class TestZipfile(object):
     def test_heuristics(self):
         t = unpack("tests/files/zip_plain.zip", filename="foo")
         assert t.unpacker == "zipfile"
+        assert t.filename == "foo"
 
         t = unpack("tests/files/zip_nested.zip", filename="foo")
         assert t.unpacker == "zipfile"
+        assert t.filename == "foo"
 
         t = unpack("tests/files/zip_nested2.zip", filename="foo")
         assert t.unpacker == "zipfile"
+        assert t.filename == "foo"
 
         t = unpack("tests/files/zip_encrypted.zip", filename="foo")
         assert t.unpacker == "zipfile"
+        assert t.filename == "foo"
 
         t = unpack("tests/files/zip_encrypted2.zip", filename="foo")
         assert t.unpacker == "zipfile"
+        assert t.filename == "foo"
 
     def test_garbage(self):
         t = ZipFile(f("garbage.bin"))
