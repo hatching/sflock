@@ -73,5 +73,8 @@ def package(f):
     if filename.endswith(".wsf"):
         return "wsf"
 
+    if filename.endswith(".bat"):
+        return "generic"
+
     if "HTML" in f.magic or filename.endswith((".htm", ".html")):
         return "ie"
