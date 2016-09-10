@@ -107,12 +107,10 @@ class File(object):
         self._selected = selected
         self._filename = filename
         self._sha256 = None
-        self._finger = {
-            "mime": None,
-            "magic": None,
-            "mime_human": None,
-            "magic_human": None
-        }
+        self._mime = None
+        self._magic = None
+        self._mime_human = None
+        self._magic_human = None
 
     @classmethod
     def from_path(self, filepath, filename=None, password=None):
@@ -130,30 +128,30 @@ class File(object):
 
     @property
     def magic(self):
-        if not self._finger["magic"] and self.contents:
-            self._finger["magic"] = magic.from_buffer(self.contents)
-        return self._finger["magic"] or ""
+        if not self._magic and self.contents:
+            self._magic = magic.from_buffer(self.contents)
+        return self._magic or ""
 
     @property
     def mime(self):
-        if not self._finger["mime"] and self.contents:
-            self._finger["mime"] = magic.from_buffer(self.contents, mime=True)
-        return self._finger["mime"] or ""
+        if not self._mime and self.contents:
+            self._mime = magic.from_buffer(self.contents, mime=True)
+        return self._mime or ""
 
     @property
     def magic_human(self):
-        if not self._finger["magic_human"]:
+        if not self._magic_human:
             magic = self.magic or ""
             if "," in magic:
                 spl = magic.split(",")
                 magic = "%s (%s)" % (spl[0], ",".join(spl[1:3]).strip())
 
-            self._finger["magic_human"] = magic
-        return self._finger["magic_human"] or ""
+            self._magic_human = magic
+        return self._magic_human or ""
 
     @property
     def mime_human(self):
-        if not self._finger["mime_human"]:
+        if not self._mime_human:
             mime = self.mime or ""
             if "/" in mime:
                 mime = mime.split("/", 1)[1]
@@ -163,8 +161,8 @@ class File(object):
 
                 mime = mime.replace("-", " ")
 
-            self._finger["mime_human"] = mime
-        return self._finger["mime_human"] or ""
+            self._mime_human = mime
+        return self._mime_human or ""
 
     @property
     def parentdirs(self):
