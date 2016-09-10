@@ -25,14 +25,16 @@ def supported():
                 ret.extend(plugin.exts)
     return ret
 
-def unpack(filepath, contents=None, password=None, filename=None):
+def unpack(filepath, contents=None, password=None, filename=None,
+           duplicates=None):
     """Unpacks the file or contents provided."""
     if contents:
         f = File(filepath, contents, filename=filename)
     else:
         f = File.from_path(filepath, filename=filename)
 
-    duplicates = []
+    if duplicates is None:
+        duplicates = []
 
     # Determine how we're going to unpack this file (if at all). It may not
     # have a file extension, e.g., when its filename is a hash. In those cases

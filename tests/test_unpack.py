@@ -275,3 +275,10 @@ def test_extract3():
     f.extract(dirpath, "efax_9057733019_pdf.scr")
     filepath = os.path.join(dirpath, "efax_9057733019_pdf.scr")
     assert len(open(filepath, "rb").read()) == 377856
+
+def test_duplicate():
+    duplicates = []
+    f1 = unpack("tests/files/tar_plain.tar", duplicates=duplicates)
+    f2 = unpack("tests/files/tar_plain.tar", duplicates=duplicates)
+    assert f1.children[0].duplicate is False
+    assert f2.children[0].duplicate is True
