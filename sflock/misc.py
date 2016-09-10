@@ -21,5 +21,5 @@ def import_plugins(dirpath, module_prefix, namespace, class_):
     for subclass in class_.__subclasses__():
         namespace[subclass.__name__] = subclass
         plugins[subclass.name.lower()] = subclass
-        class_.plugins[subclass.__name__.lower()] = subclass
+        class_.plugins[subclass.name.lower()] = subclass
     return plugins
