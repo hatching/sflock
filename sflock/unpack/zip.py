@@ -2,8 +2,8 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import io
 import zipfile
-from StringIO import StringIO
 
 from sflock.abstracts import File, Unpacker
 from sflock.config import iter_passwords
@@ -63,10 +63,7 @@ class ZipFile(Unpacker):
 
     def unpack(self, password=None, duplicates=None):
         try:
-            if self.f.contents:
-                archive = zipfile.ZipFile(StringIO(self.f.contents))
-            else:
-                archive = zipfile.ZipFile(self.f.filepath)
+            archive = zipfile.ZipFile(io.BytesIO(self.f.contents))
         except zipfile.BadZipfile:
             return self.process([], duplicates)
 
