@@ -76,6 +76,7 @@ class Unpacker(object):
             else:
                 f.duplicate = True
 
+            f.parent = self.f
             ret.append(f)
         if not ret:
             raise UnpackException("No files unpacked")
@@ -106,6 +107,7 @@ class File(object):
     The `filepath` represents any filepath accessible on the disk.
     The `relapath` is a relative path representative for the archive file.
     The `filename` is the actual filename of the file.
+    The `extrpath` determines the extraction path and may be used for read().
     """
 
     def __init__(self, filepath=None, contents=None, relapath=None,
@@ -119,6 +121,7 @@ class File(object):
         self.children = []
         self.duplicate = False
         self.unpacker = None
+        self.parent = None
 
         # Extract the filename from any of the available path components.
         self.filename = ntpath.basename(
@@ -216,15 +219,20 @@ class File(object):
             self._selected = bool(self.package)
         return self._selected
 
-    @selected.setter
-    def selected(self, selected):
-        self._selected = selected
+    @property
+    def extrpath(self):
+        ret, child = [], self
+        while child.parent:
+            ret.insert(0, child.relapath)
+            child = child.parent
+        return ret
 
     def to_dict(self):
         return {
             "filename": self.filename,
             "relapath": self.relapath,
             "filepath": self.filepath,
+            "extrpath": self.extrpath,
             "parentdirs": self.parentdirs,
             "duplicate": self.duplicate,
             "size": self.filesize,
@@ -249,6 +257,7 @@ class File(object):
             "filename": self.filename,
             "relapath": self.relapath,
             "filepath": self.filepath,
+            "extrpath": self.extrpath,
             "size": self.filesize,
             "package": self.package,
             "selected": self.selected,
@@ -294,3 +303,16 @@ class File(object):
             filepath = os.path.join(dirpath, child.filename)
             open(filepath, "wb").write(child.contents or "")
             child.extract(dirpath)
+
+    def read(self, relapath):
+        """Extract a single file from a possibly nested archive. See also the
+        `extrpath` field of an embedded document."""
+        if isinstance(relapath, basestring):
+            relapath = relapath,
+
+        relapath, nextpath = relapath[0], relapath[1:]
+        for child in self.children:
+            if child.relapath == relapath:
+                if nextpath:
+                    return child.read(nextpath)
+                return child.contents
