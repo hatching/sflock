@@ -4,21 +4,24 @@ python:
     - 2.7
 
 install:
-    - python setup.py install
-    - pip install pytest
+    - python setup.py develop
+    - pip install pytest pytest-cov coveralls
 
 script:
     - python -c "import sflock ; exit(len(sflock.supported()) != 8)"
-    - py.test
+    - py.test --cov=sflock
 
     - sudo apt-get -y install p7zip-full
     - python -c "import sflock ; exit(len(sflock.supported()) != 9)"
-    - py.test
+    - py.test --cov=sflock --cov-append
 
     - sudo apt-get -y install rar
     - python -c "import sflock ; exit(len(sflock.supported()) != 10)"
-    - py.test
+    - py.test --cov=sflock --cov-append
 
     - sudo apt-get -y install unace-nonfree
     - python -c "import sflock ; exit(len(sflock.supported()) != 11)"
-    - py.test
+    - py.test --cov=sflock --cov-append
+
+after_success:
+    - coveralls
