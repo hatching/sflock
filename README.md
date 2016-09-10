@@ -1,5 +1,8 @@
 # sflock
 
+[![Build Status](https://travis-ci.org/jbremer/sflock.svg?branch=master)](https://travis-ci.org/jbremer/sflock)
+[![Coverage Status](https://coveralls.io/repos/github/jbremer/sflock/badge.svg?branch=master)](https://coveralls.io/github/jbremer/sflock?branch=master)
+
 Sample staging &amp; detonation utility to be used in combination with other
 analysis tools.
 
