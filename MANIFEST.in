@@ -1,3 +1,4 @@
 graft sflock
+recursive-exclude * *.pyc *.pyo
 include sflock/data/zipjail
 include sflock/data/password.txt
