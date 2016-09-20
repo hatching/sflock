@@ -76,5 +76,5 @@ def package(f):
     if filename.endswith(".bat"):
         return "generic"
 
-    if "HTML" in f.magic or filename.endswith((".htm", ".html")):
+    if "HTML" in f.magic or filename.endswith((".htm", ".html", ".hta")):
         return "ie"
