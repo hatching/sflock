@@ -54,6 +54,7 @@ def test_package():
     assert File(filename="a.psc1").package == "ps1"
     assert File(filename="a.psm1").package == "ps1"
     assert File(filename="a.wsf").package == "wsf"
+    assert File(filename="a.wsc").package == "wsf"
     assert File(filename="a.htm").package == "ie"
     assert File(filename="a.html").package == "ie"
     assert File(filename="a.bat").package == "generic"

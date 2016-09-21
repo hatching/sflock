@@ -70,7 +70,7 @@ def package(f):
     if filename.endswith((".ps1", ".ps1xml", ".psc1", ".psm1")):
         return "ps1"
 
-    if filename.endswith(".wsf"):
+    if filename.endswith((".wsf", ".wsc")):
         return "wsf"
 
     if filename.endswith(".bat"):
