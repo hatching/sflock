@@ -10,6 +10,11 @@ matrix:
 install:
     - python setup.py develop
     - pip install pytest pytest-cov coveralls
+    - |
+      if [[ $TRAVIS_OS_NAME == "osx" ]]; then
+        brew update || brew update
+        brew install libmagic
+      fi
 
 script:
     - 'python -c "import sflock ; exit(len(sflock.supported()) != 8)"'
