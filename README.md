@@ -18,10 +18,10 @@ particular sflock focuses on integration and usage with Cuckoo Sandbox.
 Installation
 ============
 
-As-is sflock has been designed to be used on Ubuntu/Debian-like systems. For
-optimal usage it is recommended to install the following packages along side
-sflock. It is currently not possible to run the unpackers that require native
-tooling support on non-Linux platforms.
+As-is sflock has been designed to be used to its full extent on
+Ubuntu/Debian-like systems. For optimal usage it is recommended to install the
+following packages alongside sflock. It is currently not possible to run the
+unpackers that require native tooling support on non-Linux platforms.
 
 ```bash
 $ sudo apt-get install p7zip-full rar unace-nonfree
@@ -38,6 +38,33 @@ Or in a virtualenv environment.
 ```bash
 (venv)$ pip install -U sflock
 ```
+
+Installation (Windows)
+======================
+
+Since version 0.2 sflock properly supports Windows-based operating systems.
+However, as-is only 32-bit Python setups are fully supported, as currently no
+support exists for libmagic in 64-bit Python, see also
+https://github.com/ahupp/python-magic#dependencies.
+
+To simplify the setup phase, sflock ships the required 32-bit binaries to use
+libmagic under Windows and as such Windows support works flawlessly.
+
+Note: on Windows the `7z`, `ace`, and `.rar` file formats are not supported.
+
+Installation (Mac OS X)
+=======================
+
+Since version 0.2 sflock properly supports Mac OS X-based operating systems.
+One does have to manually install `libmagic` though. This may be done through
+the `brew` package manager.
+
+```bash
+$ brew update
+$ brew install libmagic
+```
+
+Note: on Mac OS X the `7z`, `ace`, and `.rar` file formats are not supported.
 
 Supported archives
 ==================
