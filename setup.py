@@ -16,9 +16,9 @@ setup(
         "sflock.data",
     ],
     entry_points={
-        "console_scripts": {
+        "console_scripts": [
             "sflock = sflock.main:main",
-        },
+        ],
     },
     url="http://sflock.org/",
     license="GPLv3",
