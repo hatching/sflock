@@ -9,7 +9,9 @@ def f(filename):
     return File.from_path("tests/files/%s" % filename)
 
 def test_bup_plain():
-    assert "Composite Document File V2" in f("bup_test.bup").magic
+    assert f("bup_test.bup").magic.startswith((
+        "Composite Document File V2", "CDF V2 Document"
+    ))
     t = BupFile(f("bup_test.bup"))
     assert t.handles() is True
     assert not t.f.selected

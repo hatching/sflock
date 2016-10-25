@@ -113,4 +113,3 @@ def test_norar_plain():
     t = RarFile(f("rar_plain.rar"))
     assert t.handles() is True
     assert not t.f.selected
-    assert not t.unpack()

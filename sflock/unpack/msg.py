@@ -16,8 +16,8 @@ class MsgFile(Unpacker):
         return True
 
     def get_stream(self, *filename):
-        if self.ole.exists(os.path.join(*filename)):
-            return self.ole.openstream(os.path.join(*filename)).read()
+        if self.ole.exists("/".join(filename)):
+            return self.ole.openstream("/".join(filename)).read()
 
     def get_string(self, *filename):
         ascii_filename = "%s001E" % "/".join(filename)

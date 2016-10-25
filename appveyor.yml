@@ -10,4 +10,4 @@ build: false
 
 test_script:
   - '%PYTHON%/Python.exe -c "import sflock ; exit(len(sflock.supported()) != 8)"'
-  - '%PYTHON%/Scripts/pytest.exe'
+  - '%PYTHON%/Scripts/pytest.exe -vv'

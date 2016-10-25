@@ -268,12 +268,14 @@ def test_astree4():
     }
 
 def test_extract1():
-    unpack("tests/files/tar_plain.tar").extract("/tmp")
-    assert open("/tmp/sflock.txt", "rb").read() == "sflock_plain_tar\n"
+    unpack("tests/files/tar_plain.tar").extract(tempfile.gettempdir())
+    filepath = os.path.join(tempfile.gettempdir(), "sflock.txt")
+    assert open(filepath, "rb").read() == "sflock_plain_tar\n"
 
 def test_extract2():
-    unpack("tests/files/zip_nested2.zip").extract("/tmp")
-    assert open("/tmp/bar.txt", "rb").read() == "hello world\n"
+    unpack("tests/files/zip_nested2.zip").extract(tempfile.gettempdir())
+    filepath = os.path.join(tempfile.gettempdir(), "bar.txt")
+    assert open(filepath, "rb").read() == "hello world\n"
 
 def test_extract3():
     dirpath = tempfile.mkdtemp()

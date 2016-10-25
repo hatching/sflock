@@ -112,4 +112,3 @@ def test_no7z_plain():
     assert "7-zip archive" in f("7z_plain.7z").magic
     t = Zip7File(f("7z_plain.7z"))
     assert t.handles() is True
-    assert not t.unpack()

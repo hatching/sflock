@@ -82,4 +82,3 @@ def test_noace_plain():
     t = AceFile(f("ace_plain.ace"))
     assert t.handles() is True
     assert not t.f.selected
-    assert not t.unpack()

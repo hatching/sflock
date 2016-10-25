@@ -11,7 +11,9 @@ def f(filename):
     return File.from_path("tests/files/%s" % filename)
 
 def test_msg_embedded():
-    assert "Composite Document File V2" in f("msg_invoice.msg").magic
+    assert f("msg_invoice.msg").magic.startswith((
+        "Composite Document File V2", "CDF V2 Document"
+    ))
     m = MsgFile(f("msg_invoice.msg"))
     assert m.handles() is True
     assert not m.f.selected
