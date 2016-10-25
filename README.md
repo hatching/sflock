@@ -1,6 +1,7 @@
 # sflock
 
 [![Build Status](https://travis-ci.org/jbremer/sflock.svg?branch=master)](https://travis-ci.org/jbremer/sflock)
+[![Windows Build Status](https://ci.appveyor.com/api/projects/status/32r7s2skrgm9ubva?svg=true)](https://ci.appveyor.com/project/jbremer/sflock)
 [![Coverage Status](https://coveralls.io/repos/github/jbremer/sflock/badge.svg?branch=master)](https://coveralls.io/github/jbremer/sflock?branch=master)
 
 Sample staging &amp; detonation utility to be used as unpacking engine for
