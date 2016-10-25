@@ -3,14 +3,13 @@
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 import hashlib
-import magic
 import ntpath
 import os.path
 import shutil
 
-import sflock
-
 from sflock.exception import UnpackException
+from sflock.compat import magic
+from sflock.misc import data_file
 from sflock.pick import package
 
 class Unpacker(object):
@@ -35,9 +34,7 @@ class Unpacker(object):
 
     @property
     def zipjail(self):
-        return os.path.abspath(os.path.join(
-            sflock.__path__[0], "data", "zipjail"
-        ))
+        return data_file("zipjail")
 
     def handles(self):
         if self.f.filename.lower().endswith(self.exts):

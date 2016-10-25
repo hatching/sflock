@@ -5,6 +5,8 @@
 import os
 import importlib
 
+import sflock
+
 def import_plugins(dirpath, module_prefix, namespace, class_):
     """Import plugins of type `class` located at `dirpath` into the
     `namespace` that starts with `module_prefix`. If `dirpath` represents a
@@ -23,3 +25,7 @@ def import_plugins(dirpath, module_prefix, namespace, class_):
         plugins[subclass.name.lower()] = subclass
         class_.plugins[subclass.name.lower()] = subclass
     return plugins
+
+def data_file(*path):
+    """Return the path for the filepath of an embedded file."""
+    return os.path.abspath(os.path.join(sflock.__path__[0], "data", *path))
