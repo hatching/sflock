@@ -7,7 +7,7 @@ from setuptools import setup
 
 setup(
     name="SFlock",
-    version="0.2",
+    version="0.2.1",
     author="Jurriaan Bremer",
     author_email="jbr@cuckoo.sh",
     packages=[
@@ -26,6 +26,7 @@ setup(
     include_package_data=True,
     package_data={
         "sflock.data": ["*"],
+        "sflock.data.win32": ["*"],
     },
     install_requires=[
         "click==6.6",
