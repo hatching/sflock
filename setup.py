@@ -7,7 +7,7 @@ from setuptools import setup
 
 setup(
     name="SFlock",
-    version="0.2.1",
+    version="0.2.2",
     author="Jurriaan Bremer",
     author_email="jbr@cuckoo.sh",
     packages=[
@@ -24,10 +24,6 @@ setup(
     license="GPLv3",
     description="Sample staging and detonation utility",
     include_package_data=True,
-    package_data={
-        "sflock.data": ["*"],
-        "sflock.data.win32": ["*"],
-    },
     install_requires=[
         "click==6.6",
         "olefile==0.43",

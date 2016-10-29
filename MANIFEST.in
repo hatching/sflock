@@ -1,4 +1,8 @@
 graft sflock
 recursive-exclude * *.pyc *.pyo
-include sflock/data/zipjail
+include sflock/data/zipjail.elf
 include sflock/data/password.txt
+include sflock/data/win32/magic1.dll
+include sflock/data/win32/magic.mgc
+include sflock/data/win32/regex2.dll
+include sflock/data/win32/zlib1.dll

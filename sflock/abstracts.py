@@ -34,7 +34,7 @@ class Unpacker(object):
 
     @property
     def zipjail(self):
-        return data_file("zipjail")
+        return data_file("zipjail.elf")
 
     def handles(self):
         if self.f.filename.lower().endswith(self.exts):
