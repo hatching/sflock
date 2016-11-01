@@ -8,29 +8,29 @@ matrix:
       language: generic
 
 install:
-    - python setup.py develop
-    - pip install pytest pytest-cov coveralls
-    - |
-      if [[ $TRAVIS_OS_NAME == "osx" ]]; then
-        brew update || brew update
-        brew install libmagic
-      fi
+  - python setup.py develop
+  - pip install pytest pytest-cov coveralls
+  - |
+    if [[ $TRAVIS_OS_NAME == "osx" ]]; then
+      brew update || brew update
+      brew install libmagic
+    fi
 
 script:
-    - 'python -c "import sflock ; exit(len(sflock.supported()) != 8)"'
-    - 'py.test --cov=sflock'
+  - 'python -c "import sflock ; exit(len(sflock.supported()) != 8)"'
+  - 'py.test --cov=sflock'
 
-    - '[[ $TRAVIS_OS_NAME == "linux" ]] && sudo apt-get -y install p7zip-full || true'
-    - '[[ $TRAVIS_OS_NAME == "linux" ]] && python -c "import sflock ; exit(len(sflock.supported()) != 9)" || true'
-    - '[[ $TRAVIS_OS_NAME == "linux" ]] && py.test --cov=sflock --cov-append || true'
+  - '[[ $TRAVIS_OS_NAME == "linux" ]] && sudo apt-get -y install p7zip-full || true'
+  - '[[ $TRAVIS_OS_NAME == "linux" ]] && python -c "import sflock ; exit(len(sflock.supported()) != 9)" || true'
+  - '[[ $TRAVIS_OS_NAME == "linux" ]] && py.test --cov=sflock --cov-append || true'
 
-    - '[[ $TRAVIS_OS_NAME == "linux" ]] && sudo apt-get -y install rar || true'
-    - '[[ $TRAVIS_OS_NAME == "linux" ]] && python -c "import sflock ; exit(len(sflock.supported()) != 10)" || true'
-    - '[[ $TRAVIS_OS_NAME == "linux" ]] && py.test --cov=sflock --cov-append || true'
+  - '[[ $TRAVIS_OS_NAME == "linux" ]] && sudo apt-get -y install rar || true'
+  - '[[ $TRAVIS_OS_NAME == "linux" ]] && python -c "import sflock ; exit(len(sflock.supported()) != 10)" || true'
+  - '[[ $TRAVIS_OS_NAME == "linux" ]] && py.test --cov=sflock --cov-append || true'
 
-    - '[[ $TRAVIS_OS_NAME == "linux" ]] && sudo apt-get -y install unace-nonfree || true'
-    - '[[ $TRAVIS_OS_NAME == "linux" ]] && python -c "import sflock ; exit(len(sflock.supported()) != 11)" || true'
-    - '[[ $TRAVIS_OS_NAME == "linux" ]] && py.test --cov=sflock --cov-append || true'
+  - '[[ $TRAVIS_OS_NAME == "linux" ]] && sudo apt-get -y install unace-nonfree || true'
+  - '[[ $TRAVIS_OS_NAME == "linux" ]] && python -c "import sflock ; exit(len(sflock.supported()) != 11)" || true'
+  - '[[ $TRAVIS_OS_NAME == "linux" ]] && py.test --cov=sflock --cov-append || true'
 
 after_success:
-    - coveralls
+  - coveralls
