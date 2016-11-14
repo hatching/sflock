@@ -12,7 +12,7 @@ def f(filename):
 
 def test_msg_embedded():
     assert f("msg_invoice.msg").magic.startswith((
-        "Composite Document File V2", "CDF V2 Document"
+        "Composite Document File V2", "CDF V2 Document", "CDFV2 Microsoft",
     ))
     m = MsgFile(f("msg_invoice.msg"))
     assert m.handles() is True
