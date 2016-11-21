@@ -145,7 +145,15 @@ class File(object):
             filepath=filepath, contents=open(filepath, "rb").read(),
             relapath=relapath, filename=filename, password=password
         )
-
+    
+    @classmethod
+    def from_buffer(self, content, relapath=None, filename=None,
+                  password=None):
+        return File(
+            filepath="", contents=content,
+            relapath="", filename="", password=password
+        )
+    
     @property
     def contents(self):
         if self._contents is None and self.filepath:
