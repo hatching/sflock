@@ -146,7 +146,7 @@ class File(object):
             relapath=relapath, filename=filename, password=password
         )
     
-   @classmethod
+    @classmethod
     def from_buffer(self, content, relapath=None, filename=None,
                   password=None):
         return File(
