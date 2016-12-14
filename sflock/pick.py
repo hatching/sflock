@@ -4,7 +4,7 @@
 
 def package(f):
     """Guesses the package based on the filename and/or contents."""
-    filename = f.filename.lower()
+    filename = f.filename.lower() if f.filename else ""
 
     if "DLL" in f.magic:
         if filename.endswith(".cpl"):

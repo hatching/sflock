@@ -16,7 +16,13 @@ class AceFile(Unpacker):
 
     def unpack(self, password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()
-        filepath = os.path.abspath(self.f.filepath)
+
+        if self.f.filepath:
+            filepath = os.path.abspath(self.f.filepath)
+            temporary = False
+        else:
+            filepath = self.f.temp_path(".ace")
+            temporary = True
 
         try:
             subprocess.check_call([
@@ -26,5 +32,8 @@ class AceFile(Unpacker):
         except subprocess.CalledProcessError as e:
             self.f.mode = "failed"
             self.f.error = e
+
+        if temporary:
+            os.unlink(filepath)
 
         return self.process_directory(dirpath, duplicates)

@@ -69,6 +69,14 @@ class TestAceFile(object):
         assert t.unpacker == "acefile"
         assert t.filename == "foo"
 
+    def test_inmemory(self):
+        contents = open("tests/files/ace_plain.ace", "rb").read()
+        t = unpack(contents=contents)
+        assert t.unpacker == "acefile"
+        assert t.filename is None
+        assert t.filepath is None
+        assert len(t.children) == 1
+
     def test_garbage(self):
         t = AceFile(f("garbage.bin"))
         assert t.handles() is False

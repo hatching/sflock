@@ -6,8 +6,8 @@ import hashlib
 import ntpath
 import os.path
 import shutil
+import tempfile
 
-from sflock.exception import UnpackException
 from sflock.compat import magic
 from sflock.misc import data_file
 from sflock.pick import package
@@ -37,7 +37,7 @@ class Unpacker(object):
         return data_file("zipjail.elf")
 
     def handles(self):
-        if self.f.filename.lower().endswith(self.exts):
+        if self.f.filename and self.f.filename.lower().endswith(self.exts):
             return True
 
         if self.magic and self.magic in self.f.magic:
@@ -145,6 +145,12 @@ class File(object):
             filepath=filepath, contents=open(filepath, "rb").read(),
             relapath=relapath, filename=filename, password=password
         )
+
+    def temp_path(self, suffix=""):
+        fd, filepath = tempfile.mkstemp(suffix=suffix)
+        os.write(fd, self.contents)
+        os.close(fd)
+        return filepath
 
     @property
     def contents(self):

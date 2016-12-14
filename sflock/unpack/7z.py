@@ -2,6 +2,7 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import os
 import subprocess
 import tempfile
 
@@ -24,13 +25,23 @@ class Zip7File(Unpacker):
                 "7z calling clone(2) when a password has been provided)."
             )
 
+        if self.f.filepath:
+            filepath = self.f.filepath
+            temporary = False
+        else:
+            filepath = self.f.temp_path(".7z")
+            temporary = True
+
         try:
             subprocess.check_output([
-                self.zipjail, self.f.filepath, dirpath,
-                self.exe, "x", "-mmt=off", "-o%s" % dirpath, self.f.filepath,
+                self.zipjail, filepath, dirpath,
+                self.exe, "x", "-mmt=off", "-o%s" % dirpath, filepath,
             ])
         except subprocess.CalledProcessError as e:
             self.f.mode = "failed"
             self.f.error = e
+
+        if temporary:
+            os.unlink(filepath)
 
         return self.process_directory(dirpath, duplicates)

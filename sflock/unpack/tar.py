@@ -47,7 +47,7 @@ class TargzFile(TarFile, Unpacker):
     exts = ".tar.gz"
 
     def handles(self):
-        if self.f.filename.lower().endswith(self.exts):
+        if self.f.filename and self.f.filename.lower().endswith(self.exts):
             return True
 
         if not self.f.contents:
@@ -67,7 +67,7 @@ class Tarbz2File(TarFile, Unpacker):
     exts = ".tar.bz2"
 
     def handles(self):
-        if self.f.filename.lower().endswith(self.exts):
+        if self.f.filename and self.f.filename.lower().endswith(self.exts):
             return True
 
         if not self.f.contents:

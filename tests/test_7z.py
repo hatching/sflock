@@ -56,6 +56,14 @@ class Test7zFile(object):
         assert files[0].magic == "ASCII text"
         assert not files[0].selected
 
+    def test_inmemory(self):
+        contents = open("tests/files/7z_plain.7z", "rb").read()
+        t = unpack(contents=contents)
+        assert t.unpacker == "7zfile"
+        assert t.filename is None
+        assert t.filepath is None
+        assert len(t.children) == 1
+
     """
     def test_zip_encrypted(self):
         assert "7-zip archive" in f("7z_encrypted.7z").magic

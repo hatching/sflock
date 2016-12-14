@@ -91,6 +91,14 @@ class TestRarFile:
         assert t.unpacker == "rarfile"
         assert t.filename == "foo"
 
+    def test_inmemory(self):
+        contents = open("tests/files/rar_plain.rar", "rb").read()
+        t = unpack(contents=contents)
+        assert t.unpacker == "rarfile"
+        assert t.filename is None
+        assert t.filepath is None
+        assert len(t.children) == 1
+
     def test_garbage(self):
         t = RarFile(f("garbage.bin"))
         assert t.handles() is False

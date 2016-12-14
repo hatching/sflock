@@ -26,7 +26,7 @@ def supported():
                 ret.extend(plugin.exts)
     return ret
 
-def unpack(filepath, contents=None, password=None, filename=None,
+def unpack(filepath=None, contents=None, password=None, filename=None,
            duplicates=None):
     """Unpacks the file or contents provided."""
     if contents:
