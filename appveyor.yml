@@ -4,10 +4,13 @@ environment:
 
 install:
   - "%PYTHON%/Python.exe setup.py develop"
-  - "%PYTHON%/Scripts/pip.exe install pytest"
+  - "%PYTHON%/Scripts/pip.exe install pytest pytest-cov codecov"
 
 build: false
 
 test_script:
   - '%PYTHON%/Python.exe -c "import sflock ; exit(len(sflock.supported()) != 8)"'
-  - '%PYTHON%/Scripts/pytest.exe -vv'
+  - '%PYTHON%/Scripts/pytest.exe --cov=sflock'
+
+after_test:
+  - "codecov.exe"

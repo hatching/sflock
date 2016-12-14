@@ -9,7 +9,7 @@ matrix:
 
 install:
   - python setup.py develop
-  - pip install pytest pytest-cov coveralls
+  - pip install pytest pytest-cov codecov coveralls
   - |
     if [[ $TRAVIS_OS_NAME == "osx" ]]; then
       brew update || brew update
@@ -33,4 +33,5 @@ script:
   - '[[ $TRAVIS_OS_NAME == "linux" ]] && py.test --cov=sflock --cov-append || true'
 
 after_success:
+  - codecov
   - coveralls
