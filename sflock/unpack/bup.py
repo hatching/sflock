@@ -1,4 +1,4 @@
-# Copyright (C) 2016 Jurriaan Bremer.
+# Copyright (C) 2016-2017 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -23,7 +23,7 @@ class BupFile(Unpacker):
         entries = []
 
         try:
-            ole = olefile.OleFileIO(io.BytesIO(self.f.contents))
+            ole = olefile.OleFileIO(self.f.stream)
         except IOError as e:
             self.f.mode = "failed"
             self.f.error = e

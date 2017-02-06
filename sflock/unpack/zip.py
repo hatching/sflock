@@ -1,8 +1,7 @@
-# Copyright (C) 2015-2016 Jurriaan Bremer.
+# Copyright (C) 2015-2017 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
-import io
 import zipfile
 
 from sflock.abstracts import File, Unpacker
@@ -63,7 +62,7 @@ class ZipFile(Unpacker):
 
     def unpack(self, password=None, duplicates=None):
         try:
-            archive = zipfile.ZipFile(io.BytesIO(self.f.contents))
+            archive = zipfile.ZipFile(self.f.stream)
         except zipfile.BadZipfile as e:
             self.f.mode = "failed"
             self.f.error = e

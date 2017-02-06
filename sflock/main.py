@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2016 Jurriaan Bremer.
+# Copyright (C) 2015-2017 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -56,7 +56,9 @@ def zipify(f, password=None):
     z = zipfile.ZipFile(r, "w")
 
     for child in f.children:
-        z.writestr(child.relapath, child.contents)
+        filepath = child.temp_path()
+        z.write(filepath, child.relapath)
+        os.unlink(filepath)
 
     if password:
         ret = zip_set_password(z, password)

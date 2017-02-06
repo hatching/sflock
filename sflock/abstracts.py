@@ -1,8 +1,9 @@
-# Copyright (C) 2015-2016 Jurriaan Bremer.
+# Copyright (C) 2015-2017 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 import hashlib
+import io
 import ntpath
 import os.path
 import shutil
@@ -90,10 +91,10 @@ class Unpacker(object):
         for dirpath2, dirnames, filepaths in os.walk(dirpath):
             for filepath in filepaths:
                 filepath = os.path.join(dirpath2, filepath)
-                f = File.from_path(
-                    filepath=filepath,
+                f = File(
                     relapath=filepath[len(dirpath)+1:],
-                    password=password
+                    password=password,
+                    contents=open(filepath, "rb").read()
                 )
 
                 entries.append(f)
@@ -112,7 +113,7 @@ class File(object):
 
     def __init__(self, filepath=None, contents=None, relapath=None,
                  filename=None, mode=None, password=None, description=None,
-                 selected=None):
+                 selected=None, stream=None):
         self.filepath = filepath
         self.relapath = relapath
         self.mode = mode
@@ -137,19 +138,19 @@ class File(object):
         self._magic = None
         self._mime_human = None
         self._magic_human = None
+        self._stream = stream
 
     @classmethod
     def from_path(self, filepath, relapath=None, filename=None,
                   password=None):
         return File(
-            filepath=filepath, contents=open(filepath, "rb").read(),
+            filepath=filepath, stream=open(filepath, "rb"),
             relapath=relapath, filename=filename, password=password
         )
 
     def temp_path(self, suffix=""):
         fd, filepath = tempfile.mkstemp(suffix=suffix)
-        os.write(fd, self.contents)
-        os.close(fd)
+        shutil.copyfileobj(self.stream, os.fdopen(fd, "wb"))
         return filepath
 
     @property
@@ -159,21 +160,36 @@ class File(object):
         return self._contents
 
     @property
+    def stream(self):
+        if not self._stream:
+            return io.BytesIO(self.contents)
+
+        self._stream.seek(0)
+        return self._stream
+
+    @property
     def sha256(self):
         if not self._sha256:
-            self._sha256 = hashlib.sha256(self.contents or "").hexdigest()
+            h, s, buf = hashlib.sha256(), self.stream, True
+            while buf:
+                buf = s.read(0x10000)
+                h.update(buf)
+
+            self._sha256 = h.hexdigest()
         return self._sha256
 
     @property
     def magic(self):
-        if not self._magic and self.contents:
-            self._magic = magic.from_buffer(self.contents)
+        if not self._magic and self.filesize:
+            self._magic = magic.from_buffer(self.stream.read(1024*1024))
         return self._magic or ""
 
     @property
     def mime(self):
-        if not self._mime and self.contents:
-            self._mime = magic.from_buffer(self.contents, mime=True)
+        if not self._mime and self.filesize:
+            self._mime = magic.from_buffer(
+                self.stream.read(1024*1024), mime=True
+            )
         return self._mime or ""
 
     @property
@@ -212,7 +228,9 @@ class File(object):
 
     @property
     def filesize(self):
-        return len(self.contents) if self.contents else 0
+        s = self.stream
+        s.seek(0, os.SEEK_END)
+        return s.tell()
 
     @property
     def package(self):
@@ -308,10 +326,10 @@ class File(object):
                 continue
 
             filepath = os.path.join(dirpath, child.filename)
-            open(filepath, "wb").write(child.contents or "")
+            shutil.copyfileobj(child.stream, open(filepath, "wb"), 1024*1024)
             child.extract(dirpath)
 
-    def read(self, relapath):
+    def read(self, relapath, stream=False):
         """Extract a single file from a possibly nested archive. See also the
         `extrpath` field of an embedded document."""
         if isinstance(relapath, basestring):
@@ -322,4 +340,4 @@ class File(object):
             if child.relapath == relapath:
                 if nextpath:
                     return child.read(nextpath)
-                return child.contents
+                return child.stream if stream else child.contents

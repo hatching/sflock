@@ -1,4 +1,4 @@
-# Copyright (C) 2016 Jurriaan Bremer.
+# Copyright (C) 2016-2017 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -18,6 +18,7 @@ def test_bup_plain():
     files = list(t.unpack())
 
     assert len(files) == 1
+    assert not files[0].filepath
     assert files[0].relapath == "efax_9057733019_pdf.zip"
     assert "Zip archive" in files[0].magic
     assert files[0].parentdirs == []
@@ -25,6 +26,7 @@ def test_bup_plain():
     assert not files[0].selected
 
     assert len(files[0].children) == 1
+    assert not files[0].children[0].filepath
     assert files[0].children[0].relapath == "efax_9057733019_pdf.scr"
     assert files[0].children[0].filesize == 377856
     assert files[0].children[0].package == "exe"

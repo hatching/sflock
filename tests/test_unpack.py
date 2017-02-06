@@ -1,4 +1,4 @@
-# Copyright (C) 2016 Jurriaan Bremer.
+# Copyright (C) 2016-2017 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -313,3 +313,8 @@ def test_read2():
     assert len(f.read([
         "oledata.mso", "Firefox Setup Stub 43.0.1.exe",
     ])) == 249336
+
+def test_read_stream():
+    f = unpack("tests/files/bup_test.bup")
+    s = f.read("efax_9057733019_pdf.zip", stream=True)
+    assert len(s.read()) == 212663

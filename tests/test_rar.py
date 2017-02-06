@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2016 Jurriaan Bremer.
+# Copyright (C) 2015-2017 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -20,6 +20,7 @@ class TestRarFile:
         assert not t.f.selected
         files = list(t.unpack())
         assert len(files) == 1
+        assert not files[0].filepath
         assert files[0].relapath == "bar.txt"
         assert files[0].contents == "hello world\n"
         assert files[0].magic == "ASCII text"

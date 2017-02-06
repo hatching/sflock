@@ -1,4 +1,4 @@
-# Copyright (C) 2016 Jurriaan Bremer.
+# Copyright (C) 2016-2017 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -16,6 +16,7 @@ def test_eml_tar_nested2():
     files = list(t.unpack())
 
     assert len(files) == 1
+    assert not files[0].filepath
     assert files[0].relapath == "tar_nested2.tar"
     assert "POSIX tar" in files[0].magic
     assert not files[0].selected
@@ -34,16 +35,19 @@ def test_eml_nested_eml():
     files = list(t.unpack())
     assert len(files) == 2
 
+    assert not files[0].filepath
     assert files[0].relapath == "multipart.eml"
     assert "ASCII text" in files[0].magic
     assert len(files[0].children) == 2
     assert not files[0].selected
 
+    assert not files[0].children[0].filepath
     assert files[0].children[0].relapath == u"\u60e1\u610f\u8edf\u9ad4.doc"
     assert files[0].children[0].filesize == 12
     assert files[0].children[0].package == "doc"
     assert files[0].children[0].selected is True
 
+    assert not files[0].children[1].filepath
     assert files[0].children[1].relapath == "cuckoo.png"
     assert files[0].children[1].filesize == 11970
     assert files[0].children[1].package is None

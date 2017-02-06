@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2016 Jurriaan Bremer.
+# Copyright (C) 2015-2017 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -17,6 +17,7 @@ class TestZipfile(object):
         assert not z.f.selected
         files = list(z.unpack())
         assert len(files) == 1
+        assert not files[0].filepath
         assert files[0].relapath == "sflock.txt"
         assert files[0].contents == "sflock_plain_zip\n"
         assert files[0].password is None

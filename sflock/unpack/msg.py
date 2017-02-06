@@ -1,10 +1,8 @@
-# Copyright (C) 2016 Jurriaan Bremer.
+# Copyright (C) 2016-2017 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
-import io
 import olefile
-import os.path
 
 from sflock.abstracts import Unpacker, File
 
@@ -41,7 +39,7 @@ class MsgFile(Unpacker):
         seen, entries = [], []
 
         try:
-            self.ole = olefile.OleFileIO(io.BytesIO(self.f.contents))
+            self.ole = olefile.OleFileIO(self.f.stream)
         except IOError as e:
             self.f.mode = "failed"
             self.f.error = e

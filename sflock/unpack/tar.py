@@ -1,10 +1,9 @@
-# Copyright (C) 2015-2016 Jurriaan Bremer.
+# Copyright (C) 2015-2017 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 import bz2
 import gzip
-import io
 import tarfile
 
 from sflock.abstracts import Unpacker, File
@@ -20,9 +19,7 @@ class TarFile(Unpacker):
 
     def unpack(self, password=None, duplicates=None):
         try:
-            archive = tarfile.open(
-                mode=self.mode, fileobj=io.BytesIO(self.f.contents)
-            )
+            archive = tarfile.open(mode=self.mode, fileobj=self.f.stream)
         except tarfile.ReadError as e:
             self.f.mode = "failed"
             self.f.error = e
@@ -50,12 +47,11 @@ class TargzFile(TarFile, Unpacker):
         if self.f.filename and self.f.filename.lower().endswith(self.exts):
             return True
 
-        if not self.f.contents:
+        if not self.f.filesize:
             return False
 
         try:
-            contents = gzip.GzipFile(fileobj=io.BytesIO(self.f.contents))
-            f = File(contents=contents.read())
+            f = File(contents=gzip.GzipFile(fileobj=self.f.stream).read())
         except IOError:
             return False
 
@@ -70,7 +66,7 @@ class Tarbz2File(TarFile, Unpacker):
         if self.f.filename and self.f.filename.lower().endswith(self.exts):
             return True
 
-        if not self.f.contents:
+        if not self.f.filesize:
             return False
 
         try:
