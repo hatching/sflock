@@ -1,1 +1,3 @@
 python-magic
+click
+olefile
