@@ -43,6 +43,18 @@ class ZipFile(Unpacker):
                 contents=archive.read(entry),
                 password=password
             )
+        except NotImplementedError as nae:
+            # Deflate64
+            # Instead of throwing an UnpackException return failed.
+            # TODO: 7z supports this format, so pick could be updated to detect this
+            #       compression type and use the 7z unpacker instead.
+            #
+            if "compression type 9" in nae.args[0]:
+                return File(
+                    relapath=entry.filename,
+                    mode="failed",
+                    description="%s" % nae
+                )
         except RuntimeError as e:
             if "password required" not in e.args[0] and \
                     "Bad password" not in e.args[0]:

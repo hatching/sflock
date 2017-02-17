@@ -130,3 +130,13 @@ class TestZipfile(object):
         assert len(files) == 1
         assert not files[0].children
         assert files[0].mode == "failed"
+
+    def test_deflate64(self):
+        t = ZipFile(f("zip_deflate64.zip"))
+        assert t.handles() is True
+        assert not t.f.selected
+        files = t.unpack()
+        assert len(files) == 1
+        assert not files[0].children
+        assert files[0].mode == "failed"
+
