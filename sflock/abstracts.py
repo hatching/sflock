@@ -275,13 +275,12 @@ class File(object):
             "selected": self.selected,
         }
 
-    def astree(self, finger=True):
+    def astree(self, finger=True, sanitize=False):
         ret = {
             "duplicate": self.duplicate,
             "password": self.password,
             "filename": self.filename,
             "relapath": self.relapath,
-            "filepath": self.filepath,
             "extrpath": self.extrpath,
             "size": self.filesize,
             "package": self.package,
@@ -289,6 +288,9 @@ class File(object):
             "type": "container" if self.children else "file",
             "children": [],
         }
+
+        if not sanitize:
+            ret["filepath"] = self.filepath
 
         if finger:
             ret["finger"] = {
@@ -314,7 +316,7 @@ class File(object):
             entry = ret["children"]
             for part in child.parentdirs:
                 entry = findentry(entry, part)["children"]
-            entry.append(child.astree(finger=finger))
+            entry.append(child.astree(finger=finger, sanitize=sanitize))
 
         return ret
 

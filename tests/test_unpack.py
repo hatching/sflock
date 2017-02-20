@@ -267,6 +267,22 @@ def test_astree4():
         ],
     }
 
+def test_astree_sanitize():
+    f = unpack("tests/files/msg_invoice.msg")
+    obj = f.astree(sanitize=False)
+    assert "filepath" in obj
+    assert "filepath" in obj["children"][0]
+    assert "filepath" in obj["children"][1]
+    assert "filepath" in obj["children"][2]
+    assert "filepath" in obj["children"][2]["children"][0]
+
+    obj = f.astree(sanitize=True)
+    assert "filepath" not in obj
+    assert "filepath" not in obj["children"][0]
+    assert "filepath" not in obj["children"][1]
+    assert "filepath" not in obj["children"][2]
+    assert "filepath" not in obj["children"][2]["children"][0]
+
 def test_extract1():
     unpack("tests/files/tar_plain.tar").extract(tempfile.gettempdir())
     filepath = os.path.join(tempfile.gettempdir(), "sflock.txt")
