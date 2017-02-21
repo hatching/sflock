@@ -3,7 +3,10 @@
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 import hashlib
+import io
+import zipfile
 
+from sflock import unpack, zipify
 from sflock.abstracts import File
 from sflock.unpack import MsgFile
 
@@ -49,6 +52,22 @@ def test_msg_embedded():
     assert hashlib.md5(
         files[2].children[0].contents
     ).hexdigest() == "c8cd8eb88f1848cf456725d67baaaa35"
+
+def test_msg_nullbyte():
+    f = unpack("tests/files/ole_nullbyte.zip")
+    assert len(f.children) == 1
+    assert len(f.children[0].children) == 2
+
+    ole = f.children[0]
+    assert ole.filename == "You have recevied a message.msg"
+    assert f.read(ole.extrpath) == ole.contents
+
+    doc = ole.children[0]
+    assert doc.filename == "eFax_document-4631559.doc"
+    assert doc.relapath == "eFax_document-4631559.doc\x00"
+
+    z = zipfile.ZipFile(io.BytesIO(zipify(ole)))
+    assert z.read("eFax_document-4631559.doc") == doc.contents
 
 def test_garbage():
     m = MsgFile(f("garbage.bin"))

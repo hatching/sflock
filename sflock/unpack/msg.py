@@ -21,10 +21,12 @@ class MsgFile(Unpacker):
         ascii_filename = "%s001E" % "/".join(filename)
         unicode_filename = "%s001F" % "/".join(filename)
 
-        return (
-            self.get_stream(unicode_filename).decode("utf16") or
-            self.get_stream(ascii_filename)
-        )
+        # If available, the unicode stream takes precedence.
+        stream = self.get_stream(unicode_filename)
+        if stream:
+            return stream.decode("utf16")
+
+        return self.get_stream(ascii_filename)
 
     def get_attachment(self, dirname):
         filename = (
