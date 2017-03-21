@@ -5,7 +5,7 @@
 import os.path
 import tempfile
 
-from sflock.main import unpack
+from sflock.main import unpack, supported
 
 def test_unpack1():
     f = unpack("tests/files/tar_plain.tar")
@@ -345,6 +345,9 @@ def test_duplicate1():
     ).duplicate is True
 
 def test_duplicate2():
+    if ".7z" not in supported():
+        return
+
     duplicates = []
     assert unpack(
         "tests/files/7z_plain.7z", duplicates=duplicates
