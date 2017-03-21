@@ -82,7 +82,8 @@ class Unpacker(object):
         """Enumerates a directory, removes the directory, and returns data
         after calling the process function."""
         entries = []
-        duplicates = duplicates or []
+        if duplicates is None:
+            duplicates = []
 
         if not os.listdir(dirpath):
             self.f.mode = "failed"

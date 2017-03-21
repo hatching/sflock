@@ -343,3 +343,12 @@ def test_duplicate1():
     assert unpack(
         "tests/files/garbage.bin", duplicates=duplicates
     ).duplicate is True
+
+def test_duplicate2():
+    duplicates = []
+    assert unpack(
+        "tests/files/7z_plain.7z", duplicates=duplicates
+    ).children[0].duplicate is False
+    assert unpack(
+        "tests/files/7z_nested.7z", duplicates=duplicates
+    ).children[0].duplicate is True
