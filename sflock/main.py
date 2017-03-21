@@ -29,13 +29,18 @@ def supported():
 def unpack(filepath=None, contents=None, password=None, filename=None,
            duplicates=None):
     """Unpacks the file or contents provided."""
+    if duplicates is None:
+        duplicates = []
+
     if contents:
         f = File(filepath, contents, filename=filename)
     else:
         f = File.from_path(filepath, filename=filename)
 
-    if duplicates is None:
-        duplicates = []
+    if f.sha256 not in duplicates:
+        duplicates.append(f.sha256)
+    else:
+        f.duplicate = True
 
     # Determine how we're going to unpack this file (if at all). It may not
     # have a file extension, e.g., when its filename is a hash. In those cases

@@ -334,3 +334,12 @@ def test_read_stream():
     f = unpack("tests/files/bup_test.bup")
     s = f.read("efax_9057733019_pdf.zip", stream=True)
     assert len(s.read()) == 212663
+
+def test_duplicate1():
+    duplicates = []
+    assert unpack(
+        "tests/files/garbage.bin", duplicates=duplicates
+    ).duplicate is False
+    assert unpack(
+        "tests/files/garbage.bin", duplicates=duplicates
+    ).duplicate is True
