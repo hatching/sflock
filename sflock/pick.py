@@ -1,10 +1,27 @@
-# Copyright (C) 2016 Jurriaan Bremer.
+# Copyright (C) 2016-2017 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
+
+doc_ext = (
+    ".rtf", ".doc", ".docx", ".docm", ".dot", ".dotx", ".docb", ".mht",
+    ".mso",
+)
+doc_hdr = (
+    "\x7b\x5c\x72\x74",
+)
+xls_ext = (
+    ".xls", ".xlsx", ".xlm", ".xlt", ".xltx", ".xlsm", ".xltm", ".xlsb",
+    ".xla", ".xlam", ".xll", ".xlw",
+)
+ppt_ext = (
+    ".ppt", ".pptx", ".pps", ".ppsx", ".pptm", ".potm", ".potx", ".ppsm",
+    ".pot", ".ppam", ".sldx", ".sldm",
+)
 
 def package(f):
     """Guesses the package based on the filename and/or contents."""
     filename = f.filename.lower() if f.filename else ""
+    header = f.stream.read(0x1000)
 
     if "DLL" in f.magic:
         if filename.endswith(".cpl"):
@@ -18,18 +35,13 @@ def package(f):
     if "PDF" in f.magic or filename.endswith(".pdf"):
         return "pdf"
 
-    if filename.endswith((".rtf", ".doc", ".docx", ".docm", ".dot",
-                          ".dotx", ".docb", ".mht", ".mso")):
+    if filename.endswith(doc_ext):
         return "doc"
 
-    if filename.endswith((".xls", ".xlsx", ".xlm", ".xlsx", ".xlt",
-                          ".xltx", ".xlsm", ".xltm", ".xlsb", ".xla",
-                          ".xlam", ".xll", ".xlw")):
+    if filename.endswith(xls_ext):
         return "xls"
 
-    if filename.endswith((".ppt", ".pptx", ".pps", ".ppsx", ".pptm",
-                          ".potm", ".potx", ".ppsm", ".pot", ".ppam",
-                          ".sldx", ".sldm")):
+    if filename.endswith(ppt_ext):
         return "ppt"
 
     if filename.endswith(".pub"):
@@ -40,6 +52,9 @@ def package(f):
     if "Rich Text Format" in f.magic or \
             "Microsoft Word" in f.magic or \
             "Microsoft Office Word" in f.magic:
+        return "doc"
+
+    if header.startswith(doc_hdr):
         return "doc"
 
     if "Microsoft Office Excel" in f.magic or \

@@ -1,4 +1,4 @@
-# Copyright (C) 2016 Jurriaan Bremer.
+# Copyright (C) 2016-2017 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -8,6 +8,9 @@ from sflock import unpack
 
 def test_attributes():
     for filename in os.listdir("tests/files"):
+        if os.path.isdir("tests/files/%s" % filename):
+            continue
+
         if "encrypted" in filename:
             continue
 
