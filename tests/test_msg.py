@@ -65,9 +65,10 @@ def test_msg_nullbyte():
     doc = ole.children[0]
     assert doc.filename == "eFax_document-4631559.doc"
     assert doc.relapath == "eFax_document-4631559.doc\x00"
+    assert doc.relaname == "eFax_document-4631559.doc"
 
     z = zipfile.ZipFile(io.BytesIO(zipify(ole)))
-    assert z.read("eFax_document-4631559.doc") == doc.contents
+    assert z.read(doc.relaname) == doc.contents
 
 def test_garbage():
     m = MsgFile(f("garbage.bin"))

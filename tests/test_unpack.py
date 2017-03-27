@@ -16,12 +16,14 @@ def test_unpack2():
     f = unpack("tests/files/tar_nested.tar.bz2")
     assert len(f.children) == 1
     assert f.children[0].relapath == "foo/bar.txt"
+    assert f.children[0].relaname == "foo/bar.txt"
     assert f.children[0].contents == "hello world\n"
 
 def test_unpack3():
     f = unpack("tests/files/zip_nested2.zip")
     assert len(f.children) == 1
     assert f.children[0].relapath == "deepfoo/foo/bar.txt"
+    assert f.children[0].relaname == "deepfoo/foo/bar.txt"
     assert f.children[0].contents == "hello world\n"
 
 def test_unpack4():
@@ -35,6 +37,7 @@ def test_astree1():
         "password": None,
         "filename": "zip_nested2.zip",
         "relapath": None,
+        "relaname": None,
         "filepath": "tests/files/zip_nested2.zip",
         "extrpath": [],
         "size": 496,
@@ -53,8 +56,11 @@ def test_astree1():
                             {
                                 "filename": "bar.txt",
                                 "relapath": "deepfoo/foo/bar.txt",
+                                "relaname": "deepfoo/foo/bar.txt",
                                 "filepath": None,
-                                "extrpath": ["deepfoo/foo/bar.txt"],
+                                "extrpath": [
+                                    "deepfoo/foo/bar.txt",
+                                ],
                                 "duplicate": False,
                                 "password": None,
                                 "size": 12,
@@ -77,6 +83,7 @@ def test_astree2():
         "duplicate": False,
         "filename": "eml_tar_nested2.eml",
         "relapath": None,
+        "relaname": None,
         "filepath": "tests/files/eml_tar_nested2.eml",
         "extrpath": [],
         "size": 15035,
@@ -89,10 +96,13 @@ def test_astree2():
                 "type": "container",
                 "password": None,
                 "duplicate": False,
-                "filename": u"tar_nested2.tar",
-                "relapath": u"tar_nested2.tar",
+                "filename": "tar_nested2.tar",
+                "relapath": "tar_nested2.tar",
+                "relaname": "tar_nested2.tar",
                 "filepath": None,
-                "extrpath": ["tar_nested2.tar"],
+                "extrpath": [
+                    "tar_nested2.tar",
+                ],
                 "package": None,
                 "selected": False,
                 "size": 10240,
@@ -115,8 +125,12 @@ def test_astree2():
                                         "selected": False,
                                         "filename": "bar.txt",
                                         "relapath": "deepfoo/foo/bar.txt",
+                                        "relaname": "deepfoo/foo/bar.txt",
                                         "filepath": None,
-                                        "extrpath": ["tar_nested2.tar", "deepfoo/foo/bar.txt"],
+                                        "extrpath": [
+                                            "tar_nested2.tar",
+                                            "deepfoo/foo/bar.txt",
+                                        ],
                                     },
                                 ],
                             },
@@ -133,6 +147,7 @@ def test_astree3():
         "duplicate": False,
         "filename": "eml_nested_eml.eml",
         "relapath": None,
+        "relaname": None,
         "filepath": "tests/files/eml_nested_eml.eml",
         "extrpath": [],
         "package": None,
@@ -143,10 +158,13 @@ def test_astree3():
         "children": [
             {
                 "duplicate": False,
-                "filename": u"multipart.eml",
-                "relapath": u"multipart.eml",
+                "filename": "multipart.eml",
+                "relapath": "multipart.eml",
+                "relaname": "multipart.eml",
                 "filepath": None,
-                "extrpath": [u"multipart.eml"],
+                "extrpath": [
+                    "multipart.eml",
+                ],
                 "package": None,
                 "selected": False,
                 "password": None,
@@ -157,8 +175,12 @@ def test_astree3():
                         "duplicate": False,
                         "filename": u"\u60e1\u610f\u8edf\u9ad4.doc",
                         "relapath": u"\u60e1\u610f\u8edf\u9ad4.doc",
+                        "relaname": u"\u60e1\u610f\u8edf\u9ad4.doc",
                         "filepath": None,
-                        "extrpath": [u"multipart.eml", u"\u60e1\u610f\u8edf\u9ad4.doc"],
+                        "extrpath": [
+                            "multipart.eml",
+                            u"\u60e1\u610f\u8edf\u9ad4.doc",
+                        ],
                         "package": "doc",
                         "selected": True,
                         "password": None,
@@ -168,10 +190,14 @@ def test_astree3():
                     },
                     {
                         "duplicate": False,
-                        "filename": u"cuckoo.png",
-                        "relapath": u"cuckoo.png",
+                        "filename": "cuckoo.png",
+                        "relapath": "cuckoo.png",
+                        "relaname": "cuckoo.png",
                         "filepath": None,
-                        "extrpath": [u"multipart.eml", u"cuckoo.png"],
+                        "extrpath": [
+                            "multipart.eml",
+                            "cuckoo.png",
+                        ],
                         "package": None,
                         "selected": False,
                         "password": None,
@@ -185,8 +211,11 @@ def test_astree3():
                 "duplicate": True,
                 "filename": "att1",
                 "relapath": "att1",
+                "relaname": "att1",
                 "filepath": None,
-                "extrpath": ["att1"],
+                "extrpath": [
+                    "att1",
+                ],
                 "package": None,
                 "selected": False,
                 "password": None,
@@ -202,6 +231,7 @@ def test_astree4():
     assert f.astree(finger=False) == {
         "filename": "msg_invoice.msg",
         "relapath": None,
+        "relaname": None,
         "filepath": "tests/files/msg_invoice.msg",
         "extrpath": [],
         "size": 270848,
@@ -213,10 +243,13 @@ def test_astree4():
         "children": [
             {
                 "duplicate": False,
-                "filename": u"image003.emz",
-                "relapath": u"image003.emz",
+                "filename": "image003.emz",
+                "relapath": "image003.emz",
+                "relaname": "image003.emz",
                 "filepath": None,
-                "extrpath": ["image003.emz"],
+                "extrpath": [
+                    "image003.emz",
+                ],
                 "package": None,
                 "selected": False,
                 "password": None,
@@ -226,10 +259,13 @@ def test_astree4():
             },
             {
                 "duplicate": False,
-                "filename": u"image004.png",
-                "relapath": u"image004.png",
+                "filename": "image004.png",
+                "relapath": "image004.png",
+                "relaname": "image004.png",
                 "filepath": None,
-                "extrpath": ["image004.png"],
+                "extrpath": [
+                    "image004.png",
+                ],
                 "package": None,
                 "selected": False,
                 "password": None,
@@ -239,10 +275,13 @@ def test_astree4():
             },
             {
                 "duplicate": False,
-                "filename": u"oledata.mso",
-                "relapath": u"oledata.mso",
+                "filename": "oledata.mso",
+                "relapath": "oledata.mso",
+                "relaname": "oledata.mso",
                 "filepath": None,
-                "extrpath": ["oledata.mso"],
+                "extrpath": [
+                    "oledata.mso",
+                ],
                 "package": "doc",
                 "selected": True,
                 "password": None,
@@ -253,8 +292,12 @@ def test_astree4():
                         "duplicate": False,
                         "filename": "Firefox Setup Stub 43.0.1.exe",
                         "relapath": "Firefox Setup Stub 43.0.1.exe",
+                        "relaname": "Firefox Setup Stub 43.0.1.exe",
                         "filepath": None,
-                        "extrpath": ["oledata.mso", "Firefox Setup Stub 43.0.1.exe"],
+                        "extrpath": [
+                            "oledata.mso",
+                            "Firefox Setup Stub 43.0.1.exe",
+                        ],
                         "package": "exe",
                         "selected": False,
                         "password": None,

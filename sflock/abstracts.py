@@ -253,10 +253,15 @@ class File(object):
             child = child.parent
         return ret
 
+    @property
+    def relaname(self):
+        return self.relapath.rstrip("\x00") if self.relapath else None
+
     def to_dict(self):
         return {
             "filename": self.filename,
             "relapath": self.relapath,
+            "relaname": self.relaname,
             "filepath": self.filepath,
             "extrpath": self.extrpath,
             "parentdirs": self.parentdirs,
@@ -282,6 +287,7 @@ class File(object):
             "password": self.password,
             "filename": self.filename,
             "relapath": self.relapath,
+            "relaname": self.relaname,
             "extrpath": self.extrpath,
             "size": self.filesize,
             "package": self.package,
