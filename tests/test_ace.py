@@ -70,6 +70,13 @@ class TestAceFile(object):
         assert t.unpacker == "acefile"
         assert t.filename == "foo"
 
+    def test_doubledot(self):
+        files = list(AceFile(f("ace_doubledot.ace")).unpack())
+        assert len(files) == 1
+        assert files[0].filename == (
+            "Procurement commercial terms & conditions..exe"
+        )
+
     def test_inmemory(self):
         contents = open("tests/files/ace_plain.ace", "rb").read()
         t = unpack(contents=contents)
