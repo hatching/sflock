@@ -2,8 +2,10 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import io
 import os.path
 import tempfile
+import zipfile
 
 from sflock.main import unpack, supported
 
@@ -351,6 +353,37 @@ def test_extract3():
     f.extract(dirpath, "efax_9057733019_pdf.scr")
     filepath = os.path.join(dirpath, "efax_9057733019_pdf.scr")
     assert len(open(filepath, "rb").read()) == 377856
+
+def test_extract4_nopreserve():
+    buf = io.BytesIO()
+    z = zipfile.ZipFile(buf, "w")
+    z.writestr("thisisfilename", "B"*1024)
+    z.close()
+    f = unpack(contents=buf.getvalue().replace(
+        "thisisfilename", "/absolute/path"
+    ))
+    dirpath = tempfile.mkdtemp()
+    f.extract(dirpath, preserve=True)
+
+    filepath = os.path.join(dirpath, "absolute", "path")
+    assert os.path.exists(filepath)
+    assert open(filepath, "rb").read() == "B"*1024
+
+def test_extract5_relative():
+    buf = io.BytesIO()
+    z = zipfile.ZipFile(buf, "w")
+    z.writestr("foobarfilename", "A"*1024)
+    z.writestr("thisisfilename", "B"*1024)
+    z.close()
+    f = unpack(contents=buf.getvalue().replace(
+        "thisisfilename", "/../../../rela"
+    ))
+    dirpath = tempfile.mkdtemp()
+    f.extract(dirpath, preserve=True)
+    assert len(os.listdir(dirpath)) == 1
+
+    filepath = os.path.join(dirpath, "foobarfilename")
+    assert open(filepath, "rb").read() == "A"*1024
 
 def test_duplicate():
     duplicates = []

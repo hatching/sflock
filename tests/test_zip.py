@@ -2,6 +2,9 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import io
+import zipfile
+
 from sflock.abstracts import File
 from sflock.main import unpack
 from sflock.unpack import ZipFile
@@ -130,3 +133,18 @@ class TestZipfile(object):
         assert len(files) == 1
         assert not files[0].children
         assert files[0].mode == "failed"
+
+    def test_absolute_path(self):
+        buf = io.BytesIO()
+        z = zipfile.ZipFile(buf, "w")
+        z.writestr("thisisfilename", "A"*1024)
+        z.close()
+        f = unpack(contents=buf.getvalue().replace(
+            "thisisfilename", "/absolute/path"
+        ))
+        assert len(f.children) == 1
+        assert f.children[0].filename == "path"
+        assert f.children[0].relapath == "/absolute/path"
+        assert f.children[0].relaname == "absolute/path"
+        assert f.children[0].contents == "A"*1024
+        assert f.read("/absolute/path") == "A"*1024

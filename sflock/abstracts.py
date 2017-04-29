@@ -255,7 +255,11 @@ class File(object):
 
     @property
     def relaname(self):
-        return self.relapath.rstrip("\x00") if self.relapath else None
+        if not self.relapath:
+            return
+        # TODO Strip absolute paths for Windows.
+        # TODO Normalize relative paths.
+        return self.relapath.lstrip("\\/").rstrip("\x00")
 
     def to_dict(self):
         return {
@@ -327,16 +331,27 @@ class File(object):
 
         return ret
 
-    def extract(self, dirpath, filename=None):
+    def extract(self, dirpath, filename=None, preserve=False):
         """Extract one or all files into a directory, note that directory
-        hierarchy is not preserved with this function."""
+        hierarchy is by default not preserved with this function."""
         for child in self.children:
             if filename and child.relapath != filename:
                 continue
 
-            filepath = os.path.join(dirpath, child.filename)
+            if not preserve:
+                filepath = os.path.join(dirpath, child.filename)
+            else:
+                filepath = os.path.abspath(os.path.join(
+                    dirpath, child.relaname
+                ))
+                # Avoid path traversal.
+                if not filepath.startswith(dirpath):
+                    continue
+                if not os.path.exists(os.path.dirname(filepath)):
+                    os.mkdir(os.path.dirname(filepath))
+
             shutil.copyfileobj(child.stream, open(filepath, "wb"), 1024*1024)
-            child.extract(dirpath)
+            child.extract(dirpath, preserve=preserve)
 
     def read(self, relapath, stream=False):
         """Extract a single file from a possibly nested archive. See also the
