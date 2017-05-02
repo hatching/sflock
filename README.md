@@ -25,7 +25,7 @@ following packages alongside sflock. It is currently not possible to run the
 unpackers that require native tooling support on non-Linux platforms.
 
 ```bash
-$ sudo apt-get install p7zip-full rar unace-nonfree
+$ sudo apt-get install p7zip-full rar unace-nonfree cabextract
 ```
 
 Installation of sflock itself may be done as follows.
@@ -51,7 +51,8 @@ https://github.com/ahupp/python-magic#dependencies.
 To simplify the setup phase, sflock ships the required 32-bit binaries to use
 libmagic under Windows and as such Windows support works flawlessly.
 
-Note: on Windows the `7z`, `ace`, and `.rar` file formats are not supported.
+Note: on Windows the `7z`, `ace`, `cab`, and `rar` file formats are not
+supported.
 
 Installation (Mac OS X)
 =======================
@@ -65,7 +66,8 @@ $ brew update
 $ brew install libmagic
 ```
 
-Note: on Mac OS X the `7z`, `ace`, and `.rar` file formats are not supported.
+Note: on Mac OS X the `7z`, `ace`, `cab`, and `rar` file formats are not
+supported.
 
 Supported archives
 ==================
@@ -75,6 +77,7 @@ SFlock supports a number of (semi-)archive types, sorted by extension:
 * .7z (7-Zip archive, `requires native tooling`)
 * .ace (ACE archive, `requires native tooling`)
 * .bup (McAfee quarantine files)
+* .cab (Microsoft Cabinet archive, `requires native tooling`)
 * .eml (MIME RFC 822 email representation)
 * .msg (Outlook mail message)
 * .mso (Microsoft Office Macro reference file)
@@ -88,9 +91,9 @@ Security
 ========
 
 Due to its nature of unpacking malicious archives with, depending on the
-extension, native tools (i.e., *.rar*, *.7z*, and *.ace*), it is important
-that such operations happen securely. SFlock therefore wraps execution of the
-native tools in [zipjail][], a usermode sandbox written exactly for this
-purpose.
+extension, native tools (i.e., *.7z*, *.ace*, *.cab*, *.rar*), it is
+important that such operations happen securely. SFlock therefore wraps
+execution of the native tools in [zipjail][], a usermode sandbox written
+exactly for this purpose.
 
 [zipjail]: https://github.com/jbremer/tracy/tree/master/src/zipjail
