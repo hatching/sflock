@@ -103,6 +103,16 @@ class Unpacker(object):
         shutil.rmtree(dirpath)
         return self.process(entries, duplicates)
 
+class Decoder(object):
+    """Abstract class for Decoder engines."""
+
+    # Initiated at runtime - contains each Decoder subclass.
+    plugins = {}
+
+    def __init__(self, f, password):
+        self.f = f
+        self.password = password
+
 class File(object):
     """Abstract class for all file operations.
 
