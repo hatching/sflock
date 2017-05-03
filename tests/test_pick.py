@@ -12,3 +12,7 @@ def test_malformed_rtf():
     ]
     assert package(File("tests/files/maldoc/%s" % hashes[0])) == "doc"
     assert package(File("tests/files/maldoc/%s" % hashes[1])) == "doc"
+
+def test_lnk():
+    f = File(contents=open("tests/files/lnk_1.lnk", "rb").read())
+    assert package(f) == "generic"

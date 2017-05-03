@@ -88,7 +88,10 @@ def package(f):
     if filename.endswith((".wsf", ".wsc")):
         return "wsf"
 
-    if filename.endswith(".bat"):
+    if filename.endswith(".lnk") or "MS Windows shortcut" in f.magic:
+        return "generic"
+
+    if filename.endswith((".bat", ".cmd")):
         return "generic"
 
     if "HTML" in f.magic or filename.endswith((".htm", ".html", ".hta")):
