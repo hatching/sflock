@@ -6,12 +6,8 @@ from sflock.abstracts import File
 from sflock.pick import package
 
 def test_malformed_rtf():
-    hashes = [
-        "0882c8a38ca485fe9763b0c0c7c5a22c330cebe86101a9e1ffa5a70c4f58faac",
-        "11836837753c754997adf8ccf4fa8ba824e57725f56fbcd3b0d903e1fa30ac5b",
-    ]
-    assert package(File("tests/files/maldoc/%s" % hashes[0])) == "doc"
-    assert package(File("tests/files/maldoc/%s" % hashes[1])) == "doc"
+    assert package(File("tests/files/maldoc/0882c8")) == "doc"
+    assert package(File("tests/files/maldoc/118368")) == "doc"
 
 def test_lnk():
     f = File(contents=open("tests/files/lnk_1.lnk", "rb").read())

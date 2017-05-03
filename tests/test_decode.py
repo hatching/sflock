@@ -9,7 +9,9 @@ def f(filename):
     return File.from_path("tests/files/%s" % filename)
 
 def test_decode_docx():
-    o = Office(f("encrypted1.docx"), "Password1234_").decrypt()
-    assert o.magic in (
+    assert Office(f("encrypted1.docx"), "Password1234_").decrypt().magic in (
         "Microsoft Word 2007+", "Zip archive data, at least v2.0 to extract"
     )
+
+def test_decode_regular():
+    assert Office(f("maldoc/0882c8"), "").decrypt() is None
