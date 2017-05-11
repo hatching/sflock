@@ -7,6 +7,7 @@ import os
 import tempfile
 
 from sflock.abstracts import File
+from sflock.main import unpack
 
 def test_temp_path():
     filepath = File(contents="foo").temp_path()
@@ -42,3 +43,10 @@ def test_stream():
     assert s.read(6) == "hello "
     assert s.read() == "world"
     assert f.sha256.startswith("b94d27b9934d3e08a52e52d7da7da")
+
+def test_has_child():
+    f = unpack("tests/files/doc_1.docx_")
+    assert f.get_child("[Content_Types].xml") is not None
+    assert f.get_child("docProps/app.xml") is not None
+    assert f.get_child("docProps/.*\\.xml$", True) is not None
+    assert f.get_child("docProps/.*\\.xmk", True) is None

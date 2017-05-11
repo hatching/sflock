@@ -6,6 +6,7 @@ import hashlib
 import io
 import ntpath
 import os.path
+import re
 import shutil
 import tempfile
 
@@ -249,11 +250,19 @@ class File(object):
             self._package = package(self)
         return self._package
 
+    @package.setter
+    def package(self, value):
+        self._package = value
+
     @property
     def selected(self):
         if self._selected is None:
             self._selected = bool(self.package)
         return self._selected
+
+    @selected.setter
+    def selected(self, value):
+        self._selected = value
 
     @property
     def extrpath(self):
@@ -375,3 +384,11 @@ class File(object):
                 if nextpath:
                     return child.read(nextpath)
                 return child.stream if stream else child.contents
+
+    def get_child(self, relaname, regex=False):
+        if not regex:
+            relaname = "%s$" % re.escape(relaname)
+
+        for child in self.children:
+            if re.match(relaname, child.relaname):
+                return child

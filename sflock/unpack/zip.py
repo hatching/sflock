@@ -19,6 +19,13 @@ class ZipFile(Unpacker):
     def supported(self):
         return True
 
+    def handles(self):
+        if super(ZipFile, self).handles():
+            return True
+        if self.f.stream.read(2) == "PK":
+            return True
+        return False
+
     def _bruteforce(self, archive, entry, passwords):
         for password in passwords:
             try:

@@ -10,6 +10,7 @@ import os.path
 import zipfile
 
 from sflock.abstracts import File, Unpacker
+from sflock.ident import identify
 from sflock.misc import zip_set_password
 from sflock.unpack import plugins
 
@@ -25,6 +26,22 @@ def supported():
             else:
                 ret.extend(plugin.exts)
     return ret
+
+def ident(f):
+    """Identifies a file based on its contents."""
+    package = identify(f)
+
+    if package:
+        f.package = package
+
+        # Deselect the direct children.
+        for child in f.children:
+            child.selected = False
+        return
+
+    # Recursively enumerate further.
+    for child in f.children:
+        ident(child)
 
 def unpack(filepath=None, contents=None, password=None, filename=None,
            duplicates=None):
@@ -53,6 +70,7 @@ def unpack(filepath=None, contents=None, password=None, filename=None,
         if plugin.supported():
             f.children = plugin.unpack(password, duplicates)
 
+    ident(f)
     return f
 
 def zipify(f, password=None):

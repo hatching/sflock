@@ -148,3 +148,7 @@ class TestZipfile(object):
         assert f.children[0].relaname == "absolute/path"
         assert f.children[0].contents == "A"*1024
         assert f.read("/absolute/path") == "A"*1024
+
+    def test_docx1(self):
+        t = ZipFile(f("doc_1.docx_"))
+        assert t.handles()
