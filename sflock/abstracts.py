@@ -113,6 +113,10 @@ class Decoder(object):
     def __init__(self, f, password):
         self.f = f
         self.password = password
+        self.init()
+
+    def init(self):
+        pass
 
 class File(object):
     """Abstract class for all file operations.

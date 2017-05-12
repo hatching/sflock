@@ -53,6 +53,8 @@ libmagic under Windows and as such Windows support works flawlessly.
 
 Note: on Windows the `7z`, `ace`, `cab`, and `rar` file formats are not
 supported.
+Note: for decrypting Microsoft Office files it is required to manually install
+the PyCrypto Python package.
 
 Installation (Mac OS X)
 =======================
@@ -68,6 +70,8 @@ $ brew install libmagic
 
 Note: on Mac OS X the `7z`, `ace`, `cab`, and `rar` file formats are not
 supported.
+Note: for decrypting Microsoft Office files it is required to manually install
+the PyCrypto Python package.
 
 Supported archives
 ==================

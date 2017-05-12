@@ -27,7 +27,11 @@ setup(
     install_requires=[
         "click==6.6",
         "olefile==0.43",
-        "pycrypto==2.6.1",
         "python-magic==0.4.12",
     ],
+    extras_require={
+        ":sys_platform == 'linux2'": [
+            "pycrypto==2.6.1",
+        ],
+    },
 )

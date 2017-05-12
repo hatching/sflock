@@ -7,10 +7,15 @@ import olefile
 import struct
 import xml.dom.minidom
 
-from Crypto.Cipher import AES, PKCS1_v1_5
-from Crypto.PublicKey import RSA
+try:
+    from Crypto.Cipher import AES, PKCS1_v1_5
+    from Crypto.PublicKey import RSA
+    HAVE_PYCRYPTO = True
+except ImportError:
+    HAVE_PYCRYPTO = False
 
 from sflock.abstracts import Decoder, File
+from sflock.exception import DecoderException
 
 class EncryptedInfo(object):
     key_data_salt = None
@@ -23,6 +28,13 @@ class EncryptedInfo(object):
 
 class Office(Decoder):
     name = "office"
+
+    def init(self):
+        if not HAVE_PYCRYPTO:
+            raise DecoderException(
+                "Microsoft Office document decoding is only supported on "
+                "Linux systems or when manually installing PyCrypto!"
+            )
 
     def get_hash(self, value, algorithm):
         if algorithm == "SHA512":
