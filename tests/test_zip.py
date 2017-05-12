@@ -18,6 +18,7 @@ class TestZipfile(object):
         z = ZipFile(f("zip_plain.zip"))
         assert z.handles() is True
         assert not z.f.selected
+        assert z.f.preview is True
         files = list(z.unpack())
         assert len(files) == 1
         assert not files[0].filepath
@@ -27,12 +28,14 @@ class TestZipfile(object):
         assert files[0].magic == "ASCII text"
         assert files[0].parentdirs == []
         assert not files[0].selected
+        assert files[0].preview is True
 
     def test_zip_encrypted(self):
         assert "Zip archive" in f("zip_encrypted.zip").magic
         z = ZipFile(f("zip_encrypted.zip"))
         assert z.handles() is True
         assert not z.f.selected
+        assert z.f.preview is True
         files = list(z.unpack())
         assert len(files) == 1
         assert files[0].relapath == "sflock.txt"
@@ -129,6 +132,7 @@ class TestZipfile(object):
         t = ZipFile(f("zip_garbage.zip"))
         assert t.handles() is True
         assert not t.f.selected
+        assert t.f.preview is True
         files = t.unpack()
         assert len(files) == 1
         assert not files[0].children

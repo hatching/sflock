@@ -32,6 +32,7 @@ def ident(f):
     package = identify(f)
 
     if package:
+        f.preview = False
         f.package = package
 
         # Deselect the direct children.

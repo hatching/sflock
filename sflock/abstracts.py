@@ -136,6 +136,7 @@ class File(object):
         self.duplicate = False
         self.unpacker = None
         self.parent = None
+        self.preview = True
 
         # Extract the filename from any of the available path components.
         self.filename = ntpath.basename(
@@ -302,6 +303,7 @@ class File(object):
             "sha256": self.sha256,
             "package": self.package,
             "selected": self.selected,
+            "preview": self.preview,
         }
 
     def astree(self, finger=True, sanitize=False):
@@ -317,6 +319,7 @@ class File(object):
             "selected": self.selected,
             "type": "container" if self.children else "file",
             "children": [],
+            "preview": self.preview,
         }
 
         if not sanitize:
