@@ -51,10 +51,12 @@ def test_astree1():
             {
                 "type": "directory",
                 "filename": "deepfoo",
+                "preview": True,
                 "children": [
                     {
                         "type": "directory",
                         "filename": "foo",
+                        "preview": True,
                         "children": [
                             {
                                 "filename": "bar.txt",
@@ -116,10 +118,12 @@ def test_astree2():
                     {
                         "type": "directory",
                         "filename": "deepfoo",
+                        "preview": True,
                         "children": [
                             {
                                 "type": "directory",
                                 "filename": "foo",
+                                "preview": True,
                                 "children": [
                                     {
                                         "type": "file",

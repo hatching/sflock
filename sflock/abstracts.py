@@ -346,6 +346,7 @@ class File(object):
                 "type": "directory",
                 "filename": name,
                 "children": [],
+                "preview": True,
             })
             return entry[-1]
 
