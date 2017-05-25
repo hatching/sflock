@@ -82,9 +82,15 @@ def visualbasic(f):
     return
 
 def java(f):
+    if (f.get_child("META-INF/MANIFEST.MF") and
+            not f.get_child("AndroidManifest.xml")):
+        return "jar"
     return
 
 def android(f):
+    if (f.get_child("AndroidManifest.xml") and
+            f.get_child("classes.dex")):
+        return "apk"
     return
 
 def identify(f):
@@ -95,5 +101,5 @@ def identify(f):
 
 identifiers = [
     office, powershell, javascript,
-    visualbasic, java, android
+    visualbasic, android, java
 ]
