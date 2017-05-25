@@ -1,0 +1,13 @@
+<job id="PERLandVBS">
+   <script language="PerlScript">
+      sub PerlHello {
+         my $str = @_[0];
+         $WScript->Echo($str);
+      }
+   </script>
+
+   <script language="VBScript">
+      WScript.Echo "Hello from VBScript"
+      PerlHello "Hello from PERLScript"
+   </script>
+</job>

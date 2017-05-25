@@ -59,6 +59,16 @@ def javascript(f):
     if found > 5:
         return "js"
 
+def wsf(f):
+    if not f.contents:
+        return
+
+    match = re.search(
+        "<script\\s+language=\"(J|VB|Perl)Script\"", f.contents, re.I
+    )
+    if match:
+        return "wsf"
+
 def visualbasic(f):
     if not f.contents:
         return
