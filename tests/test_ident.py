@@ -4,6 +4,29 @@
 
 from sflock.main import unpack
 
+def test_js():
+    f = unpack("tests/files/script.js")
+    assert f.duplicate is False
+    assert f.package == "js"
+
+def test_vba():
+    f = unpack("tests/files/script.vbs")
+    assert f.duplicate is False
+    assert f.package == "vbs"
+
+def test_ps():
+    f = unpack("tests/files/script.ps1")
+    assert f.duplicate is False
+    assert f.package == "ps1"
+
+def test_ppt():
+    f = unpack("tests/files/ppt_1.pptx")
+    assert f.duplicate is False
+    assert f.preview is False
+    assert f.package == "ppt"
+    assert f.get_child("[Content_Types].xml") is not None
+    assert len(f.children) == 37
+
 def test_doc1():
     f = unpack("tests/files/doc_1.docx_")
     assert f.duplicate is False
