@@ -8,13 +8,16 @@ def office(f):
     if not f.get_child("[Content_Types].xml"):
         return
 
+    # Shortcut for PowerPoint files.
+    if f.get_child("ppt/presentation.xml"):
+        return "ppt"
+
     if not f.get_child("docProps/app.xml"):
         return
 
     packages = {
         "Microsoft Office Word": "doc",
         "Microsoft Excel": "xls",
-        "Microsoft Power Point": "ppt",
     }
 
     application = re.search(
