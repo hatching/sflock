@@ -26,7 +26,7 @@ def test_jar():
     f = unpack("tests/files/sample.jar")
     assert f.duplicate is False
     assert f.selected is True
-#    assert f.preview is False
+    assert f.preview is False
     assert f.package == "jar"
 
 def test_apk():

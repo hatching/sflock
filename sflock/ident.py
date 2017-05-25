@@ -41,7 +41,6 @@ def powershell(f):
     for s in POWERSHELL_STRS:
         if s in f.contents:
             return "ps1"
-    return
 
 def javascript(f):
     if not f.contents:
@@ -59,8 +58,6 @@ def javascript(f):
 
     if found > 5:
         return "js"
-    return
-
 
 def visualbasic(f):
     if not f.contents:
@@ -82,16 +79,18 @@ def visualbasic(f):
     return
 
 def java(f):
-    if (f.get_child("META-INF/MANIFEST.MF") and
-            not f.get_child("AndroidManifest.xml")):
-        return "jar"
-    return
+    if not f.get_child("META-INF/MANIFEST.MF"):
+        return
+    if f.get_child("AndroidManifest.xml"):
+        return
+    return "jar"
 
 def android(f):
-    if (f.get_child("AndroidManifest.xml") and
-            f.get_child("classes.dex")):
-        return "apk"
-    return
+    if not f.get_child("AndroidManifest.xml"):
+        return
+    if not f.get_child("classes.dex"):
+        return
+    return "apk"
 
 def identify(f):
     for identifier in identifiers:
@@ -100,6 +99,5 @@ def identify(f):
             return package
 
 identifiers = [
-    office, powershell, javascript,
-    visualbasic, android, java
+    office, powershell, javascript, visualbasic, android, java,
 ]
