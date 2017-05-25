@@ -14,7 +14,7 @@ def test_vba():
     assert f.duplicate is False
     assert f.package == "vbs"
 
-def test_ps():
+def test_ps1():
     f = unpack("tests/files/script.ps1")
     assert f.duplicate is False
     assert f.package == "ps1"

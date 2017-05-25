@@ -34,7 +34,7 @@ def powershell(f):
         return
 
     POWERSHELL_STRS = [
-        "$PSHOME", "Get-WmiObject", "Write-", "new-object", 
+        "$PSHOME", "Get-WmiObject", "Write-", "new-object",
         "Start-Process", "Copy-Item", "Set-ItemProperty"
     ]
 
@@ -48,7 +48,7 @@ def javascript(f):
         return
 
     JS_STRS = [
-        "var ", "function ", "eval", " true", 
+        "var ", "function ", "eval", " true",
         " false", " null", "Math.", "alert("
     ]
 
@@ -67,7 +67,7 @@ def visualbasic(f):
         return
 
     VB_STRS = [
-        "Dim ", "Set ", "Attribute ", "Public ", 
+        "Dim ", "Set ", "Attribute ", "Public ",
         "#If", "#Else", "#End If", "End Function",
         "End Sub", "VBA"
     ]
