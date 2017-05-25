@@ -10,6 +10,12 @@ def test_js():
     assert f.selected is True
     assert f.package == "js"
 
+def test_wsf():
+    f = unpack("tests/files/script.wsf")
+    assert f.duplicate is False
+    assert f.selected is True
+    assert f.package == "wsf"
+
 def test_vba():
     f = unpack("tests/files/script.vbs")
     assert f.duplicate is False

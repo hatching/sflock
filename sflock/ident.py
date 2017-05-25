@@ -61,6 +61,14 @@ def javascript(f):
         return "js"
     return
 
+def wsf(f):
+    if not f.contents:
+        return
+
+    scriptre = re.compile("<script\s+language=\"(J|VB|Perl)Script\"")
+    if scriptre.search(f.contents):
+        return "wsf"
+    return
 
 def visualbasic(f):
     if not f.contents:
