@@ -52,6 +52,16 @@ def javascript(f):
 
     if found > 5:
         return "js"
+    return
+
+def wsf(f):
+    if not f.contents:
+        return
+
+    scriptre = re.compile("<script\s+language=\"(J|VB|Perl)Script\"")
+    if scriptre.search(f.contents):
+        return "wsf"
+    return
 
 def wsf(f):
     match = re.search(
@@ -100,5 +110,6 @@ def identify(f):
             return package
 
 identifiers = [
-    office, powershell, javascript, visualbasic, android, java,
+    office, powershell, javascript, visualbasic, 
+    android, wsf, java,
 ]
