@@ -30,9 +30,6 @@ def office(f):
     return packages.get(application.group(1))
 
 def powershell(f):
-    if not f.contents:
-        return
-
     POWERSHELL_STRS = [
         "$PSHOME", "Get-WmiObject", "Write-", "new-object",
         "Start-Process", "Copy-Item", "Set-ItemProperty"
@@ -43,9 +40,6 @@ def powershell(f):
             return "ps1"
 
 def javascript(f):
-    if not f.contents:
-        return
-
     JS_STRS = [
         "var ", "function ", "eval", " true",
         " false", " null", "Math.", "alert("
@@ -60,9 +54,6 @@ def javascript(f):
         return "js"
 
 def wsf(f):
-    if not f.contents:
-        return
-
     match = re.search(
         "<script\\s+language=\"(J|VB|Perl)Script\"", f.contents, re.I
     )
@@ -70,9 +61,6 @@ def wsf(f):
         return "wsf"
 
 def visualbasic(f):
-    if not f.contents:
-        return
-
     VB_STRS = [
         "Dim ", "Set ", "Attribute ", "Public ",
         "#If", "#Else", "#End If", "End Function",
@@ -103,6 +91,9 @@ def android(f):
     return "apk"
 
 def identify(f):
+    if not f.stream.read(0x1000):
+        return
+
     for identifier in identifiers:
         package = identifier(f)
         if package:

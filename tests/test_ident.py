@@ -2,7 +2,16 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import os
+import tempfile
+
+from sflock.abstracts import File
 from sflock.main import unpack
+
+def test_empty():
+    fd, filepath = tempfile.mkstemp()
+    os.close(fd)
+    assert unpack(filepath).package is None
 
 def test_js():
     f = unpack("tests/files/script.js")
