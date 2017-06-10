@@ -17,23 +17,23 @@ install:
     fi
 
 script:
-  - 'python -c "import sflock ; exit(len(sflock.supported()) != 8)"'
+  - 'python -c "import sflock ; exit(len(sflock.supported()) != 9)"'
   - 'py.test --cov=sflock'
 
   - '[[ $TRAVIS_OS_NAME == "linux" ]] && sudo apt-get -y install p7zip-full || true'
-  - '[[ $TRAVIS_OS_NAME == "linux" ]] && python -c "import sflock ; exit(len(sflock.supported()) != 9)" || true'
-  - '[[ $TRAVIS_OS_NAME == "linux" ]] && py.test --cov=sflock --cov-append || true'
-
-  - '[[ $TRAVIS_OS_NAME == "linux" ]] && sudo apt-get -y install rar || true'
   - '[[ $TRAVIS_OS_NAME == "linux" ]] && python -c "import sflock ; exit(len(sflock.supported()) != 10)" || true'
   - '[[ $TRAVIS_OS_NAME == "linux" ]] && py.test --cov=sflock --cov-append || true'
 
-  - '[[ $TRAVIS_OS_NAME == "linux" ]] && sudo apt-get -y install unace-nonfree || true'
+  - '[[ $TRAVIS_OS_NAME == "linux" ]] && sudo apt-get -y install rar || true'
   - '[[ $TRAVIS_OS_NAME == "linux" ]] && python -c "import sflock ; exit(len(sflock.supported()) != 11)" || true'
   - '[[ $TRAVIS_OS_NAME == "linux" ]] && py.test --cov=sflock --cov-append || true'
 
-  - '[[ $TRAVIS_OS_NAME == "linux" ]] && sudo apt-get -y install cabextract || true'
+  - '[[ $TRAVIS_OS_NAME == "linux" ]] && sudo apt-get -y install unace-nonfree || true'
   - '[[ $TRAVIS_OS_NAME == "linux" ]] && python -c "import sflock ; exit(len(sflock.supported()) != 12)" || true'
+  - '[[ $TRAVIS_OS_NAME == "linux" ]] && py.test --cov=sflock --cov-append || true'
+
+  - '[[ $TRAVIS_OS_NAME == "linux" ]] && sudo apt-get -y install cabextract || true'
+  - '[[ $TRAVIS_OS_NAME == "linux" ]] && python -c "import sflock ; exit(len(sflock.supported()) != 13)" || true'
   - '[[ $TRAVIS_OS_NAME == "linux" ]] && py.test --cov=sflock --cov-append || true'
 
 after_success:
