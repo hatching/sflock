@@ -398,5 +398,5 @@ class File(object):
             relaname = "%s$" % re.escape(relaname)
 
         for child in self.children:
-            if re.match(relaname, child.relaname):
+            if child.relaname and re.match(relaname, child.relaname):
                 return child

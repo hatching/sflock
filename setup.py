@@ -27,6 +27,7 @@ setup(
     install_requires=[
         "click==6.6",
         "olefile==0.43",
+        "peepdf==0.3.5",
         "python-magic==0.4.12",
     ],
     extras_require={
