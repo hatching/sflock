@@ -2,6 +2,7 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import os
 import peepdf
 
 from sflock.abstracts import Unpacker, File
@@ -16,12 +17,21 @@ class PdfFile(Unpacker):
     def unpack(self, password=None, duplicates=None):
         entries = []
 
+        if self.f.filepath:
+            filepath = self.f.filepath
+            temporary = False
+        else:
+            filepath = self.f.temp_path()
+            temporary = True
+
         p = peepdf.PDFCore.PDFParser()
         r, f = p.parse(
-            self.f.filepath, forceMode=True,
+            filepath, forceMode=True,
             looseMode=True, manualAnalysis=False
         )
         if r:
+            if temporary:
+                os.unlink(filepath)
             return
 
         for version in xrange(f.updates + 1):
@@ -58,6 +68,9 @@ class PdfFile(Unpacker):
                     filename=filename.value,
                     selected=False
                 ))
+
+        if temporary:
+            os.unlink(filepath)
 
         if entries:
             self.f.preview = False

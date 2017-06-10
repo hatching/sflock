@@ -2,8 +2,11 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import io
+import zipfile
+
 from sflock.abstracts import File
-from sflock.unpack import PdfFile
+from sflock.unpack import PdfFile, ZipFile
 
 def f(filename):
     return File.from_path("tests/files/%s" % filename)
@@ -15,6 +18,7 @@ def test_pdf_embedded():
     assert m.f.selected
     files = list(m.unpack())
     assert not m.f.preview
+    assert m.f.package == "pdf"
 
     assert len(files) == 1
     assert not files[0].filepath
@@ -23,6 +27,18 @@ def test_pdf_embedded():
     assert files[0].package == "doc"
     assert not files[0].selected
     assert len(files[0].children) == 18
+
+def test_pdf_is_embedded():
+    buf = io.BytesIO()
+    z = zipfile.ZipFile(buf, "w")
+    z.write("tests/files/pdf_docm.pdf")
+    z.close()
+    m = ZipFile(File(contents=buf.getvalue()))
+    files = list(m.unpack())
+    assert len(files) == 1
+    assert files[0].package == "pdf"
+    assert len(files[0].children) == 1
+    assert files[0].children[0].package == "doc"
 
 def test_garbage():
     m = PdfFile(f("garbage.bin"))
