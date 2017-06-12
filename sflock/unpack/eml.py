@@ -4,6 +4,7 @@
 
 import email
 import email.header
+import re
 
 from sflock.abstracts import Unpacker, File
 
@@ -18,7 +19,21 @@ class EmlFile(Unpacker):
     def supported(self):
         return True
 
-    def unpack(self, password=None, duplicates=None):
+    def handles(self):
+        if super(EmlFile, self).handles():
+            return True
+
+        stream = self.f.stream
+        keys = []
+        for _ in xrange(10):
+            line = stream.readline()
+            if ":" in line:
+                keys.append(line.split(":")[0])
+        if "From" in keys and "To" in keys:
+            return True
+        return False
+
+    def real_unpack(self, password, duplicates):
         entries = []
 
         e = email.message_from_string(self.f.contents)
@@ -43,5 +58,20 @@ class EmlFile(Unpacker):
             entries.append(File(
                 relapath=filename or "att1", contents=payload
             ))
+
+        return entries
+
+    def unpack(self, password=None, duplicates=None):
+        re_compile_orig = re.compile
+
+        def re_compile_our(pattern):
+            return re_compile_orig(pattern.replace("?P<end>--", "?P<end>--+"))
+
+        re.compile = re_compile_our
+
+        try:
+            entries = self.real_unpack(password, duplicates)
+        finally:
+            re.compile = re_compile_orig
 
         return self.process(entries, duplicates)

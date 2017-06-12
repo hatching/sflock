@@ -2,6 +2,10 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import mock
+import pytest
+import re
+
 from sflock.abstracts import File
 from sflock.unpack import EmlFile
 
@@ -58,6 +62,27 @@ def test_eml_nested_eml():
     assert files[1].contents == "\xe6\x83\xa1\xe6\x84\x8f\xe8\xbb\x9f\xe9\xab\x94"
     assert files[1].package is None
     assert not files[1].selected
+
+def test_faulty_eml():
+    assert f("eml_faulty.eml_").magic in ("data", "RFC 822 mail text")
+    t = EmlFile(f("eml_faulty.eml_"))
+    assert t.handles() is True
+    files = list(t.unpack())
+    assert files[0].children[0].filename == "DOC1820617988-PDF.vbs"
+    assert files[0].children[0].filesize == 89851
+
+def test_eml_exception():
+    """We must ensure that re.compile is restored at all times."""
+    re_compile = re.compile
+    EmlFile(f("eml_faulty.eml_")).unpack()
+    assert re.compile == re_compile
+
+    with mock.patch("email.message_from_string") as p:
+        p.side_effect = Exception("test_exception")
+        with pytest.raises(Exception) as e:
+            EmlFile(f("eml_faulty.eml_")).unpack()
+        e.match("test_exception")
+    assert re.compile == re_compile
 
 def test_garbage():
     t = EmlFile(f("garbage.bin"))
