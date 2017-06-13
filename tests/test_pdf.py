@@ -28,6 +28,10 @@ def test_pdf_embedded():
     assert not files[0].selected
     assert len(files[0].children) == 18
 
+def test_pdf_magic():
+    m = PdfFile(File(contents=f("pdf_docm.pdf").contents))
+    assert m.handles() is True
+
 def test_pdf_is_embedded():
     buf = io.BytesIO()
     z = zipfile.ZipFile(buf, "w")

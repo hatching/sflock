@@ -10,6 +10,7 @@ from sflock.abstracts import Unpacker, File
 class PdfFile(Unpacker):
     name = "pdffile"
     exts = ".pdf"
+    magic = "PDF document"
 
     def supported(self):
         return True
