@@ -85,10 +85,11 @@ SFlock supports a number of (semi-)archive types, sorted by extension:
 * .eml (MIME RFC 822 email representation)
 * .msg (Outlook mail message)
 * .mso (Microsoft Office Macro reference file)
+* .pdf (Attachments embedded in PDF files)
 * .rar (RAR archive, `requires native tooling`)
 * .tar (Unix file archive)
-* .tar.gz (gzip compressed Unix file archive)
 * .tar.bz2 (bzip2 compressed Unix file archive)
+* .tar.gz (gzip compressed Unix file archive)
 * .zip (ZIP archive)
 
 Security
