@@ -156,3 +156,8 @@ class TestZipfile(object):
     def test_docx1(self):
         t = ZipFile(f("doc_1.docx_"))
         assert t.handles()
+
+    def test_partial(self):
+        t = ZipFile(f("partial.zip"))
+        assert t.handles()
+        assert not t.unpack()

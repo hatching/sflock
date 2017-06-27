@@ -70,7 +70,7 @@ class ZipFile(Unpacker):
     def unpack(self, password=None, duplicates=None):
         try:
             archive = zipfile.ZipFile(self.f.stream)
-        except zipfile.BadZipfile as e:
+        except (zipfile.BadZipfile, IOError) as e:
             self.f.mode = "failed"
             self.f.error = e
             return []
