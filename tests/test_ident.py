@@ -83,3 +83,7 @@ def test_doc2():
     assert len(f.children) == 12
     assert f.children[0].selected is False
     assert f.children[11].selected is False
+
+def test_oledoc1():
+    f = unpack("tests/files/oledoc1.doc_")
+    assert f.package == "doc"

@@ -2,9 +2,10 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import olefile
 import re
 
-def office(f):
+def office_zip(f):
     if not f.get_child("[Content_Types].xml"):
         return
 
@@ -28,6 +29,15 @@ def office(f):
         return
 
     return packages.get(application.group(1))
+
+def office_ole(f):
+    try:
+        ole = olefile.OleFileIO(f.stream)
+        for filename in ole.listdir():
+            if filename[0] == "WordDocument":
+                return "doc"
+    except IOError:
+        return
 
 def powershell(f):
     POWERSHELL_STRS = [
@@ -100,5 +110,5 @@ def identify(f):
             return package
 
 identifiers = [
-    office, powershell, javascript, visualbasic, android, java,
+    office_zip, office_ole, powershell, javascript, visualbasic, android, java,
 ]
