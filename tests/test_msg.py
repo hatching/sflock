@@ -70,6 +70,18 @@ def test_msg_nullbyte():
     z = zipfile.ZipFile(io.BytesIO(zipify(ole)))
     assert z.read(doc.relaname) == doc.contents
 
+def test_msg_doc_magic():
+    f = unpack("tests/files/msg_doc.msg_")
+    assert len(f.children) == 1
+    assert f.children[0].filename == "Kristina_Meyer.doc"
+    assert f.children[0].filesize == 57856
+
+def test_msg_rtf_magic():
+    f = unpack("tests/files/msg_rtf.msg_")
+    assert len(f.children) == 1
+    assert f.children[0].filename == "g94ys83xi8_8fb0ud5,7.rtf"
+    assert f.children[0].filesize == 138638
+
 def test_garbage():
     m = MsgFile(f("garbage.bin"))
     assert m.handles() is False

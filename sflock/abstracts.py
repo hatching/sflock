@@ -11,7 +11,7 @@ import shutil
 import tempfile
 
 from sflock.compat import magic
-from sflock.misc import data_file
+from sflock.misc import data_file, make_list
 from sflock.pick import package
 
 class Unpacker(object):
@@ -42,9 +42,9 @@ class Unpacker(object):
         if self.f.filename and self.f.filename.lower().endswith(self.exts):
             return True
 
-        if self.magic and self.magic in self.f.magic:
-            return True
-
+        for magic in make_list(self.magic or []):
+            if magic in self.f.magic:
+                return True
         return False
 
     @staticmethod

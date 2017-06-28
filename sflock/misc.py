@@ -102,3 +102,8 @@ def zip_set_password(z, password):
 
     r.close()
     return out.getvalue()
+
+def make_list(obj):
+    if isinstance(obj, (tuple, list)):
+        return list(obj)
+    return [obj]

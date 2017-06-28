@@ -5,7 +5,7 @@
 import io
 import zipfile
 
-from sflock.misc import ZipCrypt, zip_set_password
+from sflock.misc import ZipCrypt, zip_set_password, make_list
 
 def test_zipdecryptor_decrypt():
     a, b = zipfile._ZipDecrypter("password"), ZipCrypt("password")
@@ -31,3 +31,12 @@ def test_zip_passwd():
     z.setpassword("password")
     assert z.read("a.txt") == "hello world"
     assert z.read("b.txt") == "A"*1024
+
+def test_make_list():
+    assert make_list(None) == [None]
+    assert make_list([]) == []
+    assert make_list(()) == []
+    assert make_list(1) == [1]
+    assert make_list("a") == ["a"]
+    assert make_list((1, 2)) == [1, 2]
+    assert make_list([3, 4]) == [3, 4]

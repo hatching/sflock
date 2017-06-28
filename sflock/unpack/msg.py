@@ -9,6 +9,10 @@ from sflock.abstracts import Unpacker, File
 class MsgFile(Unpacker):
     name = "msgfile"
     exts = ".msg"
+    magic = (
+        "Composite Document File V2 Document",
+        "CDF V2 Document", "CDFV2 Microsoft",
+    )
 
     def supported(self):
         return True
