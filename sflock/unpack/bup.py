@@ -16,6 +16,19 @@ class BupFile(Unpacker):
     def supported(self):
         return True
 
+    def handles(self):
+        if super(BupFile, self).handles():
+            return True
+
+        try:
+            ole = olefile.OleFileIO(self.f.stream)
+            for filename in ole.listdir():
+                if filename[0] == "Details":
+                    return True
+        except IOError:
+            pass
+        return False
+
     def decrypt(self, content):
         return "".join(chr(ord(ch) ^ 0x6a) for ch in content)
 

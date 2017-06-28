@@ -9,13 +9,22 @@ from sflock.abstracts import Unpacker, File
 class MsgFile(Unpacker):
     name = "msgfile"
     exts = ".msg"
-    magic = (
-        "Composite Document File V2 Document",
-        "CDF V2 Document", "CDFV2 Microsoft",
-    )
 
     def supported(self):
         return True
+
+    def handles(self):
+        if super(MsgFile, self).handles():
+            return True
+
+        try:
+            ole = olefile.OleFileIO(self.f.stream)
+            for filename in ole.listdir():
+                if filename[0].startswith("__attach"):
+                    return True
+        except IOError:
+            pass
+        return False
 
     def get_stream(self, *filename):
         if self.ole.exists("/".join(filename)):
