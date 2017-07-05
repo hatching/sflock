@@ -84,6 +84,13 @@ def test_doc2():
     assert f.children[0].selected is False
     assert f.children[11].selected is False
 
+def test_doc3():
+    f = unpack("tests/files/maldoc_office.htm")
+    assert f.duplicate is False
+    assert f.selected is True
+    assert f.preview is False
+    assert f.package == "doc"
+
 def test_oledoc1():
     f = unpack("tests/files/oledoc1.doc_")
     assert f.package == "doc"
