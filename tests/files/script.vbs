@@ -1,3 +1,5 @@
+Attribute VB_TEST = FOO
+
 strComputer = "."
 Set objWMIService = GetObject("winmgmts:\\" & strComputer & "\root\cimv2")
 Set colProcesses = objWMIService.ExecQuery _
@@ -11,3 +13,12 @@ End If
 For i = 1 to 5
     Wscript.echo i
 Next
+
+Public Sub hello()
+    If 1
+        Wscript.Echo "hello"
+End Sub
+
+Function hello2()
+    Dim var1
+End Function

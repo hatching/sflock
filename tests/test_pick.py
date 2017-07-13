@@ -25,7 +25,7 @@ def test_ole():
 
 @pytest.mark.xfail
 def test_bup():
-    mso = unpack("tests/files/msg_invoice.msg").read("oledata.mso"),
+    mso = unpack("tests/files/msg_invoice.msg").read("oledata.mso")
 
     # At the moment we only look at the file extension for .mso files.
     # TODO Allow bruteforcing to identify file type. Note that this is

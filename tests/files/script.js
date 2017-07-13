@@ -8,4 +8,5 @@ console.log(greet(who));
 var show = false;
 if (show) {
     alert(greet(who));
+    eval(1 + true);
 }
