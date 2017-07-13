@@ -39,6 +39,15 @@ def office_ole(f):
     except IOError:
         return
 
+def excel_ole(f):
+    try:
+        ole = olefile.OleFileIO(f.stream)
+        for filename in ole.listdir():
+            if filename[0] == "Workbook":
+                return "xls"
+    except IOError:
+        return
+
 def powershell(f):
     POWERSHELL_STRS = [
         "$PSHOME", "Get-WmiObject", "Write-", "new-object",
@@ -110,5 +119,6 @@ def identify(f):
             return package
 
 identifiers = [
-    office_zip, office_ole, powershell, javascript, visualbasic, android, java,
+    office_zip, office_ole, excel_ole, powershell, 
+    javascript, visualbasic, android, java,
 ]
