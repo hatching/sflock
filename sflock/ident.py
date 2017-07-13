@@ -5,6 +5,35 @@
 import olefile
 import re
 
+def office_webarchive(f):
+    STRINGS = [
+        "<o:Pages>", "<o:DocumentProperties>", "<o:Words>",
+        "<o:Characters>", "<o:Lines>", "<o:Paragraphs>",
+        "Content-Location:", "Content-Transfer-Encoding:",
+        "Content-Type:", "<o:OfficeDocumentSettings>"
+    ]
+
+    MANDATORY_STRINGS = [
+        "MIME-Version:", "------=_NextPart_", "<w:WordDocument>",
+        "text/html",
+    ]
+
+    # Make sure all mandatory strings are found
+    for string in MANDATORY_STRINGS:
+        if string not in f.contents:
+            return
+
+    found = 0
+    for string in STRINGS:
+        found += f.contents.count(string)
+
+    if found >= 10:
+        return "doc"
+
+def office_activemime(f):
+    if f.contents.startswith('QWN0aXZlTWltZQ') or f.contents.startswith('ActiveMime'):
+        return "doc"
+
 def office_zip(f):
     if not f.get_child("[Content_Types].xml"):
         return
@@ -112,6 +141,6 @@ def identify(f):
             return package
 
 identifiers = [
-    office_zip, office_ole, powershell, 
-    javascript, visualbasic, android, java,
+    office_zip, office_ole, office_webarchive, office_activemime,
+    powershell, javascript, visualbasic, android, java, wsf,
 ]
