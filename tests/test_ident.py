@@ -84,6 +84,13 @@ def test_doc2():
     assert f.children[0].selected is False
     assert f.children[11].selected is False
 
+def test_xls():
+    f = unpack("tests/files/maldoc.xls")
+    assert f.duplicate is False
+    assert f.selected is True
+    assert f.preview is False
+    assert f.package == "xls"
+
 def test_oledoc1():
     f = unpack("tests/files/oledoc1.doc_")
     assert f.package == "doc"

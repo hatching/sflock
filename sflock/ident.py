@@ -36,6 +36,8 @@ def office_ole(f):
         for filename in ole.listdir():
             if filename[0] == "WordDocument":
                 return "doc"
+            elif filename[0] == "Workbook":
+                return "xls"
     except IOError:
         return
 
@@ -110,5 +112,6 @@ def identify(f):
             return package
 
 identifiers = [
-    office_zip, office_ole, powershell, javascript, visualbasic, android, java,
+    office_zip, office_ole, powershell, 
+    javascript, visualbasic, android, java,
 ]
