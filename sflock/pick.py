@@ -3,8 +3,7 @@
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 doc_ext = (
-    ".rtf", ".doc", ".docx", ".docm", ".dot", ".dotx", ".docb", ".mht",
-    ".mso",
+    ".rtf", ".doc", ".docx", ".docm", ".dot", ".dotx", ".docb", ".mso",
 )
 doc_hdr = (
     "\x7b\x5c\x72\x74",
@@ -16,6 +15,9 @@ xls_ext = (
 ppt_ext = (
     ".ppt", ".pptx", ".pps", ".ppsx", ".pptm", ".potm", ".potx", ".ppsm",
     ".pot", ".ppam", ".sldx", ".sldm",
+)
+ie_ext = (
+    ".htm", ".html", ".hta", ".mht", ".mhtml",
 )
 
 def package(f):
@@ -94,5 +96,5 @@ def package(f):
     if filename.endswith((".bat", ".cmd")):
         return "generic"
 
-    if "HTML" in f.magic or filename.endswith((".htm", ".html", ".hta")):
+    if "HTML" in f.magic or filename.endswith(ie_ext):
         return "ie"
