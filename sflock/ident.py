@@ -5,6 +5,29 @@
 import olefile
 import re
 
+def hta(f):
+    STRINGS = [
+        "<head", "<title", "<body", "SINGLEINSTANCE",
+        "<script", "<input", "WINDOWSTATE",
+        "APPLICATIONNAME", "SCROLL", "</"
+    ]
+
+    MANDATORY_STRINGS = [
+        "HTA:APPLICATION", "<head", "<body"
+    ]
+
+    # Make sure all mandatory strings are found
+    for string in MANDATORY_STRINGS:
+        if string not in f.contents:
+            return
+
+    found = 0
+    for string in STRINGS:
+        found += f.contents.count(string)
+
+    if found >= 10:
+        return "hta"
+
 def office_webarchive(f):
     STRINGS = [
         "<o:Pages>", "<o:DocumentProperties>", "<o:Words>",
@@ -142,5 +165,5 @@ def identify(f):
 
 identifiers = [
     office_zip, office_ole, office_webarchive, office_activemime,
-    powershell, javascript, visualbasic, android, java, wsf,
+    hta, powershell, javascript, visualbasic, android, java, wsf,
 ]
