@@ -25,6 +25,7 @@ def test_identify():
     assert f.package == "apk"
     assert identify(File("tests/files/maldoc_office.htm")) == "doc"
     assert identify(File("tests/files/maldoc.xls")) == "xls"
+    assert identify(File("tests/files/test.hta_")) == "hta"
 
 def test_ppt():
     f = unpack(contents=open("tests/files/ppt_1.pptx", "rb").read())
