@@ -23,6 +23,7 @@ def test_bup_plain():
     assert "Zip archive" in files[0].magic
     assert files[0].parentdirs == []
     assert files[0].package is None
+    assert files[0].platform is None
     assert not files[0].selected
 
     assert len(files[0].children) == 1
@@ -30,6 +31,7 @@ def test_bup_plain():
     assert files[0].children[0].relapath == "efax_9057733019_pdf.scr"
     assert files[0].children[0].filesize == 377856
     assert files[0].children[0].package == "exe"
+    assert files[0].children[0].platform == "windows"
     assert files[0].children[0].selected is True
 
 def test_garbage():

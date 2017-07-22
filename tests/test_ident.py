@@ -13,6 +13,7 @@ def test_empty():
     fd, filepath = tempfile.mkstemp()
     os.close(fd)
     assert unpack(filepath).package is None
+    assert unpack(filepath).platform is None
 
 def test_identify():
     assert identify(File("tests/files/script.js")) == "js"
@@ -33,6 +34,7 @@ def test_ppt():
     assert f.preview is False
     assert f.selected is True
     assert f.package == "ppt"
+    assert f.platform == "windows"
     assert f.get_child("[Content_Types].xml") is not None
     assert len(f.children) == 37
 
@@ -42,6 +44,7 @@ def test_doc1():
     assert f.selected is True
     assert f.preview is False
     assert f.package == "doc"
+    assert f.platform == "windows"
     assert f.get_child("[Content_Types].xml") is not None
     assert len(f.children) == 12
     assert f.children[0].selected is False
@@ -55,6 +58,7 @@ def test_doc2():
     assert f.selected is True
     assert f.preview is False
     assert f.package == "xls"
+    assert f.platform == "windows"
     assert f.get_child("[Content_Types].xml") is not None
     assert len(f.children) == 12
     assert f.children[0].selected is False
@@ -63,3 +67,4 @@ def test_doc2():
 def test_oledoc1():
     f = unpack("tests/files/oledoc1.doc_")
     assert f.package == "doc"
+    assert f.platform == "windows"

@@ -12,7 +12,7 @@ import tempfile
 
 from sflock.compat import magic
 from sflock.misc import data_file, make_list
-from sflock.pick import package
+from sflock.pick import package, platform
 
 class Unpacker(object):
     """Abstract class for Unpacker engines."""
@@ -93,13 +93,11 @@ class Unpacker(object):
         for dirpath2, dirnames, filepaths in os.walk(dirpath):
             for filepath in filepaths:
                 filepath = os.path.join(dirpath2, filepath)
-                f = File(
+                entries.append(File(
                     relapath=filepath[len(dirpath)+1:],
                     password=password,
                     contents=open(filepath, "rb").read()
-                )
-
-                entries.append(f)
+                ))
 
         shutil.rmtree(dirpath)
         return self.process(entries, duplicates)
@@ -129,7 +127,7 @@ class File(object):
 
     def __init__(self, filepath=None, contents=None, relapath=None,
                  filename=None, mode=None, password=None, description=None,
-                 selected=None, stream=None):
+                 selected=None, stream=None, platform=None):
         self.filepath = filepath
         self.relapath = relapath
         self.mode = mode
@@ -149,6 +147,7 @@ class File(object):
 
         self._contents = contents
         self._package = None
+        self._platform = platform
         self._selected = selected
         self._sha256 = None
         self._mime = None
@@ -260,6 +259,16 @@ class File(object):
         self._package = value
 
     @property
+    def platform(self):
+        if self._platform is None:
+            self._platform = platform(self)
+        return self._platform
+
+    @platform.setter
+    def platform(self, value):
+        self._platform = value
+
+    @property
     def selected(self):
         if self._selected is None:
             self._selected = bool(self.package)
@@ -305,6 +314,7 @@ class File(object):
             },
             "password": self.password,
             "sha256": self.sha256,
+            "platform": self.platform,
             "package": self.package,
             "selected": self.selected,
             "preview": self.preview,
@@ -319,6 +329,7 @@ class File(object):
             "relaname": self.relaname,
             "extrpath": self.extrpath,
             "size": self.filesize,
+            "platform": self.platform,
             "package": self.package,
             "selected": self.selected,
             "type": "container" if self.children else "file",

@@ -41,6 +41,7 @@ def test_msg_embedded():
     assert files[2].relapath == "oledata.mso"
     assert files[2].filesize == 234898
     assert files[2].package == "doc"
+    assert files[2].platform == "windows"
     assert files[2].selected is True
 
     assert len(files[2].children) == 1

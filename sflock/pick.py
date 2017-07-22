@@ -98,3 +98,22 @@ def package(f):
 
     if "HTML" in f.magic or filename.endswith(ie_ext):
         return "ie"
+
+platforms = {
+    "cpl": "windows",
+    "dll": "windows",
+    "doc": "windows",
+    "exe": "windows",
+    "ie": "windows",
+    "msi": "windows",
+    "ppt": "windows",
+    "ps1": "windows",
+    "pub": "windows",
+    "vbs": "windows",
+    "wsf": "windows",
+    "xls": "windows",
+}
+
+def platform(f):
+    # TODO Handle "generic".
+    return platforms.get(f.package)

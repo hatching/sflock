@@ -6,15 +6,23 @@ import pytest
 
 from sflock.abstracts import File
 from sflock.main import unpack
-from sflock.pick import package
+from sflock.pick import package, platform
 
 def test_malformed_rtf():
     assert package(File("tests/files/maldoc/0882c8")) == "doc"
     assert package(File("tests/files/maldoc/118368")) == "doc"
+    assert platform(File("tests/files/maldoc/0882c8")) == "windows"
 
 def test_lnk():
     f = File(contents=open("tests/files/lnk_1.lnk", "rb").read())
     assert package(f) == "generic"
+
+@pytest.mark.xfail
+def test_lnk_windows():
+    # TODO This is currently assigned no platform due to "generic" also being
+    # a Linux Analysis analysis package.
+    f = File(contents=open("tests/files/lnk_1.lnk", "rb").read())
+    assert platform(f) == "windows"
 
 def test_ole():
     msg = open("tests/files/msg_invoice.msg", "rb").read()

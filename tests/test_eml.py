@@ -49,18 +49,21 @@ def test_eml_nested_eml():
     assert files[0].children[0].relapath == u"\u60e1\u610f\u8edf\u9ad4.doc"
     assert files[0].children[0].filesize == 12
     assert files[0].children[0].package == "doc"
+    assert files[0].children[0].platform == "windows"
     assert files[0].children[0].selected is True
 
     assert not files[0].children[1].filepath
     assert files[0].children[1].relapath == "cuckoo.png"
     assert files[0].children[1].filesize == 11970
     assert files[0].children[1].package is None
+    assert files[0].children[1].platform is None
     assert not files[0].children[1].selected
 
     assert files[1].relapath == "att1"
     assert "UTF-8 Unicode" in files[1].magic
     assert files[1].contents == "\xe6\x83\xa1\xe6\x84\x8f\xe8\xbb\x9f\xe9\xab\x94"
     assert files[1].package is None
+    assert files[1].platform is None
     assert not files[1].selected
 
 def test_faulty_eml():
