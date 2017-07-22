@@ -2,7 +2,6 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
-import olefile
 import re
 
 def hta(f):
@@ -83,15 +82,11 @@ def office_zip(f):
     return packages.get(application.group(1))
 
 def office_ole(f):
-    try:
-        ole = olefile.OleFileIO(f.stream)
-        for filename in ole.listdir():
-            if filename[0] == "WordDocument":
-                return "doc"
-            elif filename[0] == "Workbook":
-                return "xls"
-    except IOError:
-        return
+    files = f.ole and f.ole.listdir() or []
+    if ["WordDocument"] in files:
+        return "doc"
+    if ["Workbook"] in files:
+        return "xls"
 
 def powershell(f):
     POWERSHELL_STRS = [

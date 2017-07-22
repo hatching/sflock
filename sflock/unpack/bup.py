@@ -5,7 +5,6 @@
 import ConfigParser
 import io
 import ntpath
-import olefile
 
 from sflock.abstracts import Unpacker, File
 
@@ -20,13 +19,8 @@ class BupFile(Unpacker):
         if super(BupFile, self).handles():
             return True
 
-        try:
-            ole = olefile.OleFileIO(self.f.stream)
-            for filename in ole.listdir():
-                if filename[0] == "Details":
-                    return True
-        except IOError:
-            pass
+        if self.f.ole and ["Details"] in self.f.ole.listdir():
+            return True
         return False
 
     def decrypt(self, content):
@@ -35,16 +29,16 @@ class BupFile(Unpacker):
     def unpack(self, password=None, duplicates=None):
         entries = []
 
-        try:
-            ole = olefile.OleFileIO(self.f.stream)
-        except IOError as e:
+        if not self.f.ole:
             self.f.mode = "failed"
-            self.f.error = e
+            self.f.error = "No OLE structure found"
             return []
 
-        details = self.decrypt(ole.openstream("Details").read())
+        details = self.decrypt(self.f.ole.openstream("Details").read())
         config = ConfigParser.ConfigParser()
         config.readfp(io.BytesIO(details))
+
+        ole = self.f.ole
 
         for filename in ole.listdir():
             if filename[0] == "Details" or not ole.get_size(filename[0]):

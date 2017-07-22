@@ -2,8 +2,6 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
-import olefile
-
 from sflock.abstracts import Unpacker, File
 
 class MsgFile(Unpacker):
@@ -17,18 +15,15 @@ class MsgFile(Unpacker):
         if super(MsgFile, self).handles():
             return True
 
-        try:
-            ole = olefile.OleFileIO(self.f.stream)
-            for filename in ole.listdir():
+        if self.f.ole:
+            for filename in self.f.ole.listdir():
                 if filename[0].startswith("__attach"):
                     return True
-        except IOError:
-            pass
         return False
 
     def get_stream(self, *filename):
-        if self.ole.exists("/".join(filename)):
-            return self.ole.openstream("/".join(filename)).read()
+        if self.f.ole.exists("/".join(filename)):
+            return self.f.ole.openstream("/".join(filename)).read()
 
     def get_string(self, *filename):
         ascii_filename = "%s001E" % "/".join(filename)
@@ -53,14 +48,12 @@ class MsgFile(Unpacker):
     def unpack(self, password=None, duplicates=None):
         seen, entries = [], []
 
-        try:
-            self.ole = olefile.OleFileIO(self.f.stream)
-        except IOError as e:
+        if not self.f.ole:
             self.f.mode = "failed"
-            self.f.error = e
+            self.f.error = "No OLE structure found"
             return []
 
-        for dirname in self.ole.listdir():
+        for dirname in self.f.ole.listdir():
             if dirname[0].startswith("__attach") and dirname[0] not in seen:
                 filename, contents = self.get_attachment(dirname[0])
                 entries.append(File(

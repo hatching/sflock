@@ -5,6 +5,7 @@
 import hashlib
 import io
 import ntpath
+import olefile
 import os.path
 import re
 import shutil
@@ -155,6 +156,8 @@ class File(object):
         self._mime_human = None
         self._magic_human = None
         self._stream = stream
+        self._ole = None
+        self._ole_tried = False
 
     @classmethod
     def from_path(self, filepath, relapath=None, filename=None,
@@ -293,6 +296,20 @@ class File(object):
         # TODO Strip absolute paths for Windows.
         # TODO Normalize relative paths.
         return self.relapath.lstrip("\\/").rstrip("\x00")
+
+    @property
+    def ole(self):
+        if not self._ole_tried:
+            try:
+                self._ole = olefile.OleFileIO(self.stream)
+            except IOError:
+                pass
+            self._ole_tried = True
+        return self._ole
+
+    def raise_no_ole(self, message):
+        if self.ole is None:
+            raise UnpackException(message)
 
     def to_dict(self):
         return {

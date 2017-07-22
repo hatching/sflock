@@ -2,8 +2,6 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
-import io
-import olefile
 import os.path
 import struct
 import zlib
@@ -32,10 +30,9 @@ class MsoFile(Unpacker):
         else:
             raise UnpackException("GZIP stream not found")
 
-        try:
-            return olefile.OleFileIO(io.BytesIO(obj))
-        except IOError as e:
-            raise UnpackException(e)
+        f = File(contents=obj)
+        f.raise_no_ole("No OLE file found in MSO")
+        return f.ole
 
     def walk_stream(self, ole, name):
         try:
@@ -63,7 +60,7 @@ class MsoFile(Unpacker):
 
     def walk_ole(self, ole):
         for dirname in ole.listdir():
-            if dirname[0] == "\x01Ole10Native":
+            if dirname == ["\x01Ole10Native"]:
                 self.parse_ole10_native(ole, dirname[0])
                 continue
 

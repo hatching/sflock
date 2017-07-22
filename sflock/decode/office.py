@@ -3,7 +3,6 @@
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 import hashlib
-import olefile
 import struct
 import xml.dom.minidom
 
@@ -94,15 +93,13 @@ class Office(Decoder):
         return File(contents="".join(ret))
 
     def decrypt(self):
-        try:
-            ole = olefile.OleFileIO(self.f.stream)
-        except IOError:
+        if not self.f.ole:
             return
 
         self._secret_key = None
 
         info = xml.dom.minidom.parseString(
-            ole.openstream("EncryptionInfo").read()[8:]
+            self.f.ole.openstream("EncryptionInfo").read()[8:]
         )
         key_data = info.getElementsByTagName("keyData")[0]
         password = info.getElementsByTagName("p:encryptedKey")[0]
@@ -118,4 +115,4 @@ class Office(Decoder):
         ei.password_hash_alg = password.getAttribute("hashAlgorithm")
         ei.password_key_bits = int(password.getAttribute("keyBits"))
 
-        return self.decrypt_blob(ole.openstream("EncryptedPackage"))
+        return self.decrypt_blob(self.f.ole.openstream("EncryptedPackage"))
