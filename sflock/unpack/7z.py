@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2016 Jurriaan Bremer.
+# Copyright (C) 2015-2017 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -13,7 +13,8 @@ class Zip7File(Unpacker):
     name = "7zfile"
     exe = "/usr/bin/7z"
     exts = ".7z"
-    magic = "7-zip archive"
+    # TODO Should we use "isoparser" (check PyPI) instead of 7z?
+    magic = "7-zip archive", "# ISO 9660"
 
     def unpack(self, password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()

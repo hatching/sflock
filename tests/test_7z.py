@@ -2,6 +2,7 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import hashlib
 import pytest
 
 from sflock.abstracts import File
@@ -115,6 +116,22 @@ class Test7zFile(object):
         assert t.unpacker == "7zfile"
         assert t.filename == "foo"
         """
+
+    def test_payment_iso(self):
+        t = Zip7File(f("payment.iso"))
+        assert t.handles() is True
+        assert not t.f.selected
+        files = t.unpack()
+        assert len(files) == 1
+        assert hashlib.md5(files[0].contents).hexdigest() == (
+            "eccd7c33037181277ae23f3c3b5baf74"
+        )
+        assert not files[0].children
+        assert files[0].relaname == (
+            "payment slip and bank confirmation document.exe"
+        )
+        assert files[0].selected is True
+        assert files[0].duplicate is False
 
 @pytest.mark.skipif("Zip7File(None).supported()")
 def test_no7z_plain():
