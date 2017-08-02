@@ -9,8 +9,7 @@ from sflock.abstracts import Unpacker, File
 
 class PdfFile(Unpacker):
     name = "pdffile"
-    exts = ".pdf"
-    magic = "PDF document"
+    package = "pdf"
 
     def supported(self):
         return True
@@ -26,14 +25,9 @@ class PdfFile(Unpacker):
             temporary = True
 
         p = peepdf.PDFCore.PDFParser()
-        r, f = p.parse(
-            filepath, forceMode=True,
-            looseMode=True, manualAnalysis=False
+        _, f = p.parse(
+            filepath, forceMode=True, looseMode=True, manualAnalysis=False
         )
-        if r:
-            if temporary:
-                os.unlink(filepath)
-            return
 
         for version in xrange(f.updates + 1):
             for obj in f.body[version].objects.values():

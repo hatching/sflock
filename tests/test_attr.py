@@ -2,9 +2,15 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import json
 import os
 
-from sflock import unpack
+from sflock.abstracts import File
+from sflock.main import unpack
+from sflock.unpack import plugins
+
+def f(filename):
+    return File.from_path("tests/files/%s" % filename)
 
 def test_attributes():
     for filename in os.listdir("tests/files"):
@@ -15,4 +21,12 @@ def test_attributes():
             continue
 
         f = unpack("tests/files/%s" % filename)
-        f.to_dict()
+        assert json.loads(json.dumps(f.to_dict())) == f.to_dict()
+
+def test_unpack_not_none():
+    for filename in os.listdir("tests/files"):
+        if os.path.isdir("tests/files/%s" % filename):
+            continue
+
+        for unpacker in plugins.values():
+            assert unpacker(f(filename)).unpack() is not None

@@ -34,7 +34,11 @@ class BupFile(Unpacker):
             self.f.error = "No OLE structure found"
             return []
 
+        if ["Details"] not in self.f.ole.listdir():
+            return []
+
         details = self.decrypt(self.f.ole.openstream("Details").read())
+
         config = ConfigParser.ConfigParser()
         config.readfp(io.BytesIO(details))
 

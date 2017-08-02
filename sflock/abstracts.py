@@ -12,6 +12,7 @@ import shutil
 import tempfile
 
 from sflock.compat import magic
+from sflock.exception import UnpackException
 from sflock.misc import data_file, make_list
 from sflock.pick import package, platform
 
@@ -19,7 +20,8 @@ class Unpacker(object):
     """Abstract class for Unpacker engines."""
     name = None
     exe = None
-    exts = []
+    exts = ()
+    package = None
     magic = None
 
     # Initiated at runtime - contains each Unpacker subclass.
@@ -41,6 +43,9 @@ class Unpacker(object):
 
     def handles(self):
         if self.f.filename and self.f.filename.lower().endswith(self.exts):
+            return True
+
+        if self.f.package and self.f.package in make_list(self.package or []):
             return True
 
         for magic in make_list(self.magic or []):
