@@ -29,4 +29,6 @@ def test_unpack_not_none():
             continue
 
         for unpacker in plugins.values():
+            if not unpacker(None).supported():
+                continue
             assert unpacker(f(filename)).unpack() is not None

@@ -12,7 +12,7 @@ from sflock.exception import UnpackException
 class Zip7File(Unpacker):
     name = "7zfile"
     exe = "/usr/bin/7z"
-    exts = ".7z"
+    exts = ".7z", ".iso"
     # TODO Should we use "isoparser" (check PyPI) instead of 7z?
     magic = "7-zip archive", "# ISO 9660"
 
