@@ -91,7 +91,7 @@ def office_ole(f):
 def powershell(f):
     POWERSHELL_STRS = [
         "$PSHOME", "Get-WmiObject", "Write-", "new-object",
-        "Start-Process", "Copy-Item", "Set-ItemProperty"
+        "Start-Process", "Copy-Item", "Set-ItemProperty", "Select-Object"
     ]
 
     found = 0
@@ -99,7 +99,7 @@ def powershell(f):
         if s in f.contents:
             found += 1
 
-    if found > 5:
+    if found > 1:
         return "ps1"
 
 def javascript(f):
@@ -153,6 +153,10 @@ def android(f):
         return
     return "apk"
 
+def bash_script(f):
+    if f.filename.endswith(".sh"):
+        return "generic"
+
 def elf_executable(f):
     if f.magic.startswith("ELF"):
         return "generic"
@@ -168,5 +172,5 @@ def identify(f):
 
 identifiers = [
     office_zip, office_ole, office_webarchive, office_activemime,
-    hta, powershell, javascript, visualbasic, android, java, wsf, elf_executable,
+    hta, powershell, javascript, visualbasic, android, java, wsf,
 ]
