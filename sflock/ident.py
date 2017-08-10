@@ -153,6 +153,10 @@ def android(f):
         return
     return "apk"
 
+def elf_executable(f):
+    if f.magic.startswith("ELF"):
+        return "generic"
+
 def identify(f):
     if not f.stream.read(0x1000):
         return
@@ -164,5 +168,5 @@ def identify(f):
 
 identifiers = [
     office_zip, office_ole, office_webarchive, office_activemime,
-    hta, powershell, javascript, visualbasic, android, java, wsf,
+    hta, powershell, javascript, visualbasic, android, java, wsf, elf_executable,
 ]
