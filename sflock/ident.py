@@ -94,9 +94,13 @@ def powershell(f):
         "Start-Process", "Copy-Item", "Set-ItemProperty"
     ]
 
+    found = 0
     for s in POWERSHELL_STRS:
         if s in f.contents:
-            return "ps1"
+            found += 1
+
+    if found > 5:
+        return "ps1"
 
 def javascript(f):
     JS_STRS = [
