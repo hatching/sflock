@@ -130,5 +130,10 @@ platforms = {
 }
 
 def platform(f):
-    # TODO Handle "generic".
+    if f.package == "generic":
+        if is_bash_script(f) or is_elf_executable(f):
+            return "linux"
+        else:
+            return "windows"
+
     return platforms.get(f.package)
