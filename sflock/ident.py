@@ -153,14 +153,6 @@ def android(f):
         return
     return "apk"
 
-def bash_script(f):
-    if f.filename.endswith(".sh"):
-        return "generic"
-
-def elf_executable(f):
-    if f.magic.startswith("ELF"):
-        return "generic"
-
 def identify(f):
     if not f.stream.read(0x1000):
         return
