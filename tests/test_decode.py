@@ -19,10 +19,12 @@ def test_no_pycrypto():
 
 @pytest.mark.skipif("sys.platform != 'linux2'")
 def test_decode_docx():
-    assert Office(f("encrypted1.docx"), "Password1234_").decrypt().magic in (
+    assert Office(f("encrypted1.docx"), "Password1234_").decode().magic in (
         "Microsoft Word 2007+", "Zip archive data, at least v2.0 to extract"
     )
+    # Invalid password provided.
+    assert Office(f("encrypted1.docx"), "Password12345").decode() is False
 
 @pytest.mark.skipif("sys.platform != 'linux2'")
 def test_decode_regular():
-    assert Office(f("maldoc/0882c8"), "").decrypt() is None
+    assert Office(f("maldoc/0882c8"), "").decode() is None
