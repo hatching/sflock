@@ -91,12 +91,16 @@ def office_ole(f):
 def powershell(f):
     POWERSHELL_STRS = [
         "$PSHOME", "Get-WmiObject", "Write-", "new-object",
-        "Start-Process", "Copy-Item", "Set-ItemProperty"
+        "Start-Process", "Copy-Item", "Set-ItemProperty", "Select-Object"
     ]
 
+    found = 0
     for s in POWERSHELL_STRS:
         if s in f.contents:
-            return "ps1"
+            found += 1
+
+    if found > 1:
+        return "ps1"
 
 def javascript(f):
     JS_STRS = [

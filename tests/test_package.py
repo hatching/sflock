@@ -62,6 +62,7 @@ def test_package():
     assert File(filename="a.cmd").package == "generic"
     assert File(filename="a.lnk").package == "generic"
     assert File(filename="a.hta").package == "ie"
+    assert File(filename="a.sh").package == "generic"
 
 def test_case():
     assert File(filename="A.PDF").package == "pdf"
@@ -124,7 +125,8 @@ def test_platform():
     assert File(filename="a.wsc").platform == "windows"
     assert File(filename="a.htm").platform == "windows"
     assert File(filename="a.html").platform == "windows"
-    assert File(filename="a.bat").platform is None
-    assert File(filename="a.cmd").platform is None
-    assert File(filename="a.lnk").platform is None
+    assert File(filename="a.bat").platform == "windows"
+    assert File(filename="a.cmd").platform == "windows"
+    assert File(filename="a.lnk").platform == "windows"
     assert File(filename="a.hta").platform == "windows"
+    assert File(filename="a.sh").platform == "linux"

@@ -17,10 +17,7 @@ def test_lnk():
     f = File(contents=open("tests/files/lnk_1.lnk", "rb").read())
     assert package(f) == "generic"
 
-@pytest.mark.xfail
 def test_lnk_windows():
-    # TODO This is currently assigned no platform due to "generic" also being
-    # a Linux Analysis analysis package.
     f = File(contents=open("tests/files/lnk_1.lnk", "rb").read())
     assert platform(f) == "windows"
 
