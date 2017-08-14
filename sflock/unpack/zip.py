@@ -5,16 +5,12 @@
 import zipfile
 
 from sflock.abstracts import File, Unpacker
-from sflock.config import iter_passwords
 from sflock.exception import UnpackException
 
 class ZipFile(Unpacker):
     name = "zipfile"
     exts = ".zip"
     magic = "Zip archive data"
-
-    def init(self):
-        self.known_passwords = set()
 
     def supported(self):
         return True
@@ -26,23 +22,7 @@ class ZipFile(Unpacker):
             return True
         return False
 
-    def _bruteforce(self, archive, entry, passwords):
-        for password in passwords:
-            try:
-                archive.setpassword(password)
-                ret = File(
-                    relapath=entry.filename,
-                    contents=archive.read(entry),
-                    password=password
-                )
-                self.known_passwords.add(password)
-                return ret
-            except (RuntimeError, zipfile.BadZipfile) as e:
-                msg = e.message or e.args[0]
-                if "Bad password" not in msg and "Bad CRC-32" not in msg:
-                    raise UnpackException("Unknown zipfile error: %s" % e)
-
-    def _decrypt(self, archive, entry, password):
+    def decrypt(self, password, archive, entry):
         try:
             archive.setpassword(password)
             return File(
@@ -50,22 +30,16 @@ class ZipFile(Unpacker):
                 contents=archive.read(entry),
                 password=password
             )
-        except RuntimeError as e:
-            if "password required" not in e.args[0] and \
-                    "Bad password" not in e.args[0]:
-                raise UnpackException("Unknown zipfile error: %s" % e)
+        except (RuntimeError, zipfile.BadZipfile) as e:
+            msg = e.message or e.args[0]
+            if "Bad password" in msg:
+                return
+            if "Bad CRC-32" in msg:
+                return
+            if "password required" in msg:
+                return
 
-        # Bruteforce the password. First try all passwords that are known to
-        # work and if that fails try our entire dictionary.
-        return (
-            self._bruteforce(archive, entry, self.known_passwords) or
-            self._bruteforce(archive, entry, iter_passwords()) or
-            File(
-                relapath=entry.filename,
-                mode="failed",
-                description="Error decrypting file"
-            )
-        )
+            raise UnpackException("Unknown zipfile error: %s" % e)
 
     def unpack(self, password=None, duplicates=None):
         try:
@@ -80,6 +54,11 @@ class ZipFile(Unpacker):
             if entry.filename.endswith("/"):
                 continue
 
-            entries.append(self._decrypt(archive, entry, password))
+            f = self.bruteforce(password, archive, entry)
+            entries.append(f or File(
+                filename=entry.filename,
+                mode="failed",
+                description="Error decrypting file"
+            ))
 
         return self.process(entries, duplicates)

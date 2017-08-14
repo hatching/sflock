@@ -70,6 +70,18 @@ class TestZipfile(object):
         assert files[0].parentdirs == []
         assert not files[0].selected
 
+        z = ZipFile(f("zip_encrypted2.zip"))
+        assert z.handles() is True
+        assert not z.f.selected
+        files = list(z.unpack(["sflock"]))
+        assert len(files) == 1
+        assert files[0].relapath == "sflock.txt"
+        assert files[0].contents == "sflock_encrypted_zip\n"
+        assert files[0].password == "sflock"
+        assert files[0].magic == "ASCII text"
+        assert files[0].parentdirs == []
+        assert not files[0].selected
+
     def test_nested(self):
         assert "Zip archive" in f("zip_nested.zip").magic
         z = ZipFile(f("zip_nested.zip"))

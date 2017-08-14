@@ -12,6 +12,7 @@ import shutil
 import tempfile
 
 from sflock.compat import magic
+from sflock.config import iter_passwords
 from sflock.exception import UnpackException
 from sflock.misc import data_file, make_list
 from sflock.pick import package, platform
@@ -107,6 +108,22 @@ class Unpacker(object):
 
         shutil.rmtree(dirpath)
         return self.process(entries, duplicates)
+
+    def bruteforce(self, passwords, *args, **kwargs):
+        if isinstance(passwords, basestring):
+            passwords = [passwords]
+        elif not passwords:
+            passwords = []
+
+        for password in iter_passwords():
+            if password not in passwords:
+                passwords.append(password)
+
+        passwords.insert(0, None)
+        for password in passwords:
+            value = self.decrypt(password, *args, **kwargs)
+            if value:
+                return value
 
 class Decoder(object):
     """Abstract class for Decoder engines."""
