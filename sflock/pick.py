@@ -99,20 +99,14 @@ def package(f):
     if "HTML" in f.magic or filename.endswith(ie_ext):
         return "ie"
 
-    if is_bash_script(f):
+    if is_bash_script(f) or is_elf_executable(f):
         return "generic"
-
-    if f.magic.startswith("ELF"):
-        return "generic"
-
 
 def is_bash_script(f):
     return f.filename and f.filename.endswith(".sh")
 
-
 def is_elf_executable(f):
     return f.magic.startswith("ELF")
-
 
 platforms = {
     "cpl": "windows",
