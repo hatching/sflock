@@ -130,6 +130,9 @@ class Office(Decoder):
         if not self.f.ole:
             return
 
+        if ["EncryptionInfo"] not in self.f.ole.listdir():
+            return
+
         info = xml.dom.minidom.parseString(
             self.f.ole.openstream("EncryptionInfo").read()[8:]
         )

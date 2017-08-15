@@ -3,6 +3,7 @@
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 import zipfile
+import zlib
 
 from sflock.abstracts import File, Unpacker
 from sflock.exception import UnpackException
@@ -30,13 +31,17 @@ class ZipFile(Unpacker):
                 contents=archive.read(entry),
                 password=password
             )
-        except (RuntimeError, zipfile.BadZipfile) as e:
+        except (RuntimeError, zipfile.BadZipfile, zlib.error) as e:
             msg = e.message or e.args[0]
             if "Bad password" in msg:
                 return
             if "Bad CRC-32" in msg:
                 return
             if "password required" in msg:
+                return
+            if "Truncated file header" in msg:
+                return
+            if "invalid distance too far back" in msg:
                 return
 
             raise UnpackException("Unknown zipfile error: %s" % e)

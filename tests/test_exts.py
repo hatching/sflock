@@ -5,7 +5,7 @@
 from sflock.abstracts import File, Unpacker
 
 def guess(filename):
-    return list(Unpacker.guess(File(filename=filename)))
+    return sorted(list(Unpacker.guess(File(filename=filename))))
 
 def test_extensions():
     assert guess("a.tar") == ["tarfile"]
@@ -17,7 +17,7 @@ def test_extensions():
     assert guess("a.ace") == ["acefile"]
     assert guess("a.eml") == ["emlfile"]
     assert guess("a.msg") == ["msgfile"]
-    assert guess("a.mso") == ["msofile"]
+    assert guess("a.mso") == ["msofile", "office"]
     assert guess("a.bup") == ["bupfile"]
 
 def test_case():
