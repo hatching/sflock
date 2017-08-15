@@ -55,21 +55,7 @@ def unpack(filepath=None, contents=None, password=None, filename=None,
     else:
         f = File.from_path(filepath, filename=filename)
 
-    if f.sha256 not in duplicates:
-        duplicates.append(f.sha256)
-    else:
-        f.duplicate = True
-
-    # Determine how we're going to unpack this file (if at all). It may not
-    # have a file extension, e.g., when its filename is a hash. In those cases
-    # we're going to take a look at the contents of the file.
-    f.unpacker = Unpacker.guess(f)
-
-    # Actually unpack any embedded files in this archive.
-    if f.unpacker:
-        plugin = plugins[f.unpacker](f)
-        if plugin.supported():
-            f.children = plugin.unpack(password, duplicates)
+    Unpacker.single(f, password, duplicates)
 
     ident(f)
     return f

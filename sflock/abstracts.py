@@ -59,23 +59,30 @@ class Unpacker(object):
         """Guesses the unpacker based on the filename and/or contents."""
         for plugin in Unpacker.plugins.values():
             if plugin(f).handles():
-                return plugin.name
+                yield plugin.name
 
     def unpack(self, password=None, duplicates=None):
         raise NotImplementedError
 
-    def process(self, entries, duplicates):
+    def process(self, entries, duplicates, password=None):
         """Recursively unpacks embedded archives if found."""
         if duplicates is None:
             duplicates = []
 
         ret = []
         for f in entries:
-            f.unpacker = Unpacker.guess(f)
-            if f.unpacker:
-                plugin = self.plugins[f.unpacker](f)
+            for unpacker in Unpacker.guess(f):
+                plugin = self.plugins[unpacker](f)
                 if plugin.supported():
-                    f.children = plugin.unpack(duplicates=duplicates)
+                    f.children = plugin.unpack(password, duplicates)
+                    # TODO Improve this. The following is simply a guesstimate
+                    # towards which unpacker is actually used. If there are
+                    # multiple unpackers eligible for the current file, but
+                    # neither unpacks anything, then f.unpacker will be set to
+                    # the last available unpacker.
+                    f.unpacker = unpacker
+                    if f.children:
+                        break
 
             if f.sha256 not in duplicates:
                 duplicates.append(f.sha256)
@@ -85,6 +92,10 @@ class Unpacker(object):
             f.parent = self.f
             ret.append(f)
         return ret
+
+    @staticmethod
+    def single(f, password, duplicates):
+        return Unpacker(None).process([f], duplicates, password)
 
     def process_directory(self, dirpath, duplicates, password=None):
         """Enumerates a directory, removes the directory, and returns data
