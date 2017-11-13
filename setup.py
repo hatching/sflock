@@ -32,7 +32,7 @@ setup(
     ],
     extras_require={
         ":sys_platform == 'linux2'": [
-            "pycrypto==2.6.1",
+            "cryptography>=2.1",
         ],
     },
 )

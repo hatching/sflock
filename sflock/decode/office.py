@@ -7,11 +7,16 @@ import struct
 import xml.dom.minidom
 
 try:
-    from Crypto.Cipher import AES, PKCS1_v1_5
-    from Crypto.PublicKey import RSA
-    HAVE_PYCRYPTO = True
+    from cryptography.hazmat.backends import default_backend
+    from cryptography.hazmat.primitives.ciphers import (
+        Cipher, algorithms, modes
+    )
+
+    # from Crypto.Cipher import PKCS1_v1_5
+    # from Crypto.PublicKey import RSA
+    HAVE_CRYPTOGRAPHY = True
 except ImportError:
-    HAVE_PYCRYPTO = False
+    HAVE_CRYPTOGRAPHY = False
 
 from sflock.abstracts import Decoder, File
 from sflock.exception import DecoderException
@@ -31,10 +36,10 @@ class Office(Decoder):
     name = "office"
 
     def init(self):
-        if not HAVE_PYCRYPTO:
+        if not HAVE_CRYPTOGRAPHY:
             raise DecoderException(
                 "Microsoft Office document decoding is only supported on "
-                "Linux systems or when manually installing PyCrypto!"
+                "Linux systems or when manually installing 'cryptography'!"
             )
 
         self.secret_key = None
@@ -68,15 +73,16 @@ class Office(Decoder):
     def init_secret_key(self):
         # TODO Add support for private keys.
         if False:
-            rsa = PKCS1_v1_5.new(RSA.importKey(self._private_key))
-            self.secret_key = rsa.decrypt(self.ei.encrypted_key_value, None)
+            # rsa = PKCS1_v1_5.new(RSA.importKey(self._private_key))
+            # self.secret_key = rsa.decrypt(self.ei.encrypted_key_value, None)
             # Presumably the following is correct.
-            self.verifier_hash_input = rsa.decrypt(
-                self.ei.verifier_hash_input, None
-            )
-            self.verifier_hash_value = rsa.decrypt(
-                self.ei.verifier_hash_value, None
-            )
+            # self.verifier_hash_input = rsa.decrypt(
+                # self.ei.verifier_hash_input, None
+            # )
+            # self.verifier_hash_value = rsa.decrypt(
+                # self.ei.verifier_hash_value, None
+            # )
+            pass
 
         if self.password:
             block_verifier_input = bytearray([
@@ -91,27 +97,32 @@ class Office(Decoder):
 
             # AES decrypt the encrypted* values with their pre-defined block
             # keys and salt in order to get secret key.
-            aes = AES.new(
-                self.gen_encryption_key(block_verifier_input),
-                AES.MODE_CBC, self.ei.password_salt
-            )
-            self.verifier_hash_input = aes.decrypt(
+            aes = Cipher(
+                algorithms.AES(self.gen_encryption_key(block_verifier_input)),
+                modes.CBC(self.ei.password_salt),
+                backend=default_backend()
+            ).decryptor()
+            self.verifier_hash_input = aes.update(
                 self.ei.verifier_hash_input
-            )
+            ) + aes.finalize()
 
-            aes = AES.new(
-                self.gen_encryption_key(block_verifier_value),
-                AES.MODE_CBC, self.ei.password_salt
-            )
-            self.verifier_hash_value = aes.decrypt(
+            aes = Cipher(
+                algorithms.AES(self.gen_encryption_key(block_verifier_value)),
+                modes.CBC(self.ei.password_salt),
+                backend=default_backend()
+            ).decryptor()
+            self.verifier_hash_value = aes.update(
                 self.ei.verifier_hash_value
-            )
+            ) + aes.finalize()
 
-            aes = AES.new(
-                self.gen_encryption_key(block_encrypted_key),
-                AES.MODE_CBC, self.ei.password_salt
+            aes = Cipher(
+                algorithms.AES(self.gen_encryption_key(block_encrypted_key)),
+                modes.CBC(self.ei.password_salt),
+                backend=default_backend()
+            ).decryptor()
+            self.secret_key = (
+                aes.update(self.ei.encrypted_key_value) + aes.finalize()
             )
-            self.secret_key = aes.decrypt(self.ei.encrypted_key_value)
 
     def decrypt_blob(self, f):
         ret = []
@@ -122,8 +133,12 @@ class Office(Decoder):
                 self.ei.key_data_salt + struct.pack("<I", idx),
                 self.ei.key_data_hash_alg
             )
-            aes = AES.new(self.secret_key, AES.MODE_CBC, iv[:16])
-            ret.append(aes.decrypt(f.read(0x1000)))
+            aes = Cipher(
+                algorithms.AES(self.secret_key),
+                modes.CBC(iv[:16]),
+                backend=default_backend()
+            ).decryptor()
+            ret.append(aes.update(f.read(0x1000)) + aes.finalize())
         return File(contents="".join(ret))
 
     def decode(self):
