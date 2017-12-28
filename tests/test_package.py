@@ -48,7 +48,7 @@ def test_package():
     assert File(filename="a.pyo").package == "python"
     assert File(filename="a.vbs").package == "vbs"
     assert File(filename="a.js").package == "js"
-    assert File(filename="a.jse").package == "js"
+    assert File(filename="a.jse").package == "jse"
     assert File(filename="a.msi").package == "msi"
     assert File(filename="a.ps1").package == "ps1"
     assert File(filename="a.ps1xml").package == "ps1"
