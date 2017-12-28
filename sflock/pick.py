@@ -78,8 +78,11 @@ def package(f):
     if filename.endswith(".vbs"):
         return "vbs"
 
-    if filename.endswith((".js", ".jse")):
+    if filename.endswith(".js"):
         return "js"
+
+    if filename.endswith(".jse"):
+	return "jse"
 
     if filename.endswith(".msi"):
         return "msi"
