@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (C) 2015-2017 Jurriaan Bremer.
+# Copyright (C) 2015-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -7,7 +7,7 @@ from setuptools import setup
 
 setup(
     name="SFlock",
-    version="0.2.17",
+    version="0.2.18",
     author="Jurriaan Bremer",
     author_email="jbr@cuckoo.sh",
     packages=[
