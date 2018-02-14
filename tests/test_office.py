@@ -39,4 +39,7 @@ class TestOfficeFile(object):
         d, = z.unpack("Password1234_")
         assert z.f.selected is False
         assert z.f.preview is True
-        assert d.magic == "Microsoft Word 2007+"
+        assert d.magic.startswith(("Microsoft Word 2007+", "Zip archive data"))
+        assert d.package == "doc"
+        assert d.selected is True
+        assert d.preview is False

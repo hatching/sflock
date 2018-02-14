@@ -19,6 +19,9 @@ class OfficeFile(Unpacker):
         return plugins["office"](self.f, password).decode()
 
     def unpack(self, password=None, duplicates=None):
+        # Avoiding recursive imports. TODO Can this be generalized?
+        from sflock import ident
+
         entries = []
 
         f = self.bruteforce(password)
@@ -27,4 +30,6 @@ class OfficeFile(Unpacker):
             self.f.preview = True
             self.f.selected = False
 
-        return self.process(entries, duplicates)
+        ret = self.process(entries, duplicates)
+        f and ident(f)
+        return ret
