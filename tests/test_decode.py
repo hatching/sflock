@@ -2,10 +2,7 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
-import pytest
-
 from sflock.abstracts import File
-from sflock.exception import DecoderException
 from sflock.decode.office import Office
 from sflock.main import unpack
 
@@ -15,7 +12,6 @@ def f(filename):
 def f2(filename):
     return "tests/files/%s" % filename
 
-@pytest.mark.skipif("sys.platform != 'linux2'")
 def test_decode_docx():
     assert Office(f("encrypted1.docx"), "Password1234_").decode().magic in (
         "Microsoft Word 2007+", "Zip archive data, at least v2.0 to extract"
@@ -23,7 +19,6 @@ def test_decode_docx():
     # Invalid password provided.
     assert Office(f("encrypted1.docx"), "Password12345").decode() is False
 
-@pytest.mark.skipif("sys.platform != 'linux2'")
 def test_decode_regular():
     assert Office(f("maldoc/0882c8"), "").decode() is None
 

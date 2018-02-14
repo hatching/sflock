@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Jurriaan Bremer.
+# Copyright (C) 2017-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -11,7 +11,6 @@ from sflock.unpack import OfficeFile
 def f(filename):
     return File.from_path("tests/files/%s" % filename)
 
-@pytest.mark.skipif("sys.platform != 'linux2'")
 class TestOfficeFile(object):
     def test_office_plain(self):
         z = OfficeFile(f("maldoc.xls"))
@@ -41,11 +40,3 @@ class TestOfficeFile(object):
         assert z.f.selected is False
         assert z.f.preview is True
         assert d.magic == "Microsoft Word 2007+"
-
-@pytest.mark.skipif("sys.platform == 'linux2'")
-def test_no_pycrypto():
-    z = OfficeFile(f("encrypted1.docx"))
-    assert z.handles() is True
-    z.unpack("Password1234_")
-    assert z.f.mode == "failed"
-    assert "To decrypt" in z.f.error
