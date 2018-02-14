@@ -26,13 +26,9 @@ setup(
     include_package_data=True,
     install_requires=[
         "click==6.6",
+        "cryptography>=2.1",
         "olefile==0.43",
         "peepdf>=0.3.4",
         "python-magic==0.4.12",
     ],
-    extras_require={
-        ":sys_platform == 'linux2'": [
-            "cryptography>=2.1",
-        ],
-    },
 )

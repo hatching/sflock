@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Jurriaan Bremer.
+# Copyright (C) 2017-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -17,17 +17,7 @@ class OfficeFile(Unpacker):
         if password is None:
             return
 
-        try:
-            d = plugins["office"](self.f, password)
-        except DecoderException:
-            # TODO Should this be moved to the supported() method?
-            self.f.mode = "failed"
-            self.f.error = (
-                "To decrypt a Microsoft Office document PyCrypto is required!"
-            )
-            return
-
-        return d.decode()
+        return plugins["office"](self.f, password).decode()
 
     def unpack(self, password=None, duplicates=None):
         entries = []

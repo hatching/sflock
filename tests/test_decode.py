@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Jurriaan Bremer.
+# Copyright (C) 2017-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -14,12 +14,6 @@ def f(filename):
 
 def f2(filename):
     return "tests/files/%s" % filename
-
-@pytest.mark.skipif("sys.platform == 'linux2'")
-def test_no_pycrypto():
-    with pytest.raises(DecoderException) as e:
-        assert Office(None, None)
-    e.match("manually installing PyCrypto")
 
 @pytest.mark.skipif("sys.platform != 'linux2'")
 def test_decode_docx():

@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Jurriaan Bremer.
+# Copyright (C) 2017-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -6,20 +6,12 @@ import hashlib
 import struct
 import xml.dom.minidom
 
-try:
-    from cryptography.hazmat.backends import default_backend
-    from cryptography.hazmat.primitives.ciphers import (
-        Cipher, algorithms, modes
-    )
-
-    # from Crypto.Cipher import PKCS1_v1_5
-    # from Crypto.PublicKey import RSA
-    HAVE_CRYPTOGRAPHY = True
-except ImportError:
-    HAVE_CRYPTOGRAPHY = False
+# from Crypto.Cipher import PKCS1_v1_5
+# from Crypto.PublicKey import RSA
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
 from sflock.abstracts import Decoder, File
-from sflock.exception import DecoderException
 
 class EncryptedInfo(object):
     key_data_salt = None
@@ -36,12 +28,6 @@ class Office(Decoder):
     name = "office"
 
     def init(self):
-        if not HAVE_CRYPTOGRAPHY:
-            raise DecoderException(
-                "Microsoft Office document decoding is only supported on "
-                "Linux systems or when manually installing 'cryptography'!"
-            )
-
         self.secret_key = None
         self.verifier_hash_input = None
         self.verifier_hash_value = None
