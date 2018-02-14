@@ -8,7 +8,7 @@ matrix:
       language: generic
 
 install:
-  - python setup.py develop
+  - pip install -e .
   - pip install pytest pytest-cov codecov coveralls mock
   - |
     if [[ $TRAVIS_OS_NAME == "osx" ]]; then
