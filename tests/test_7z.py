@@ -66,6 +66,12 @@ class Test7zFile(object):
         assert t.filepath is None
         assert len(t.children) == 1
 
+    def test_gzip_file(self):
+        t = unpack(contents=open("tests/files/gzip1.gzip", "rb").read())
+        assert t.unpacker == "gzipfile"
+        assert len(t.children) == 1
+        assert len(t.children[0].contents) == 801792
+
     """
     def test_zip_encrypted(self):
         assert "7-zip archive" in f("7z_encrypted.7z").magic

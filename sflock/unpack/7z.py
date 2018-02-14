@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2017 Jurriaan Bremer.
+# Copyright (C) 2015-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -37,6 +37,36 @@ class Zip7File(Unpacker):
             subprocess.check_output([
                 self.zipjail, filepath, dirpath,
                 self.exe, "x", "-mmt=off", "-o%s" % dirpath, filepath,
+            ])
+        except subprocess.CalledProcessError as e:
+            self.f.mode = "failed"
+            self.f.error = e
+
+        if temporary:
+            os.unlink(filepath)
+
+        return self.process_directory(dirpath, duplicates)
+
+class GzipFile(Unpacker):
+    name = "gzipfile"
+    exe = "/usr/bin/7z"
+    exts = ".gzip"
+    magic = "gzip compressed data, was"
+
+    def unpack(self, password=None, duplicates=None):
+        dirpath = tempfile.mkdtemp()
+
+        if self.f.filepath:
+            filepath = self.f.filepath
+            temporary = False
+        else:
+            filepath = self.f.temp_path(".7z")
+            temporary = True
+
+        try:
+            subprocess.check_output([
+                self.zipjail, filepath, dirpath,
+                self.exe, "x", "-o%s" % dirpath, filepath,
             ])
         except subprocess.CalledProcessError as e:
             self.f.mode = "failed"
