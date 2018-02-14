@@ -51,13 +51,13 @@ https://github.com/ahupp/python-magic#dependencies.
 To simplify the setup phase, sflock ships the required 32-bit binaries to use
 libmagic under Windows and as such Windows support works flawlessly.
 
-Note: on Windows the `7z`, `ace`, `cab`, and `rar` file formats are not
-supported.
+Note: on Windows the `7z`, `ace`, `cab`, `gzip`, `iso`, and `rar` file
+formats are not supported.
 
-Installation (Mac OS X)
+Installation (macOS)
 =======================
 
-Since version 0.2 sflock properly supports Mac OS X-based operating systems.
+Since version 0.2 sflock properly supports macOS-based operating systems.
 One does have to manually install `libmagic` though. This may be done through
 the `brew` package manager.
 
@@ -66,8 +66,8 @@ $ brew update
 $ brew install libmagic
 ```
 
-Note: on Mac OS X the `7z`, `ace`, `cab`, and `rar` file formats are not
-supported.
+Note: on macOS the `7z`, `ace`, `cab`, `gzip`, `iso`, and `rar` file
+formats are not supported.
 
 Supported archives
 ==================
@@ -79,6 +79,8 @@ SFlock supports a number of (semi-)archive types, sorted by extension:
 * .bup (McAfee quarantine files)
 * .cab (Microsoft Cabinet archive, `requires native tooling`)
 * .eml (MIME RFC 822 email representation)
+* .gzip (gzip compressed data, `requires native tooling`)
+* .iso (ISO file container, `requires native tooling`)
 * .msg (Outlook mail message)
 * .mso (Microsoft Office Macro reference file)
 * .pdf (Attachments embedded in PDF files)
@@ -92,9 +94,9 @@ Security
 ========
 
 Due to its nature of unpacking malicious archives with, depending on the
-extension, native tools (i.e., *.7z*, *.ace*, *.cab*, *.rar*), it is
-important that such operations happen securely. SFlock therefore wraps
-execution of the native tools in [zipjail][], a usermode sandbox written
-exactly for this purpose.
+extension, native tools (i.e., *.7z*, *.ace*, *.cab*, *.gzip*, *.iso*, and
+*.rar*), it is important that such operations happen securely. SFlock
+therefore wraps execution of the native tools in [zipjail][], a usermode
+sandbox written exactly for this purpose.
 
 [zipjail]: https://github.com/jbremer/tracy/tree/master/src/zipjail
