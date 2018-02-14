@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2017 Jurriaan Bremer.
+# Copyright (C) 2015-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -31,7 +31,8 @@ class ZipFile(Unpacker):
                 contents=archive.read(entry),
                 password=password
             )
-        except (RuntimeError, zipfile.BadZipfile, zlib.error) as e:
+        except (RuntimeError, zipfile.BadZipfile, OverflowError,
+                zlib.error) as e:
             msg = e.message or e.args[0]
             if "Bad password" in msg:
                 return
@@ -42,6 +43,8 @@ class ZipFile(Unpacker):
             if "Truncated file header" in msg:
                 return
             if "invalid distance too far back" in msg:
+                return
+            if "cannot fit 'long' into" in msg:
                 return
 
             raise UnpackException("Unknown zipfile error: %s" % e)
