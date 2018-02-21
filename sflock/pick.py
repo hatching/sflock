@@ -1,4 +1,4 @@
-# Copyright (C) 2016-2017 Jurriaan Bremer.
+# Copyright (C) 2016-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -82,7 +82,7 @@ def package(f):
         return "js"
 
     if filename.endswith(".jse"):
-	return "jse"
+        return "jse"
 
     if filename.endswith(".msi"):
         return "msi"
