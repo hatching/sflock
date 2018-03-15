@@ -51,23 +51,13 @@ class VBNFile(Unpacker):
         # ata was encrypted with 0x5a
         if xor_key == 0x5a:
             chunk_bytes = decoded_bytes[-file_size:]
+            file_bytes = self.remove_chunk_bytes(chunk_bytes, chunk_offset, chunk_size, chunks)
 
         # data was encrypted with 0xa5
         if xor_key == 0xa5:
             offset = config_bytes.find("\x03\x03\x00\x00\x00\x0A\x01\x08") + 0x76
             offset_size = unpack_from("<I", config_bytes, offset)[0]
             file_offset_ratio = len(file_data) / offset_size
-
-            #TODO may need to implement explicitly for VBN inside of a VBN
-            # handle VBN within a VBN
-            # if file_name.endswith(".vbn"):
-            #     config_size = offset + 0x4
-            #     decoded_bytes = decoded_bytes[config_size:]
-            #     offset = unpack_from("<I", decoded_bytes, 0x8)[0]
-            #     offset += 0x1c
-            #     file_size = unpack_from("<I", decoded_bytes, offset)[0]
-            #     offset += 0xc
-            #     chunk_bytes = decoded_bytes[offset:offset + file_size]
 
             # file size not in config
             if offset_size == chunk_offset or file_offset_ratio == 1:
@@ -77,9 +67,10 @@ class VBNFile(Unpacker):
                 offset += 0x1c
                 file_size = unpack_from("<I", decoded_bytes, offset)[0]
                 offset += 0xc
-                chunks = (file_size / chunk_offset) * chunk_size
-                file_size += chunks
-                chunk_bytes = decoded_bytes[offset:offset + file_size]
+                chunks = (len(decoded_bytes) / chunk_offset) * chunk_size
+                unchunked_bytes = self.remove_chunk_bytes(decoded_bytes, chunk_offset, chunk_size, chunks)
+                file_bytes = unchunked_bytes[offset:offset + file_size]
+
             # file size in config
             elif file_offset_ratio > 1:
                 offset += offset_size + 0xa
@@ -88,21 +79,11 @@ class VBNFile(Unpacker):
                 chunks = (file_size / chunk_offset) * chunk_size
                 file_size += chunks
                 chunk_bytes = decoded_bytes[offset:offset + file_size]
-            #
+                file_bytes = self.remove_chunk_bytes(chunk_bytes, chunk_offset, chunk_size, chunks)
+
+            # something is wrong with the file
             else:
                 return self.process([], duplicates)
-
-        # file is not chunked
-        if chunks == 0:
-           chunk_size = 0
-
-        io_bytes = BytesIO(chunk_bytes)
-        file_bytes = bytearray()
-
-        # remove chunked bytes
-        while io_bytes.tell() < len(io_bytes.getvalue()):
-            file_bytes += io_bytes.read(chunk_offset)
-            io_bytes.read(chunk_size)
 
         entries = []
 
@@ -113,3 +94,18 @@ class VBNFile(Unpacker):
         ))
 
         return self.process(entries, duplicates)
+
+    def remove_chunk_bytes(self, chunk_bytes, chunk_offset, chunk_size, chunks):
+        # file is not chunked
+        if chunks == 0:
+            chunk_size = 0
+
+        io_bytes = BytesIO(chunk_bytes)
+        file_bytes = bytearray()
+
+        # remove chunked bytes
+        while io_bytes.tell() < len(io_bytes.getvalue()):
+            file_bytes += io_bytes.read(chunk_offset)
+            io_bytes.read(chunk_size)
+
+        return file_bytes
