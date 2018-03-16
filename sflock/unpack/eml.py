@@ -30,7 +30,7 @@ class EmlFile(Unpacker):
             line = stream.readline()
             if b":" in line:
                 keys.append(line.split(b":")[0])
-        if "From" in keys and "To" in keys:
+        if b"From" in keys and b"To" in keys:
             return True
         return False
 

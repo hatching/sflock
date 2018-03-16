@@ -20,14 +20,14 @@ class ZipFile(Unpacker):
     def handles(self):
         if super(ZipFile, self).handles():
             return True
-        if self.f.stream.read(2) == "PK":
+        if self.f.stream.read(2) == b'PK':
             return True
         return False
 
     def decrypt(self, password, archive, entry):
         try:
             archive.setpassword(password)
-            if six.PY3:
+            if six.PY3 and type(entry.filename) == str:
                 entry.filename = entry.filename.encode()
             return File(
                 relapath=entry.filename,

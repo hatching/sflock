@@ -17,11 +17,11 @@ def test_attributes():
         if os.path.isdir(b"tests/files/%s" % filename):
             continue
 
-        if "encrypted" in filename:
+        if b"encrypted" in filename:
             continue
 
         f = unpack(b"tests/files/%s" % filename)
-        assert json.loads(json.dumps(f.to_dict())) == f.to_dict()
+        assert json.loads(json.dumps(list(f.to_dict()))) == list(f.to_dict())
 
 def test_unpack_not_none():
     for filename in os.listdir(b"tests/files"):

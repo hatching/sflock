@@ -81,8 +81,7 @@ def test_eml_exception():
     EmlFile(f(b"eml_faulty.eml_")).unpack()
     assert re.compile == re_compile
 
-    with mock.patch("email.message_from_string") as p:
-        p.side_effect = Exception("test_exception")
+    with mock.patch("email.message_from_string", side_effect=Exception('test_exception')):
         with pytest.raises(Exception) as e:
             EmlFile(f(b"eml_faulty.eml_")).unpack()
         e.match("test_exception")

@@ -73,7 +73,7 @@ def office_zip(f):
     }
 
     application = re.search(
-        "<application>(.*)</application>",
+        b"<application>(.*)</application>",
         f.read(b"docProps/app.xml"), re.I
     )
     if not application:
