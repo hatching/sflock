@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Jurriaan Bremer.
+# Copyright (C) 2017-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -16,17 +16,17 @@ def test_empty():
     assert unpack(filepath).platform is None
 
 def test_identify():
-    assert identify(File("tests/files/script.js")) == "js"
-    assert identify(File("tests/files/script.wsf")) == "wsf"
-    assert identify(File("tests/files/script.vbs")) == "vbs"
-    assert identify(File("tests/files/script.ps1")) == "ps1"
+    assert identify(File(b"tests/files/script.js")) == "js"
+    assert identify(File(b"tests/files/script.wsf")) == "wsf"
+    assert identify(File(b"tests/files/script.vbs")) == "vbs"
+    assert identify(File(b"tests/files/script.ps1")) == "ps1"
     f = unpack(contents=open("tests/files/sample.jar", "rb").read())
     assert f.package == "jar"
     f = unpack(contents=open("tests/files/sample.apk", "rb").read())
     assert f.package == "apk"
-    assert identify(File("tests/files/maldoc_office.htm")) == "doc"
-    assert identify(File("tests/files/maldoc.xls")) == "xls"
-    assert identify(File("tests/files/test.hta_")) == "hta"
+    assert identify(File(b"tests/files/maldoc_office.htm")) == "doc"
+    assert identify(File(b"tests/files/maldoc.xls")) == "xls"
+    assert identify(File(b"tests/files/test.hta_")) == "hta"
 
 def test_ppt():
     f = unpack(contents=open("tests/files/ppt_1.pptx", "rb").read())
@@ -35,17 +35,17 @@ def test_ppt():
     assert f.selected is True
     assert f.package == "ppt"
     assert f.platform == "windows"
-    assert f.get_child("[Content_Types].xml") is not None
+    assert f.get_child(b"[Content_Types].xml") is not None
     assert len(f.children) == 37
 
 def test_doc1():
-    f = unpack("tests/files/doc_1.docx_")
+    f = unpack(b"tests/files/doc_1.docx_")
     assert f.duplicate is False
     assert f.selected is True
     assert f.preview is False
     assert f.package == "doc"
     assert f.platform == "windows"
-    assert f.get_child("[Content_Types].xml") is not None
+    assert f.get_child(b"[Content_Types].xml") is not None
     assert len(f.children) == 12
     assert f.children[0].selected is False
     assert f.children[4].selected is False
@@ -53,18 +53,18 @@ def test_doc1():
     assert f.children[11].selected is False
 
 def test_doc2():
-    f = unpack("tests/files/doc_2.xlsx_")
+    f = unpack(b"tests/files/doc_2.xlsx_")
     assert f.duplicate is False
     assert f.selected is True
     assert f.preview is False
     assert f.package == "xls"
     assert f.platform == "windows"
-    assert f.get_child("[Content_Types].xml") is not None
+    assert f.get_child(b"[Content_Types].xml") is not None
     assert len(f.children) == 12
     assert f.children[0].selected is False
     assert f.children[11].selected is False
 
 def test_oledoc1():
-    f = unpack("tests/files/oledoc1.doc_")
+    f = unpack(b"tests/files/oledoc1.doc_")
     assert f.package == "doc"
     assert f.platform == "windows"

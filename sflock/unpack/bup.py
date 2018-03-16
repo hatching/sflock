@@ -1,16 +1,20 @@
-# Copyright (C) 2016-2017 Jurriaan Bremer.
+# Copyright (C) 2016-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
-import ConfigParser
 import io
 import ntpath
+
+try:
+    import configparser
+except ImportError:
+    import ConfigParser as configparser
 
 from sflock.abstracts import Unpacker, File
 
 class BupFile(Unpacker):
     name = "bupfile"
-    exts = ".bup"
+    exts = b".bup"
 
     def supported(self):
         return True
@@ -39,7 +43,7 @@ class BupFile(Unpacker):
 
         details = self.decrypt(self.f.ole.openstream("Details").read())
 
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.readfp(io.BytesIO(details))
 
         ole = self.f.ole

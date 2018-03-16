@@ -1,12 +1,15 @@
-# Copyright (C) 2015-2017 Jurriaan Bremer.
+# Copyright (C) 2015-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
+
+from __future__ import print_function
 
 import click
 import glob
 import io
 import json
 import os.path
+import six
 import zipfile
 
 from sflock.abstracts import File, Unpacker
@@ -21,7 +24,7 @@ def supported():
     ret = []
     for plugin in plugins.values():
         if plugin(None).supported():
-            if isinstance(plugin.exts, basestring):
+            if isinstance(plugin.exts, six.string_types):
                 ret.append(plugin.exts)
             else:
                 ret.extend(plugin.exts)
@@ -80,7 +83,7 @@ def zipify(f, password=None):
 
 def process_file(filepath, extract):
     f = unpack(filepath)
-    print json.dumps(f.astree())
+    print(json.dumps(f.astree()))
 
     extract and f.extract(extract)
 

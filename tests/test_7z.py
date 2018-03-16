@@ -23,7 +23,7 @@ class Test7zFile(object):
         assert len(files) == 1
         assert not files[0].filepath
         assert files[0].relapath == "bar.txt"
-        assert files[0].contents == "hello world\n"
+        assert files[0].contents == b"hello world\n"
         assert files[0].magic == "ASCII text"
         assert files[0].parentdirs == []
         assert not files[0].selected
@@ -38,7 +38,7 @@ class Test7zFile(object):
 
         assert files[0].relapath == "foo/bar.txt"
         assert files[0].parentdirs == ["foo"]
-        assert files[0].contents == "hello world\n"
+        assert files[0].contents == b"hello world\n"
         assert not files[0].password
         assert files[0].magic == "ASCII text"
         assert not files[0].selected
@@ -53,7 +53,7 @@ class Test7zFile(object):
 
         assert files[0].relapath == "deepfoo/foo/bar.txt"
         assert files[0].parentdirs == ["deepfoo", "foo"]
-        assert files[0].contents == "hello world\n"
+        assert files[0].contents == b"hello world\n"
         assert not files[0].password
         assert files[0].magic == "ASCII text"
         assert not files[0].selected

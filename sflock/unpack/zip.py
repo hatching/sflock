@@ -10,7 +10,7 @@ from sflock.exception import UnpackException
 
 class ZipFile(Unpacker):
     name = "zipfile"
-    exts = ".zip"
+    exts = b".zip"
     magic = "Zip archive data"
 
     def supported(self):

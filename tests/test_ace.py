@@ -1,7 +1,8 @@
-# Copyright (C) 2016-2017 Jurriaan Bremer.
+# Copyright (C) 2016-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import os.path
 import pytest
 
 from sflock.abstracts import File
@@ -9,13 +10,13 @@ from sflock.main import unpack
 from sflock.unpack import AceFile
 
 def f(filename):
-    return File.from_path("tests/files/%s" % filename)
+    return File.from_path(os.path.join(b"tests", b"files", filename))
 
 @pytest.mark.skipif("not AceFile(None).supported()")
 class TestAceFile(object):
     def test_ace_plain(self):
-        assert "ACE archive" in f("ace_plain.ace").magic
-        t = AceFile(f("ace_plain.ace"))
+        assert "ACE archive" in f(b"ace_plain.ace").magic
+        t = AceFile(f(b"ace_plain.ace"))
         assert t.handles() is True
         assert not t.f.selected
         files = list(t.unpack())
@@ -28,8 +29,8 @@ class TestAceFile(object):
         assert not files[0].selected
 
     def test_nested_plain(self):
-        assert "ACE archive" in f("ace_nested.ace").magic
-        t = AceFile(f("ace_nested.ace"))
+        assert "ACE archive" in f(b"ace_nested.ace").magic
+        t = AceFile(f(b"ace_nested.ace"))
         assert t.handles() is True
         assert not t.f.selected
         files = list(t.unpack())
@@ -43,8 +44,8 @@ class TestAceFile(object):
         assert not files[0].selected
 
     def test_nested2_plain(self):
-        assert "ACE archive" in f("ace_nested2.ace").magic
-        t = AceFile(f("ace_nested2.ace"))
+        assert "ACE archive" in f(b"ace_nested2.ace").magic
+        t = AceFile(f(b"ace_nested2.ace"))
         assert t.handles() is True
         assert not t.f.selected
         files = list(t.unpack())
@@ -71,7 +72,7 @@ class TestAceFile(object):
         assert t.filename == "foo"
 
     def test_doubledot(self):
-        files = list(AceFile(f("ace_doubledot.ace")).unpack())
+        files = list(AceFile(f(b"ace_doubledot.ace")).unpack())
         assert len(files) == 1
         assert files[0].filename == (
             "Procurement commercial terms & conditions..exe"
@@ -86,7 +87,7 @@ class TestAceFile(object):
         assert len(t.children) == 1
 
     def test_garbage(self):
-        t = AceFile(f("garbage.bin"))
+        t = AceFile(f(b"garbage.bin"))
         assert t.handles() is False
         assert not t.f.selected
         assert not t.unpack()
@@ -94,7 +95,7 @@ class TestAceFile(object):
 
 @pytest.mark.skipif("AceFile(None).supported()")
 def test_noace_plain():
-    assert "ACE archive" in f("ace_plain.ace").magic
-    t = AceFile(f("ace_plain.ace"))
+    assert "ACE archive" in f(b"ace_plain.ace").magic
+    t = AceFile(f(b"ace_plain.ace"))
     assert t.handles() is True
     assert not t.f.selected

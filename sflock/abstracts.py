@@ -8,6 +8,7 @@ import ntpath
 import olefile
 import os.path
 import re
+import six
 import shutil
 import tempfile
 
@@ -124,7 +125,7 @@ class Unpacker(object):
         return self.process(entries, duplicates)
 
     def bruteforce(self, passwords, *args, **kwargs):
-        if isinstance(passwords, basestring):
+        if isinstance(passwords, six.string_types):
             passwords = [passwords]
         elif not passwords:
             passwords = []
@@ -179,8 +180,8 @@ class File(object):
 
         # Extract the filename from any of the available path components.
         self.filename = ntpath.basename(
-            filename or self.relapath or self.filepath or ""
-        ).rstrip("\x00") or None
+            filename or self.relapath or self.filepath or b""
+        ).rstrip(b"\x00") or None
 
         self._contents = contents
         self._package = None
@@ -278,8 +279,8 @@ class File(object):
         if not self.relapath:
             return []
 
-        dirname = os.path.dirname(self.relapath.replace("\\", "/"))
-        return dirname.split("/") if dirname else []
+        dirname = os.path.dirname(self.relapath.replace(b"\\", b"/"))
+        return dirname.split(b"/") if dirname else []
 
     @property
     def filesize(self):
@@ -331,7 +332,7 @@ class File(object):
             return
         # TODO Strip absolute paths for Windows.
         # TODO Normalize relative paths.
-        return self.relapath.lstrip("\\/").rstrip("\x00")
+        return self.relapath.lstrip(b"\\/").rstrip(b"\x00")
 
     @property
     def ole(self):
@@ -402,7 +403,7 @@ class File(object):
             }
 
         def findentry(entry, name):
-            for idx in xrange(len(entry)):
+            for idx in range(len(entry)):
                 if entry[idx]["filename"] == name:
                     return entry[idx]
 
@@ -447,7 +448,7 @@ class File(object):
     def read(self, relapath, stream=False):
         """Extract a single file from a possibly nested archive. See also the
         `extrpath` field of an embedded document."""
-        if isinstance(relapath, basestring):
+        if isinstance(relapath, six.string_types):
             relapath = relapath,
 
         relapath, nextpath = relapath[0], relapath[1:]
@@ -459,7 +460,7 @@ class File(object):
 
     def get_child(self, relaname, regex=False):
         if not regex:
-            relaname = "%s$" % re.escape(relaname)
+            relaname = b"%s$" % re.escape(relaname)
 
         for child in self.children:
             if child.relaname and re.match(relaname, child.relaname):

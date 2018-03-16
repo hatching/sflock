@@ -1,4 +1,4 @@
-# Copyright (C) 2016-2017 Jurriaan Bremer.
+# Copyright (C) 2016-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -10,30 +10,30 @@ import zipfile
 from sflock.main import unpack, supported
 
 def test_unpack1():
-    f = unpack("tests/files/tar_plain.tar")
+    f = unpack(b"tests/files/tar_plain.tar")
     assert len(f.children) == 1
-    assert f.children[0].contents == "sflock_plain_tar\n"
+    assert f.children[0].contents == b"sflock_plain_tar\n"
 
 def test_unpack2():
-    f = unpack("tests/files/tar_nested.tar.bz2")
+    f = unpack(b"tests/files/tar_nested.tar.bz2")
     assert len(f.children) == 1
-    assert f.children[0].relapath == "foo/bar.txt"
-    assert f.children[0].relaname == "foo/bar.txt"
-    assert f.children[0].contents == "hello world\n"
+    assert f.children[0].relapath == b"foo/bar.txt"
+    assert f.children[0].relaname == b"foo/bar.txt"
+    assert f.children[0].contents == b"hello world\n"
 
 def test_unpack3():
-    f = unpack("tests/files/zip_nested2.zip")
+    f = unpack(b"tests/files/zip_nested2.zip")
     assert len(f.children) == 1
-    assert f.children[0].relapath == "deepfoo/foo/bar.txt"
-    assert f.children[0].relaname == "deepfoo/foo/bar.txt"
-    assert f.children[0].contents == "hello world\n"
+    assert f.children[0].relapath == b"deepfoo/foo/bar.txt"
+    assert f.children[0].relaname == b"deepfoo/foo/bar.txt"
+    assert f.children[0].contents == b"hello world\n"
 
 def test_unpack4():
-    f = unpack("hoi.txt", "hello world")
+    f = unpack(b"hoi.txt", b"hello world")
     assert not f.children
 
 def test_astree1():
-    f = unpack("tests/files/zip_nested2.zip")
+    f = unpack(b"tests/files/zip_nested2.zip")
     assert f.astree(finger=False) == {
         "duplicate": False,
         "password": None,
@@ -58,7 +58,7 @@ def test_astree1():
                 "preview": True,
                 "children": [{
                     "filename": "bar.txt",
-                    "relapath": "deepfoo/foo/bar.txt",
+                    "relapath": b"deepfoo/foo/bar.txt",
                     "relaname": "deepfoo/foo/bar.txt",
                     "filepath": None,
                     "extrpath": [
@@ -79,14 +79,14 @@ def test_astree1():
     }
 
 def test_astree2():
-    f = unpack("tests/files/eml_tar_nested2.eml")
+    f = unpack(b"tests/files/eml_tar_nested2.eml")
     assert f.astree(finger=False) == {
         "password": None,
         "duplicate": False,
-        "filename": "eml_tar_nested2.eml",
+        "filename": b"eml_tar_nested2.eml",
         "relapath": None,
         "relaname": None,
-        "filepath": "tests/files/eml_tar_nested2.eml",
+        "filepath": b"tests/files/eml_tar_nested2.eml",
         "extrpath": [],
         "size": 15035,
         "password": None,
@@ -99,9 +99,9 @@ def test_astree2():
             "type": "container",
             "password": None,
             "duplicate": False,
-            "filename": "tar_nested2.tar",
-            "relapath": "tar_nested2.tar",
-            "relaname": "tar_nested2.tar",
+            "filename": b"tar_nested2.tar",
+            "relapath": b"tar_nested2.tar",
+            "relaname": b"tar_nested2.tar",
             "filepath": None,
             "extrpath": [
                 "tar_nested2.tar",
@@ -130,7 +130,7 @@ def test_astree2():
                         "selected": False,
                         "preview": True,
                         "filename": "bar.txt",
-                        "relapath": "deepfoo/foo/bar.txt",
+                        "relapath": b"deepfoo/foo/bar.txt",
                         "relaname": "deepfoo/foo/bar.txt",
                         "filepath": None,
                         "extrpath": [
@@ -144,13 +144,13 @@ def test_astree2():
     }
 
 def test_astree3():
-    f = unpack("tests/files/eml_nested_eml.eml")
+    f = unpack(b"tests/files/eml_nested_eml.eml")
     assert f.astree(finger=False) == {
         "duplicate": False,
-        "filename": "eml_nested_eml.eml",
+        "filename": b"eml_nested_eml.eml",
         "relapath": None,
         "relaname": None,
-        "filepath": "tests/files/eml_nested_eml.eml",
+        "filepath": b"tests/files/eml_nested_eml.eml",
         "extrpath": [],
         "package": None,
         "platform": None,
@@ -161,8 +161,8 @@ def test_astree3():
         "type": "container",
         "children": [{
             "duplicate": False,
-            "filename": "multipart.eml",
-            "relapath": "multipart.eml",
+            "filename": b"multipart.eml",
+            "relapath": b"multipart.eml",
             "relaname": "multipart.eml",
             "filepath": None,
             "extrpath": [
@@ -182,7 +182,7 @@ def test_astree3():
                 "relaname": u"\u60e1\u610f\u8edf\u9ad4.doc",
                 "filepath": None,
                 "extrpath": [
-                    "multipart.eml",
+                    b"multipart.eml",
                     u"\u60e1\u610f\u8edf\u9ad4.doc",
                 ],
                 "package": "doc",
@@ -195,9 +195,9 @@ def test_astree3():
                 "children": [],
             }, {
                 "duplicate": False,
-                "filename": "cuckoo.png",
-                "relapath": "cuckoo.png",
-                "relaname": "cuckoo.png",
+                "filename": b"cuckoo.png",
+                "relapath": b"cuckoo.png",
+                "relaname": b"cuckoo.png",
                 "filepath": None,
                 "extrpath": [
                     "multipart.eml",
@@ -233,7 +233,7 @@ def test_astree3():
     }
 
 def test_astree4():
-    f = unpack("tests/files/msg_invoice.msg")
+    f = unpack(b"tests/files/msg_invoice.msg")
     assert f.astree(finger=False) == {
         "filename": "msg_invoice.msg",
         "relapath": None,
@@ -321,7 +321,7 @@ def test_astree4():
     }
 
 def test_astree_sanitize():
-    f = unpack("tests/files/msg_invoice.msg")
+    f = unpack(b"tests/files/msg_invoice.msg")
     obj = f.astree(sanitize=False)
     assert "filepath" in obj
     assert "filepath" in obj["children"][0]
@@ -337,29 +337,29 @@ def test_astree_sanitize():
     assert "filepath" not in obj["children"][2]["children"][0]
 
 def test_extract1():
-    unpack("tests/files/tar_plain.tar").extract(tempfile.gettempdir())
-    filepath = os.path.join(tempfile.gettempdir(), "sflock.txt")
+    unpack(b"tests/files/tar_plain.tar").extract(tempfile.gettempdir())
+    filepath = os.path.join(tempfile.gettempdir(), b"sflock.txt")
     assert open(filepath, "rb").read() == "sflock_plain_tar\n"
 
 def test_extract2():
-    unpack("tests/files/zip_nested2.zip").extract(tempfile.gettempdir())
-    filepath = os.path.join(tempfile.gettempdir(), "bar.txt")
+    unpack(b"tests/files/zip_nested2.zip").extract(tempfile.gettempdir())
+    filepath = os.path.join(tempfile.gettempdir(), b"bar.txt")
     assert open(filepath, "rb").read() == "hello world\n"
 
 def test_extract3():
     dirpath = tempfile.mkdtemp()
-    f = unpack("tests/files/bup_test.bup").children[0]
+    f = unpack(b"tests/files/bup_test.bup").children[0]
 
     f.extract(dirpath, "404.exe")
     assert not os.path.exists(
-        os.path.join(dirpath, "404.exe")
+        os.path.join(dirpath, b"404.exe")
     )
     assert not os.path.exists(
-        os.path.join(dirpath, "efax_9057733019_pdf.scr")
+        os.path.join(dirpath, b"efax_9057733019_pdf.scr")
     )
 
     f.extract(dirpath, "efax_9057733019_pdf.scr")
-    filepath = os.path.join(dirpath, "efax_9057733019_pdf.scr")
+    filepath = os.path.join(dirpath, b"efax_9057733019_pdf.scr")
     assert len(open(filepath, "rb").read()) == 377856
 
 def test_extract4_nopreserve():
@@ -368,14 +368,14 @@ def test_extract4_nopreserve():
     z.writestr("thisisfilename", "B"*1024)
     z.close()
     f = unpack(contents=buf.getvalue().replace(
-        "thisisfilename", "/absolute/path"
+        b"thisisfilename", b"/absolute/path"
     ))
-    dirpath = tempfile.mkdtemp()
+    dirpath = tempfile.mkdtemp(prefix=b"sfl")
     f.extract(dirpath, preserve=True)
 
-    filepath = os.path.join(dirpath, "absolute", "path")
+    filepath = os.path.join(dirpath, b"absolute", b"path")
     assert os.path.exists(filepath)
-    assert open(filepath, "rb").read() == "B"*1024
+    assert open(filepath, "rb").read() == b"B"*1024
 
 def test_extract5_relative():
     buf = io.BytesIO()
@@ -384,48 +384,48 @@ def test_extract5_relative():
     z.writestr("thisisfilename", "B"*1024)
     z.close()
     f = unpack(contents=buf.getvalue().replace(
-        "thisisfilename", "/../../../rela"
+        b"thisisfilename", b"/../../../rela"
     ))
-    dirpath = tempfile.mkdtemp()
+    dirpath = tempfile.mkdtemp(prefix=b"sfl")
     f.extract(dirpath, preserve=True)
     assert len(os.listdir(dirpath)) == 1
 
-    filepath = os.path.join(dirpath, "foobarfilename")
-    assert open(filepath, "rb").read() == "A"*1024
+    filepath = os.path.join(dirpath, b"foobarfilename")
+    assert open(filepath, "rb").read() == b"A"*1024
 
 def test_duplicate():
     duplicates = []
-    f1 = unpack("tests/files/tar_plain.tar", duplicates=duplicates)
-    f2 = unpack("tests/files/tar_plain.tar", duplicates=duplicates)
+    f1 = unpack(b"tests/files/tar_plain.tar", duplicates=duplicates)
+    f2 = unpack(b"tests/files/tar_plain.tar", duplicates=duplicates)
     assert f1.children[0].duplicate is False
     assert f2.children[0].duplicate is True
 
 def test_read1():
-    f = unpack("tests/files/bup_test.bup")
+    f = unpack(b"tests/files/bup_test.bup")
     assert len(f.read("efax_9057733019_pdf.zip")) == 212663
     assert len(f.read([
         "efax_9057733019_pdf.zip", "efax_9057733019_pdf.scr",
     ])) == 377856
 
 def test_read2():
-    f = unpack("tests/files/msg_invoice.msg")
+    f = unpack(b"tests/files/msg_invoice.msg")
     assert len(f.read("oledata.mso")) == 234898
     assert len(f.read([
         "oledata.mso", "Firefox Setup Stub 43.0.1.exe",
     ])) == 249336
 
 def test_read_stream():
-    f = unpack("tests/files/bup_test.bup")
+    f = unpack(b"tests/files/bup_test.bup")
     s = f.read("efax_9057733019_pdf.zip", stream=True)
     assert len(s.read()) == 212663
 
 def test_duplicate1():
     duplicates = []
     assert unpack(
-        "tests/files/garbage.bin", duplicates=duplicates
+        b"tests/files/garbage.bin", duplicates=duplicates
     ).duplicate is False
     assert unpack(
-        "tests/files/garbage.bin", duplicates=duplicates
+        b"tests/files/garbage.bin", duplicates=duplicates
     ).duplicate is True
 
 def test_duplicate2():
@@ -434,8 +434,8 @@ def test_duplicate2():
 
     duplicates = []
     assert unpack(
-        "tests/files/7z_plain.7z", duplicates=duplicates
+        b"tests/files/7z_plain.7z", duplicates=duplicates
     ).children[0].duplicate is False
     assert unpack(
-        "tests/files/7z_nested.7z", duplicates=duplicates
+        b"tests/files/7z_nested.7z", duplicates=duplicates
     ).children[0].duplicate is True

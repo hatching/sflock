@@ -1,9 +1,10 @@
-# Copyright (C) 2016-2017 Jurriaan Bremer.
+# Copyright (C) 2016-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 import hashlib
 import io
+import os.path
 import zipfile
 
 from sflock import unpack, zipify
@@ -11,7 +12,7 @@ from sflock.abstracts import File
 from sflock.unpack import MsgFile
 
 def f(filename):
-    return File.from_path("tests/files/%s" % filename)
+    return File.from_path(os.path.join(b"tests", b"files", filename))
 
 def test_msg_embedded():
     assert f("msg_invoice.msg").magic.startswith((
@@ -72,19 +73,19 @@ def test_msg_nullbyte():
     assert z.read(doc.relaname) == doc.contents
 
 def test_msg_doc_magic():
-    f = unpack("tests/files/msg_doc.msg_")
+    f = unpack(b"tests/files/msg_doc.msg_")
     assert len(f.children) == 1
     assert f.children[0].filename == "Kristina_Meyer.doc"
     assert f.children[0].filesize == 57856
 
 def test_msg_rtf_magic():
-    f = unpack("tests/files/msg_rtf.msg_")
+    f = unpack(b"tests/files/msg_rtf.msg_")
     assert len(f.children) == 1
     assert f.children[0].filename == "g94ys83xi8_8fb0ud5,7.rtf"
     assert f.children[0].filesize == 138638
 
 def test_garbage():
-    m = MsgFile(f("garbage.bin"))
+    m = MsgFile(f(b"garbage.bin"))
     assert m.handles() is False
     assert not m.f.selected
     assert not m.unpack()

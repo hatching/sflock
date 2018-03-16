@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Jurriaan Bremer.
+# Copyright (C) 2017-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -11,7 +11,7 @@ from sflock.abstracts import Unpacker
 class CabFile(Unpacker):
     name = "cabfile"
     exe = "/usr/bin/cabextract"
-    exts = ".cab"
+    exts = b".cab"
     magic = "Microsoft Cabinet archive"
 
     def unpack(self, password=None, duplicates=None):

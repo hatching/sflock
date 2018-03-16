@@ -1,7 +1,8 @@
-# Copyright (C) 2015-2017 Jurriaan Bremer.
+# Copyright (C) 2015-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import os.path
 import pytest
 
 from sflock.abstracts import File
@@ -9,13 +10,13 @@ from sflock.main import unpack
 from sflock.unpack import RarFile
 
 def f(filename):
-    return File.from_path("tests/files/%s" % filename)
+    return File.from_path(os.path.join(b"tests", b"files", filename))
 
 @pytest.mark.skipif("not RarFile(None).supported()")
 class TestRarFile:
     def test_plain(self):
-        assert "RAR archive" in f("rar_plain.rar").magic
-        t = RarFile(f("rar_plain.rar"))
+        assert "RAR archive" in f(b"rar_plain.rar").magic
+        t = RarFile(f(b"rar_plain.rar"))
         assert t.handles() is True
         assert not t.f.selected
         files = list(t.unpack())
@@ -28,8 +29,8 @@ class TestRarFile:
         assert not files[0].selected
 
     def test_nested_plain(self):
-        assert "RAR archive" in f("rar_nested.rar").magic
-        t = RarFile(f("rar_nested.rar"))
+        assert "RAR archive" in f(b"rar_nested.rar").magic
+        t = RarFile(f(b"rar_nested.rar"))
         assert t.handles() is True
         assert not t.f.selected
         files = list(t.unpack())
@@ -43,8 +44,8 @@ class TestRarFile:
         assert not files[0].selected
 
     def test_nested2_plain(self):
-        assert "RAR archive" in f("rar_nested2.rar").magic
-        t = RarFile(f("rar_nested2.rar"))
+        assert "RAR archive" in f(b"rar_nested2.rar").magic
+        t = RarFile(f(b"rar_nested2.rar"))
         assert t.handles() is True
         assert not t.f.selected
         files = list(t.unpack())
@@ -58,8 +59,8 @@ class TestRarFile:
         assert not files[0].selected
 
     def test_rar_encrypted(self):
-        assert "RAR archive" in f("sflock_encrypted.rar").magic
-        z = RarFile(f("sflock_encrypted.rar"))
+        assert "RAR archive" in f(b"sflock_encrypted.rar").magic
+        z = RarFile(f(b"sflock_encrypted.rar"))
         assert z.handles() is True
         assert not z.f.selected
         files = list(z.unpack("infected"))
@@ -101,14 +102,14 @@ class TestRarFile:
         assert len(t.children) == 1
 
     def test_garbage(self):
-        t = RarFile(f("garbage.bin"))
+        t = RarFile(f(b"garbage.bin"))
         assert t.handles() is False
         assert not t.f.selected
         assert not t.unpack()
         assert t.f.mode == "failed"
 
     def test_garbage2(self):
-        t = RarFile(f("rar_garbage.rar"))
+        t = RarFile(f(b"rar_garbage.rar"))
         assert t.handles() is True
         assert not t.f.selected
         files = t.unpack()
@@ -118,7 +119,7 @@ class TestRarFile:
 
 @pytest.mark.skipif("RarFile(None).supported()")
 def test_norar_plain():
-    assert "RAR archive" in f("rar_plain.rar").magic
-    t = RarFile(f("rar_plain.rar"))
+    assert "RAR archive" in f(b"rar_plain.rar").magic
+    t = RarFile(f(b"rar_plain.rar"))
     assert t.handles() is True
     assert not t.f.selected

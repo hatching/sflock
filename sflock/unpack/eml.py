@@ -1,4 +1,4 @@
-# Copyright (C) 2016 Jurriaan Bremer.
+# Copyright (C) 2016-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -10,7 +10,7 @@ from sflock.abstracts import Unpacker, File
 
 class EmlFile(Unpacker):
     name = "emlfile"
-    exts = ".eml"
+    exts = b".eml"
 
     whitelisted_content_type = [
         "text/plain", "text/html",
@@ -25,10 +25,10 @@ class EmlFile(Unpacker):
 
         stream = self.f.stream
         keys = []
-        for _ in xrange(10):
+        for _ in range(10):
             line = stream.readline()
-            if ":" in line:
-                keys.append(line.split(":")[0])
+            if b":" in line:
+                keys.append(line.split(b":")[0])
         if "From" in keys and "To" in keys:
             return True
         return False

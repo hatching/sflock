@@ -1,15 +1,20 @@
-# Copyright (C) 2017 Jurriaan Bremer.
+# Copyright (C) 2017-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 import os
-import peepdf
+
+try:
+    import peepdf
+    HAVE_PEEPDF = True
+except ImportError:
+    HAVE_PEEPDF = False
 
 from sflock.abstracts import Unpacker, File
 
 class PdfFile(Unpacker):
     name = "pdffile"
-    exts = ".pdf"
+    exts = b".pdf"
     package = "pdf"
 
     def supported(self):
@@ -17,6 +22,9 @@ class PdfFile(Unpacker):
 
     def unpack(self, password=None, duplicates=None):
         entries = []
+
+        if not HAVE_PEEPDF:
+            return []
 
         if self.f.filepath:
             filepath = self.f.filepath

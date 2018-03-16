@@ -2,6 +2,7 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import base64
 import hashlib
 import struct
 import xml.dom.minidom
@@ -141,7 +142,9 @@ class Office(Decoder):
         password = info.getElementsByTagName("p:encryptedKey")[0]
 
         self.ei = ei = EncryptedInfo()
-        ei.key_data_salt = key_data.getAttribute("saltValue").decode("base64")
+        ei.key_data_salt = base64.b64decode(
+            key_data.getAttribute("saltValue")
+        )
         ei.key_data_hash_alg = key_data.getAttribute("hashAlgorithm")
         ei.verifier_hash_input = password.getAttribute(
             "encryptedVerifierHashInput"

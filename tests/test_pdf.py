@@ -1,19 +1,20 @@
-# Copyright (C) 2016-2017 Jurriaan Bremer.
+# Copyright (C) 2016-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 import io
+import os.path
 import zipfile
 
 from sflock.abstracts import File
 from sflock.unpack import PdfFile, ZipFile
 
 def f(filename):
-    return File.from_path("tests/files/%s" % filename)
+    return File.from_path(os.path.join(b"tests", b"files", filename))
 
 def test_pdf_embedded():
-    assert f("pdf_docm.pdf").magic.startswith("PDF document")
-    m = PdfFile(f("pdf_docm.pdf"))
+    assert f(b"pdf_docm.pdf").magic.startswith("PDF document")
+    m = PdfFile(f(b"pdf_docm.pdf"))
     assert m.handles() is True
     assert m.f.selected
     files = list(m.unpack())
@@ -29,7 +30,7 @@ def test_pdf_embedded():
     assert len(files[0].children) == 18
 
 def test_pdf_magic():
-    m = PdfFile(File(contents=f("pdf_docm.pdf").contents))
+    m = PdfFile(File(contents=f(b"pdf_docm.pdf").contents))
     assert m.handles() is True
 
 def test_pdf_is_embedded():
@@ -45,7 +46,7 @@ def test_pdf_is_embedded():
     assert files[0].children[0].package == "doc"
 
 def test_garbage():
-    m = PdfFile(f("garbage.bin"))
+    m = PdfFile(f(b"garbage.bin"))
     assert m.handles() is False
     assert not m.f.selected
     assert not m.unpack()

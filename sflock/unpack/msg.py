@@ -1,4 +1,4 @@
-# Copyright (C) 2016-2017 Jurriaan Bremer.
+# Copyright (C) 2016-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -6,7 +6,7 @@ from sflock.abstracts import Unpacker, File
 
 class MsgFile(Unpacker):
     name = "msgfile"
-    exts = ".msg"
+    exts = b".msg"
 
     def supported(self):
         return True
