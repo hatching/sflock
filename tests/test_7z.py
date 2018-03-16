@@ -10,13 +10,13 @@ from sflock.main import unpack
 from sflock.unpack import Zip7File
 
 def f(filename):
-    return File.from_path("tests/files/%s" % filename)
+    return File.from_path(b"tests/files/%s" % filename)
 
 @pytest.mark.skipif("not Zip7File(None).supported()")
 class Test7zFile(object):
     def test_7z_plain(self):
-        assert "7-zip archive" in f("7z_plain.7z").magic
-        t = Zip7File(f("7z_plain.7z"))
+        assert "7-zip archive" in f(b"7z_plain.7z").magic
+        t = Zip7File(f(b"7z_plain.7z"))
         assert t.handles() is True
         assert not t.f.selected
         files = list(t.unpack())
@@ -105,20 +105,20 @@ class Test7zFile(object):
         assert files[0].mode == "failed"
 
     def test_heuristics(self):
-        t = unpack("tests/files/7z_plain.7z", filename="foo")
+        t = unpack(b"tests/files/7z_plain.7z", filename="foo")
         assert t.unpacker == "7zfile"
         assert t.filename == "foo"
 
-        t = unpack("tests/files/7z_nested.7z", filename="foo")
+        t = unpack(b"tests/files/7z_nested.7z", filename="foo")
         assert t.unpacker == "7zfile"
         assert t.filename == "foo"
 
-        t = unpack("tests/files/7z_nested2.7z", filename="foo")
+        t = unpack(b"tests/files/7z_nested2.7z", filename="foo")
         assert t.unpacker == "7zfile"
         assert t.filename == "foo"
 
         """
-        t = unpack("tests/files/7z_encrypted.7z", filename="foo")
+        t = unpack(b"tests/files/7z_encrypted.7z", filename="foo")
         assert t.unpacker == "7zfile"
         assert t.filename == "foo"
         """
@@ -141,6 +141,6 @@ class Test7zFile(object):
 
 @pytest.mark.skipif("Zip7File(None).supported()")
 def test_no7z_plain():
-    assert "7-zip archive" in f("7z_plain.7z").magic
-    t = Zip7File(f("7z_plain.7z"))
+    assert "7-zip archive" in f(b"7z_plain.7z").magic
+    t = Zip7File(f(b"7z_plain.7z"))
     assert t.handles() is True
