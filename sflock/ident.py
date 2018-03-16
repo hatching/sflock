@@ -67,9 +67,10 @@ def office_zip(f):
     if not f.get_child(b"docProps/app.xml"):
         return
 
+    #Should these names be bytes?
     packages = {
-        "Microsoft Office Word": "doc",
-        "Microsoft Excel": "xls",
+        b"Microsoft Office Word": "doc",
+        b"Microsoft Excel": "xls",
     }
 
     application = re.search(
