@@ -235,10 +235,10 @@ def test_astree3():
 def test_astree4():
     f = unpack(b"tests/files/msg_invoice.msg")
     assert f.astree(finger=False) == {
-        "filename": "msg_invoice.msg",
+        "filename": b"msg_invoice.msg",
         "relapath": None,
         "relaname": None,
-        "filepath": "tests/files/msg_invoice.msg",
+        "filepath": b"tests/files/msg_invoice.msg",
         "extrpath": [],
         "size": 270848,
         "duplicate": False,
@@ -250,12 +250,12 @@ def test_astree4():
         "type": "container",
         "children": [{
             "duplicate": False,
-            "filename": "image003.emz",
-            "relapath": "image003.emz",
-            "relaname": "image003.emz",
+            "filename": b"image003.emz",
+            "relapath": b"image003.emz",
+            "relaname": b"image003.emz",
             "filepath": None,
             "extrpath": [
-                "image003.emz",
+                b"image003.emz",
             ],
             "package": None,
             "platform": None,
@@ -267,12 +267,12 @@ def test_astree4():
             "children": [],
         }, {
             "duplicate": False,
-            "filename": "image004.png",
-            "relapath": "image004.png",
-            "relaname": "image004.png",
+            "filename": b"image004.png",
+            "relapath": b"image004.png",
+            "relaname": b"image004.png",
             "filepath": None,
             "extrpath": [
-                "image004.png",
+                b"image004.png",
             ],
             "package": None,
             "platform": None,
@@ -284,12 +284,12 @@ def test_astree4():
             "children": [],
         }, {
             "duplicate": False,
-            "filename": "oledata.mso",
-            "relapath": "oledata.mso",
-            "relaname": "oledata.mso",
+            "filename": b"oledata.mso",
+            "relapath": b"oledata.mso",
+            "relaname": b"oledata.mso",
             "filepath": None,
             "extrpath": [
-                "oledata.mso",
+                b"oledata.mso",
             ],
             "package": "doc",
             "platform": "windows",
@@ -300,13 +300,13 @@ def test_astree4():
             "type": "container",
             "children": [{
                 "duplicate": False,
-                "filename": "Firefox Setup Stub 43.0.1.exe",
-                "relapath": "Firefox Setup Stub 43.0.1.exe",
-                "relaname": "Firefox Setup Stub 43.0.1.exe",
+                "filename": b"Firefox Setup Stub 43.0.1.exe",
+                "relapath": b"Firefox Setup Stub 43.0.1.exe",
+                "relaname": b"Firefox Setup Stub 43.0.1.exe",
                 "filepath": None,
                 "extrpath": [
-                    "oledata.mso",
-                    "Firefox Setup Stub 43.0.1.exe",
+                    b"oledata.mso",
+                    b"Firefox Setup Stub 43.0.1.exe",
                 ],
                 "package": "exe",
                 "platform": "windows",
@@ -337,20 +337,23 @@ def test_astree_sanitize():
     assert "filepath" not in obj["children"][2]["children"][0]
 
 def test_extract1():
-    unpack(b"tests/files/tar_plain.tar").extract(tempfile.gettempdir())
-    filepath = os.path.join(tempfile.gettempdir(), b"sflock.txt")
-    assert open(filepath, "rb").read() == "sflock_plain_tar\n"
+    dirpath = tempfile.gettempdir().encode()
+    tmpdir = tempfile.gettempdir().encode()
+    unpack(b"tests/files/tar_plain.tar").extract(dirpath)
+    filepath = os.path.join(tmpdir, b"sflock.txt")
+    assert open(filepath, "rb").read() == b"sflock_plain_tar\n"
 
 def test_extract2():
-    unpack(b"tests/files/zip_nested2.zip").extract(tempfile.gettempdir())
-    filepath = os.path.join(tempfile.gettempdir(), b"bar.txt")
-    assert open(filepath, "rb").read() == "hello world\n"
+    tmpdir = tempfile.gettempdir().encode()
+    unpack(b"tests/files/zip_nested2.zip").extract(tmpdir)
+    filepath = os.path.join(tmpdir, b"bar.txt")
+    assert open(filepath, "rb").read() == b"hello world\n"
 
 def test_extract3():
-    dirpath = tempfile.mkdtemp()
+    dirpath = tempfile.mkdtemp().encode()
     f = unpack(b"tests/files/bup_test.bup").children[0]
 
-    f.extract(dirpath, "404.exe")
+    f.extract(dirpath, b"404.exe")
     assert not os.path.exists(
         os.path.join(dirpath, b"404.exe")
     )
@@ -358,7 +361,7 @@ def test_extract3():
         os.path.join(dirpath, b"efax_9057733019_pdf.scr")
     )
 
-    f.extract(dirpath, "efax_9057733019_pdf.scr")
+    f.extract(dirpath, b"efax_9057733019_pdf.scr")
     filepath = os.path.join(dirpath, b"efax_9057733019_pdf.scr")
     assert len(open(filepath, "rb").read()) == 377856
 
@@ -402,21 +405,21 @@ def test_duplicate():
 
 def test_read1():
     f = unpack(b"tests/files/bup_test.bup")
-    assert len(f.read("efax_9057733019_pdf.zip")) == 212663
+    assert len(f.read(b"efax_9057733019_pdf.zip")) == 212663
     assert len(f.read([
-        "efax_9057733019_pdf.zip", "efax_9057733019_pdf.scr",
+        b"efax_9057733019_pdf.zip", b"efax_9057733019_pdf.scr",
     ])) == 377856
 
 def test_read2():
     f = unpack(b"tests/files/msg_invoice.msg")
-    assert len(f.read("oledata.mso")) == 234898
+    assert len(f.read(b"oledata.mso")) == 234898
     assert len(f.read([
-        "oledata.mso", "Firefox Setup Stub 43.0.1.exe",
+        b"oledata.mso", b"Firefox Setup Stub 43.0.1.exe",
     ])) == 249336
 
 def test_read_stream():
     f = unpack(b"tests/files/bup_test.bup")
-    s = f.read("efax_9057733019_pdf.zip", stream=True)
+    s = f.read(b"efax_9057733019_pdf.zip", stream=True)
     assert len(s.read()) == 212663
 
 def test_duplicate1():

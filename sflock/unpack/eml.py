@@ -5,6 +5,7 @@
 import email
 import email.header
 import re
+import six
 
 from sflock.abstracts import Unpacker, File
 
@@ -36,7 +37,11 @@ class EmlFile(Unpacker):
     def real_unpack(self, password, duplicates):
         entries = []
 
-        e = email.message_from_string(self.f.contents)
+        if six.PY3:
+            e = email.message_from_bytes(self.f.contents)
+        else:
+            e = email.message_from_string(self.f.contents)
+
         for part in e.walk():
             if part.is_multipart():
                 continue
@@ -50,13 +55,14 @@ class EmlFile(Unpacker):
                 continue
 
             filename = part.get_filename()
-            if filename:
+            if six.PY2 and filename:
                 filename = unicode(email.header.make_header(
                     email.header.decode_header(filename)
                 ))
-
+            if six.PY3 and filename:
+                filename = filename.encode()
             entries.append(File(
-                relapath=filename or "att1", contents=payload
+                relapath=filename or b"att1", contents=payload
             ))
 
         return entries

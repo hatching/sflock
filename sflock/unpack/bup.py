@@ -4,11 +4,7 @@
 
 import io
 import ntpath
-
-try:
-    import configparser
-except ImportError:
-    import ConfigParser as configparser
+import six.moves
 
 from sflock.abstracts import Unpacker, File
 
@@ -28,7 +24,7 @@ class BupFile(Unpacker):
         return False
 
     def decrypt(self, content):
-        return "".join(chr(ord(ch) ^ 0x6a) for ch in content)
+        return b"".join(b"%c" % (ch ^ 0x6a) for ch in content)
 
     def unpack(self, password=None, duplicates=None):
         entries = []
@@ -41,10 +37,15 @@ class BupFile(Unpacker):
         if ["Details"] not in self.f.ole.listdir():
             return []
 
-        details = self.decrypt(self.f.ole.openstream("Details").read())
+        details = self.decrypt(
+            bytearray(self.f.ole.openstream("Details").read())
+        )
 
-        config = configparser.ConfigParser()
-        config.readfp(io.BytesIO(details))
+        config = six.moves.configparser.ConfigParser()
+        if six.PY3:
+            config.read_string(details.decode())
+        else:
+            config.readfp(io.BytesIO(details))
 
         ole = self.f.ole
 
@@ -52,11 +53,17 @@ class BupFile(Unpacker):
             if filename[0] == "Details" or not ole.get_size(filename[0]):
                 continue
 
+            relapath = ntpath.basename(
+                config.get(filename[0], "OriginalName")
+            )
+            if six.PY3:
+                relapath = relapath.encode()
+
             entries.append(File(
-                relapath=ntpath.basename(
-                    config.get(filename[0], "OriginalName")
-                ),
-                contents=self.decrypt(ole.openstream(filename[0]).read())
+                relapath=relapath,
+                contents=self.decrypt(
+                    bytearray(ole.openstream(filename[0]).read())
+                )
             ))
 
         return self.process(entries, duplicates)

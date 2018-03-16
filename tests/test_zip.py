@@ -114,25 +114,25 @@ class TestZipfile(object):
         assert not files[0].selected
 
     def test_heuristics(self):
-        t = unpack("tests/files/zip_plain.zip", filename="foo")
+        t = unpack(b"tests/files/zip_plain.zip", filename=b"foo")
         assert t.unpacker == "zipfile"
-        assert t.filename == "foo"
+        assert t.filename == b"foo"
 
-        t = unpack("tests/files/zip_nested.zip", filename="foo")
+        t = unpack(b"tests/files/zip_nested.zip", filename=b"foo")
         assert t.unpacker == "zipfile"
-        assert t.filename == "foo"
+        assert t.filename == b"foo"
 
-        t = unpack("tests/files/zip_nested2.zip", filename="foo")
+        t = unpack(b"tests/files/zip_nested2.zip", filename=b"foo")
         assert t.unpacker == "zipfile"
-        assert t.filename == "foo"
+        assert t.filename == b"foo"
 
-        t = unpack("tests/files/zip_encrypted.zip", filename="foo")
+        t = unpack(b"tests/files/zip_encrypted.zip", filename=b"foo")
         assert t.unpacker == "zipfile"
-        assert t.filename == "foo"
+        assert t.filename == b"foo"
 
-        t = unpack("tests/files/zip_encrypted2.zip", filename="foo")
+        t = unpack(b"tests/files/zip_encrypted2.zip", filename=b"foo")
         assert t.unpacker == "zipfile"
-        assert t.filename == "foo"
+        assert t.filename == b"foo"
 
     def test_garbage(self):
         t = ZipFile(f(b"garbage.bin"))
@@ -164,7 +164,7 @@ class TestZipfile(object):
         assert f.children[0].relapath == b"/absolute/path"
         assert f.children[0].relaname == b"absolute/path"
         assert f.children[0].contents == b"A"*1024
-        assert f.read("/absolute/path") == b"A"*1024
+        assert f.read(b"/absolute/path") == b"A"*1024
 
     def test_docx1(self):
         t = ZipFile(f(b"doc_1.docx_"))

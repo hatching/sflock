@@ -2,6 +2,8 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import six
+
 from sflock.abstracts import Unpacker, File
 
 class MsgFile(Unpacker):
@@ -56,6 +58,8 @@ class MsgFile(Unpacker):
         for dirname in self.f.ole.listdir():
             if dirname[0].startswith("__attach") and dirname[0] not in seen:
                 filename, contents = self.get_attachment(dirname[0])
+                if six.PY3:
+                    filename = filename.encode()
                 entries.append(File(
                     relapath=filename, contents=contents
                 ))

@@ -12,8 +12,8 @@ from sflock.main import unpack
 def test_empty():
     fd, filepath = tempfile.mkstemp()
     os.close(fd)
-    assert unpack(filepath).package is None
-    assert unpack(filepath).platform is None
+    assert unpack(filepath.encode()).package is None
+    assert unpack(filepath.encode()).platform is None
 
 def test_identify():
     assert identify(File(b"tests/files/script.js")) == "js"

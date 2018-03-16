@@ -32,7 +32,7 @@ class TarFile(Unpacker):
                 continue
 
             entries.append(File(
-                relapath=entry.path,
+                relapath=entry.path.encode(),
                 contents=archive.extractfile(entry).read()
             ))
 

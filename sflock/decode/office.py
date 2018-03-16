@@ -47,14 +47,14 @@ class Office(Decoder):
         )
 
         # Iteration of 0 -> spincount-1; hash = sha512(iterator + hash).
-        for i in xrange(self.ei.spin_value):
+        for i in range(self.ei.spin_value):
             h = self.get_hash(
                 struct.pack("<I", i) + h, self.ei.password_hash_alg
             )
 
         # Final skey and truncation.
         h = self.get_hash(h + block, self.ei.password_hash_alg)
-        skey = h[:self.ei.password_key_bits/8]
+        skey = h[:self.ei.password_key_bits // 8]
         return skey
 
     def init_secret_key(self):
@@ -115,7 +115,7 @@ class Office(Decoder):
         ret = []
         # TODO Ensure that the assumption of "total size" being a 64-bit
         # integer is correct?
-        for idx in xrange(0, struct.unpack("Q", f.read(8))[0], 0x1000):
+        for idx in range(0, struct.unpack("Q", f.read(8))[0], 0x1000):
             iv = self.get_hash(
                 self.ei.key_data_salt + struct.pack("<I", idx),
                 self.ei.key_data_hash_alg
@@ -126,7 +126,7 @@ class Office(Decoder):
                 backend=default_backend()
             ).decryptor()
             ret.append(aes.update(f.read(0x1000)) + aes.finalize())
-        return File(contents="".join(ret))
+        return File(contents=b"".join(ret))
 
     def decode(self):
         if not self.f.ole:
@@ -146,17 +146,19 @@ class Office(Decoder):
             key_data.getAttribute("saltValue")
         )
         ei.key_data_hash_alg = key_data.getAttribute("hashAlgorithm")
-        ei.verifier_hash_input = password.getAttribute(
-            "encryptedVerifierHashInput"
-        ).decode("base64")
-        ei.verifier_hash_value = password.getAttribute(
-            "encryptedVerifierHashValue"
-        ).decode("base64")
-        ei.encrypted_key_value = password.getAttribute(
-            "encryptedKeyValue"
-        ).decode("base64")
+        ei.verifier_hash_input = base64.b64decode(
+            password.getAttribute("encryptedVerifierHashInput")
+        )
+        ei.verifier_hash_value = base64.b64decode(
+            password.getAttribute("encryptedVerifierHashValue")
+        )
+        ei.encrypted_key_value = base64.b64decode(
+            password.getAttribute("encryptedKeyValue")
+        )
         ei.spin_value = int(password.getAttribute("spinCount"))
-        ei.password_salt = password.getAttribute("saltValue").decode("base64")
+        ei.password_salt = base64.b64decode(
+            password.getAttribute("saltValue")
+        )
         ei.password_hash_alg = password.getAttribute("hashAlgorithm")
         ei.password_key_bits = int(password.getAttribute("keyBits"))
 

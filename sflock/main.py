@@ -70,7 +70,7 @@ def zipify(f, password=None):
 
     for child in f.children:
         filepath = child.temp_path()
-        z.write(filepath, child.relapath)
+        z.write(filepath, child.relapath.decode())
         os.unlink(filepath)
 
     if password:

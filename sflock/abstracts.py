@@ -125,7 +125,7 @@ class Unpacker(object):
         return self.process(entries, duplicates)
 
     def bruteforce(self, passwords, *args, **kwargs):
-        if isinstance(passwords, six.string_types):
+        if isinstance(passwords, (six.string_types, six.binary_type)):
             passwords = [passwords]
         elif not passwords:
             passwords = []
@@ -448,7 +448,7 @@ class File(object):
     def read(self, relapath, stream=False):
         """Extract a single file from a possibly nested archive. See also the
         `extrpath` field of an embedded document."""
-        if isinstance(relapath, six.string_types):
+        if isinstance(relapath, (six.string_types, six.binary_type)):
             relapath = relapath,
 
         relapath, nextpath = relapath[0], relapath[1:]

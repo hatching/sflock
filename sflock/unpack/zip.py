@@ -2,6 +2,7 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import six
 import zipfile
 import zlib
 
@@ -26,6 +27,8 @@ class ZipFile(Unpacker):
     def decrypt(self, password, archive, entry):
         try:
             archive.setpassword(password)
+            if six.PY3:
+                entry.filename = entry.filename.encode()
             return File(
                 relapath=entry.filename,
                 contents=archive.read(entry),
@@ -33,7 +36,7 @@ class ZipFile(Unpacker):
             )
         except (RuntimeError, zipfile.BadZipfile, OverflowError,
                 zlib.error) as e:
-            msg = e.message or e.args[0]
+            msg = getattr(e, "message", None) or e.args[0]
             if "Bad password" in msg:
                 return
             if "Bad CRC-32" in msg:
