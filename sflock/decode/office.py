@@ -41,8 +41,10 @@ class Office(Decoder):
 
     def gen_encryption_key(self, block):
         # Initial round sha512(salt + password).
+        if type(self.password) == bytes:
+            self.password = self.password.decode()
         h = self.get_hash(
-            self.ei.password_salt + self.password.encode("utf-16le"),
+            self.ei.password_salt + str(self.password).encode("utf-16le"),
             self.ei.password_hash_alg
         )
 
