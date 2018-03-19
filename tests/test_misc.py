@@ -47,7 +47,7 @@ def test_zip_passwd():
     z = zipfile.ZipFile(r, "w")
 
     z.writestr("a.txt", "hello world")
-    z.writestr( "b.txt", "A"*1024)
+    z.writestr("b.txt", "A"*1024)
 
     value = zip_set_password(z, b"password")
     z.close()

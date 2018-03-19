@@ -37,7 +37,7 @@ class EmlFile(Unpacker):
         entries = []
 
         if six.PY3:
-            e = email.message_from_bytes(self.f.contents)
+            e = email.message_from_string(self.f.contents.decode('latin-1'))
         else:
             e = email.message_from_string(self.f.contents)
 
