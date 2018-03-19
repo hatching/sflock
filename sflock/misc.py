@@ -6,6 +6,8 @@ import io
 import importlib
 import os
 import zipfile
+import six
+
 
 import sflock
 
@@ -52,8 +54,14 @@ class ZipCrypt(zipfile._ZipDecrypter):
 
     def encrypt(self, ch):
         """Encrypt one character."""
-        t = chr(ord(self.__call__(ch)) ^ ord(ch))
-        zipfile._ZipDecrypter._UpdateKeys(self, ch)
+        if six.PY3:
+            a = ord(ch)
+            b = self.__call__(ord(ch))
+            t = chr(a ^ b)
+            zipfile._ZipDecrypter._UpdateKeys(self, ord(ch))
+        else:
+            t = chr(ord(self.__call__(ch)) ^ ord(ch))
+            zipfile._ZipDecrypter._UpdateKeys(self, ch)
         return chr(ord(ch) ^ ord(t))
 
 class ZipInfoWithPassword(zipfile.ZipInfo):
@@ -77,7 +85,18 @@ class ZipInfoWithPassword(zipfile.ZipInfo):
 
         # Encrypted contents that may be written away as-is.
         c = ZipCrypt(password)
-        self.contents = "".join(c.encrypt(ch) for ch in self.pw_header + buf)
+
+        astr =""
+        if six.PY3:
+            temp = self.pw_header + buf.decode()
+        else:
+            temp = self.pw_header + buf
+        for ch in temp:
+            if type(ch) == str:
+                ch = ord(ch)
+            x = c.encrypt(chr(ch))
+            astr = astr + x
+        self.contents = astr
 
     @property
     def CRC(self):

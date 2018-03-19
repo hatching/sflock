@@ -29,11 +29,18 @@ class ZipFile(Unpacker):
             archive.setpassword(password)
             if six.PY3 and type(entry.filename) == str:
                 entry.filename = entry.filename.encode()
-            return File(
+
+            #wrong password in py3
+            b = archive.read(entry)
+
+            a = File(
                 relapath=entry.filename,
-                contents=archive.read(entry),
+                contents=b,
                 password=password
             )
+
+            return a
+
         except (RuntimeError, zipfile.BadZipfile, OverflowError,
                 zlib.error) as e:
             msg = getattr(e, "message", None) or e.args[0]
