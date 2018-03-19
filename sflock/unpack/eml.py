@@ -12,7 +12,6 @@ from sflock.abstracts import Unpacker, File
 class EmlFile(Unpacker):
     name = "emlfile"
     exts = b".eml"
-    x = 0
     whitelisted_content_type = [
         "text/plain", "text/html",
     ]
