@@ -18,7 +18,7 @@ def test_msg_embedded():
     assert f(b"msg_invoice.msg").magic.startswith((
         "Composite Document File V2", "CDF V2 Document", "CDFV2 Microsoft",
     ))
-    m = MsgFile(f("msg_invoice.msg"))
+    m = MsgFile(f(b"msg_invoice.msg"))
     assert m.handles() is True
     assert not m.f.selected
     files = list(m.unpack())
@@ -67,7 +67,7 @@ def test_msg_nullbyte():
     doc = ole.children[0]
     assert doc.filename == b"eFax_document-4631559.doc"
     assert doc.relapath == b"eFax_document-4631559.doc\x00"
-    assert doc.relaname == "eFax_document-4631559.doc"
+    assert doc.relaname == b"eFax_document-4631559.doc"
 
     z = zipfile.ZipFile(io.BytesIO(zipify(ole)))
     assert z.read(doc.relaname) == doc.contents
