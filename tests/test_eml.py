@@ -47,7 +47,7 @@ def test_eml_nested_eml():
     assert not files[0].selected
 
     assert not files[0].children[0].filepath
-    assert files[0].children[0].relapath == u"\u60e1\u610f\u8edf\u9ad4.doc"
+    assert files[0].children[0].relapath == u"\u60e1\u610f\u8edf\u9ad4.doc".encode('utf-8')
     assert files[0].children[0].filesize == 12
     assert files[0].children[0].package == "doc"
     assert files[0].children[0].platform == "windows"
