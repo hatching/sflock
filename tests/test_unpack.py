@@ -157,7 +157,7 @@ def test_astree3():
         "selected": False,
         "preview": True,
         "password": None,
-        "size": 24607,
+        "size": 24951,
         "type": "container",
         "children": [{
             "duplicate": False,
@@ -177,13 +177,13 @@ def test_astree3():
             "type": "container",
             "children": [{
                 "duplicate": False,
-                "filename": u"\u60e1\u610f\u8edf\u9ad4.doc",
-                "relapath": u"\u60e1\u610f\u8edf\u9ad4.doc",
-                "relaname": u"\u60e1\u610f\u8edf\u9ad4.doc",
+                "filename": u"\u60e1\u610f\u8edf\u9ad4.doc".encode('utf-8'),
+                "relapath": u"\u60e1\u610f\u8edf\u9ad4.doc".encode('utf-8'),
+                "relaname": u"\u60e1\u610f\u8edf\u9ad4.doc".encode('utf-8'),
                 "filepath": None,
                 "extrpath": [
                     b"multipart.eml",
-                    u"\u60e1\u610f\u8edf\u9ad4.doc",
+                    u"\u60e1\u610f\u8edf\u9ad4.doc".encode('utf-8'),
                 ],
                 "package": "doc",
                 "platform": "windows",
