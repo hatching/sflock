@@ -23,7 +23,7 @@ def test_pdf_embedded():
 
     assert len(files) == 1
     assert not files[0].filepath
-    assert files[0].filename == "Q6TCWXPS.docm"
+    assert files[0].filename == b"Q6TCWXPS.docm"
     assert files[0].filesize == 55494
     assert files[0].package == "doc"
     assert not files[0].selected
