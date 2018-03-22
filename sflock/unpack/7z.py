@@ -17,7 +17,7 @@ class Zip7File(Unpacker):
     magic = "7-zip archive", "# ISO 9660"
 
     def unpack(self, password=None, duplicates=None):
-        dirpath = tempfile.mkdtemp()
+        dirpath = tempfile.mkdtemp().encode()
 
         if password:
             raise UnpackException(
@@ -30,13 +30,13 @@ class Zip7File(Unpacker):
             filepath = self.f.filepath
             temporary = False
         else:
-            filepath = self.f.temp_path(".7z")
+            filepath = self.f.temp_path(b".7z")
             temporary = True
 
         try:
             subprocess.check_output([
                 self.zipjail, filepath, dirpath,
-                self.exe, "x", "-mmt=off", "-o%s" % dirpath, filepath,
+                self.exe, "x", "-mmt=off", "-o%s" % dirpath.decode(), filepath,
             ])
         except subprocess.CalledProcessError as e:
             self.f.mode = "failed"

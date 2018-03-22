@@ -32,6 +32,8 @@ def import_plugins(dirpath, module_prefix, namespace, class_):
 
 def data_file(*path):
     """Return the path for the filepath of an embedded file."""
+    if six.PY3:
+        return os.path.abspath(os.path.join(sflock.__path__[0].encode(), b"data", *path))
     return os.path.abspath(os.path.join(sflock.__path__[0], "data", *path))
 
 class ZipCrypt(zipfile._ZipDecrypter):
