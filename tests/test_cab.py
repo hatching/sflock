@@ -31,7 +31,7 @@ class TestCabFile(object):
     def test_heuristics(self):
         t = unpack(b"tests/files/cab2.cab", filename=b"foo")
         assert t.unpacker == "cabfile"
-        assert t.filename == "bfoo"
+        assert t.filename == "foo"
 
         t = unpack(b"tests/files/readelf.cab", filename=b"foo")
         assert t.unpacker == "cabfile"

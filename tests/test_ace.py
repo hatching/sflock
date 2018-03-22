@@ -22,7 +22,7 @@ class TestAceFile(object):
         files = list(t.unpack())
         assert len(files) == 1
         assert not files[0].filepath
-        assert files[0].relapath == "ace.txt"
+        assert files[0].relapath == b"ace.txt"
         assert files[0].contents == "wow .ace"
         assert "ASCII text" in files[0].magic
         assert files[0].parentdirs == []
@@ -36,7 +36,7 @@ class TestAceFile(object):
         files = list(t.unpack())
         assert len(files) == 1
 
-        assert files[0].relapath == "b00/ace.txt"
+        assert files[0].relapath == b"b00/ace.txt"
         assert files[0].parentdirs == ["b00"]
         assert files[0].contents == "wow .ace"
         assert not files[0].password
@@ -51,7 +51,7 @@ class TestAceFile(object):
         files = list(t.unpack())
         assert len(files) == 1
 
-        assert files[0].relapath == "derp/b00/ace.txt"
+        assert files[0].relapath == b"derp/b00/ace.txt"
         assert files[0].parentdirs == ["derp", "b00"]
         assert files[0].contents == "wow .ace"
         assert not files[0].password
@@ -59,15 +59,15 @@ class TestAceFile(object):
         assert not files[0].selected
 
     def test_heuristics(self):
-        t = unpack("tests/files/ace_plain.ace", filename="foo")
+        t = unpack(b"tests/files/ace_plain.ace", filename="foo")
         assert t.unpacker == "acefile"
         assert t.filename == "foo"
 
-        t = unpack("tests/files/ace_nested.ace", filename="foo")
+        t = unpack(b"tests/files/ace_nested.ace", filename="foo")
         assert t.unpacker == "acefile"
         assert t.filename == "foo"
 
-        t = unpack("tests/files/ace_nested2.ace", filename="foo")
+        t = unpack(b"tests/files/ace_nested2.ace", filename="foo")
         assert t.unpacker == "acefile"
         assert t.filename == "foo"
 
@@ -79,7 +79,7 @@ class TestAceFile(object):
         )
 
     def test_inmemory(self):
-        contents = open("tests/files/ace_plain.ace", "rb").read()
+        contents = open(b"tests/files/ace_plain.ace", "rb").read()
         t = unpack(contents=contents)
         assert t.unpacker == "acefile"
         assert t.filename is None
