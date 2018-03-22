@@ -22,8 +22,8 @@ class TestRarFile:
         files = list(t.unpack())
         assert len(files) == 1
         assert not files[0].filepath
-        assert files[0].relapath == "bar.txt"
-        assert files[0].contents == "hello world\n"
+        assert files[0].relapath == b"bar.txt"
+        assert files[0].contents == b"hello world\n"
         assert files[0].magic == "ASCII text"
         assert files[0].parentdirs == []
         assert not files[0].selected
@@ -36,9 +36,9 @@ class TestRarFile:
         files = list(t.unpack())
         assert len(files) == 1
 
-        assert files[0].relapath == "foo/bar.txt"
-        assert files[0].parentdirs == ["foo"]
-        assert files[0].contents == "hello world\n"
+        assert files[0].relapath == b"foo/bar.txt"
+        assert files[0].parentdirs == [b"foo"]
+        assert files[0].contents == b"hello world\n"
         assert not files[0].password
         assert files[0].magic == "ASCII text"
         assert not files[0].selected
@@ -51,9 +51,9 @@ class TestRarFile:
         files = list(t.unpack())
         assert len(files) == 1
 
-        assert files[0].relapath == "deepfoo/foo/bar.txt"
-        assert files[0].parentdirs == ["deepfoo", "foo"]
-        assert files[0].contents == "hello world\n"
+        assert files[0].relapath == b"deepfoo/foo/bar.txt"
+        assert files[0].parentdirs == [b"deepfoo", b"foo"]
+        assert files[0].contents == b"hello world\n"
         assert not files[0].password
         assert files[0].magic == "ASCII text"
         assert not files[0].selected
@@ -65,36 +65,36 @@ class TestRarFile:
         assert not z.f.selected
         files = list(z.unpack("infected"))
         assert len(files) == 1
-        assert files[0].relapath == "sflock.txt"
-        assert files[0].contents == "sflock_encrypted_rar"
+        assert files[0].relapath == b"sflock.txt"
+        assert files[0].contents == b"sflock_encrypted_rar"
         assert files[0].password == "infected"
         assert "ASCII text" in files[0].magic
         assert files[0].parentdirs == []
         assert not files[0].selected
 
     def test_heuristics(self):
-        t = unpack("tests/files/rar_plain.rar", filename="foo")
+        t = unpack(b"tests/files/rar_plain.rar", filename=b"foo")
         assert t.unpacker == "rarfile"
-        assert t.filename == "foo"
+        assert t.filename == b"foo"
 
-        t = unpack("tests/files/rar_nested.rar", filename="foo")
+        t = unpack(b"tests/files/rar_nested.rar", filename=b"foo")
         assert t.unpacker == "rarfile"
-        assert t.filename == "foo"
+        assert t.filename == b"foo"
 
-        t = unpack("tests/files/rar_nested2.rar", filename="foo")
+        t = unpack(b"tests/files/rar_nested2.rar", filename=b"foo")
         assert t.unpacker == "rarfile"
-        assert t.filename == "foo"
+        assert t.filename == b"foo"
 
         t = unpack(
-            "tests/files/sflock_encrypted.rar",
-            filename="foo",
+            b"tests/files/sflock_encrypted.rar",
+            filename=b"foo",
             password="infected"
         )
         assert t.unpacker == "rarfile"
-        assert t.filename == "foo"
+        assert t.filename == b"foo"
 
     def test_inmemory(self):
-        contents = open("tests/files/rar_plain.rar", "rb").read()
+        contents = open(b"tests/files/rar_plain.rar", "rb").read()
         t = unpack(contents=contents)
         assert t.unpacker == "rarfile"
         assert t.filename is None
