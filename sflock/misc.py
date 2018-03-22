@@ -7,7 +7,7 @@ import importlib
 import os
 import zipfile
 import six
-
+import binascii
 
 import sflock
 
@@ -91,12 +91,15 @@ class ZipInfoWithPassword(zipfile.ZipInfo):
             temp = self.pw_header + buf.decode()
         else:
             temp = self.pw_header + buf
+
         for ch in temp:
-            if type(ch) == str:
-                ch = ord(ch)
-            x = c.encrypt(chr(ch))
+            x = c.encrypt(ch)
             astr = astr + x
-        self.contents = astr
+
+        if six.PY3:
+            self.contents = astr.encode('latin-1')
+        else:
+            self.contents = astr
 
     @property
     def CRC(self):

@@ -51,11 +51,11 @@ def test_zip_passwd():
 
     value = zip_set_password(z, b"password")
     z.close()
-
+    #raise Exception(len(value))
     z = zipfile.ZipFile(io.BytesIO(value))
     z.setpassword(b"password")
-    assert z.read("a.txt") == "hello world"
-    assert z.read("b.txt") == "A"*1024
+    assert z.read("a.txt") == b"hello world"
+    assert z.read("b.txt") == b"A"*1024
 
 def test_make_list():
     assert make_list(None) == [None]

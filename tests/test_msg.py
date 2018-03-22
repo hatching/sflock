@@ -70,7 +70,7 @@ def test_msg_nullbyte():
     assert doc.relaname == b"eFax_document-4631559.doc"
 
     z = zipfile.ZipFile(io.BytesIO(zipify(ole)))
-    assert z.read(doc.relaname) == doc.contents
+    assert z.read(doc.relaname.decode()) == doc.contents
 
 def test_msg_doc_magic():
     f = unpack(b"tests/files/msg_doc.msg_")
