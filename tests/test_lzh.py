@@ -22,7 +22,6 @@ class TestLzhFile(object):
         assert len(files) == 1
         assert not files[0].filepath
         assert files[0].relapath == "MICROTECH%20PRECISION%20ENGINEERING.exe"
-        #assert files[0].contents == "wow .ace"
         assert "PE32 executable (GUI) Intel 80386, for MS Windows" == files[0].magic
         assert files[0].parentdirs == []
         assert not files[0].selected
