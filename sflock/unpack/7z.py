@@ -76,3 +76,34 @@ class GzipFile(Unpacker):
             os.unlink(filepath)
 
         return self.process_directory(dirpath, duplicates)
+
+
+class LzhFile(Unpacker):
+    name = "lzhfile"
+    exe = "/usr/bin/7z"
+    exts = ".lzh", ".lha"
+    magic = "LHa ("
+
+    def unpack(self, password=None, duplicates=None):
+        dirpath = tempfile.mkdtemp()
+
+        if self.f.filepath:
+            filepath = self.f.filepath
+            temporary = False
+        else:
+            filepath = self.f.temp_path(".7z")
+            temporary = True
+
+        try:
+            subprocess.check_output([
+                self.zipjail, filepath, dirpath,
+                self.exe, "x", "-o%s" % dirpath, filepath,
+            ])
+        except subprocess.CalledProcessError as e:
+            self.f.mode = "failed"
+            self.f.error = e
+
+        if temporary:
+            os.unlink(filepath)
+
+        return self.process_directory(dirpath, duplicates)

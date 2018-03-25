@@ -25,7 +25,7 @@ following packages alongside sflock. It is currently not possible to run the
 unpackers that require native tooling support on non-Linux platforms.
 
 ```bash
-$ sudo apt-get install p7zip-full rar unace-nonfree cabextract lhasa
+$ sudo apt-get install p7zip-full rar unace-nonfree cabextract
 ```
 
 Installation of sflock itself may be done as follows.
@@ -89,7 +89,7 @@ SFlock supports a number of (semi-)archive types, sorted by extension:
 * .tar.bz2 (bzip2 compressed Unix file archive)
 * .tar.gz (gzip compressed Unix file archive)
 * .zip (ZIP archive)
-* .lzh (Lzh archive, `requires native tooling`)
+* .lzh (LZH/LHA archive)
 
 Security
 ========
