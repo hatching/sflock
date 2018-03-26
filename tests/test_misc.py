@@ -2,53 +2,7 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
-import io
-import six
-import zipfile
-
-from sflock.misc import ZipCrypt, zip_set_password, make_list
-
-def test_zipdecryptor_decrypt():
-    a, b = zipfile._ZipDecrypter(b"password"), ZipCrypt(b"password")
-    s1 = ""
-    for ch in "foobar":
-        if six.PY3:
-            s1 += chr(a(ord(ch)))
-        else:
-            s1 += a(ch)
-    s2 = ""
-    for ch in "foobar":
-        if six.PY3:
-            s2 += chr(b.decrypt(ord(ch)))
-        else:
-            s2 += b.decrypt(ch)
-    assert s1 == s2
-
-def test_zipdecryptor_encrypt():
-    a, b = zipfile._ZipDecrypter(b"password"), ZipCrypt(b"password")
-    value = ""
-    for ch in "barfoo":
-        x = b.encrypt(ch)
-        if six.PY3:
-            value += chr(a(ord(x)))
-        else:
-            value += a(x)
-    assert value == "barfoo"
-
-def test_zip_passwd():
-    r = io.BytesIO()
-    z = zipfile.ZipFile(r, "w")
-
-    z.writestr("a.txt", "hello world")
-    z.writestr("b.txt", "A"*1024)
-
-    value = zip_set_password(z, b"password")
-    z.close()
-
-    z = zipfile.ZipFile(io.BytesIO(value))
-    z.setpassword(b"password")
-    assert z.read("a.txt") == b"hello world"
-    assert z.read("b.txt") == b"A"*1024
+from sflock.misc import make_list
 
 def test_make_list():
     assert make_list(None) == [None]

@@ -13,7 +13,7 @@ import zipfile
 
 from sflock.abstracts import File, Unpacker
 from sflock.ident import identify
-from sflock.misc import zip_set_password, make_list
+from sflock.misc import make_list
 from sflock.unpack import plugins
 
 def supported():
@@ -60,7 +60,7 @@ def unpack(filepath=None, contents=None, password=None, filename=None,
     ident(f)
     return f
 
-def zipify(f, password=None):
+def zipify(f):
     """Turns any type of archive into an equivalent .zip file."""
     r = io.BytesIO()
     z = zipfile.ZipFile(r, "w")
@@ -69,11 +69,6 @@ def zipify(f, password=None):
         filepath = child.temp_path()
         z.write(filepath, child.relapath.decode())
         os.unlink(filepath)
-
-    if password:
-        ret = zip_set_password(z, password)
-        z.close()
-        return ret
 
     z.close()
     return r.getvalue()
