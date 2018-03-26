@@ -23,7 +23,7 @@ class TestAceFile(object):
         assert len(files) == 1
         assert not files[0].filepath
         assert files[0].relapath == b"ace.txt"
-        assert files[0].contents == "wow .ace"
+        assert files[0].contents == b"wow .ace"
         assert "ASCII text" in files[0].magic
         assert files[0].parentdirs == []
         assert not files[0].selected
@@ -37,8 +37,8 @@ class TestAceFile(object):
         assert len(files) == 1
 
         assert files[0].relapath == b"b00/ace.txt"
-        assert files[0].parentdirs == ["b00"]
-        assert files[0].contents == "wow .ace"
+        assert files[0].parentdirs == [b"b00"]
+        assert files[0].contents == b"wow .ace"
         assert not files[0].password
         assert "ASCII text" in files[0].magic
         assert not files[0].selected
@@ -52,30 +52,30 @@ class TestAceFile(object):
         assert len(files) == 1
 
         assert files[0].relapath == b"derp/b00/ace.txt"
-        assert files[0].parentdirs == ["derp", "b00"]
-        assert files[0].contents == "wow .ace"
+        assert files[0].parentdirs == [b"derp", b"b00"]
+        assert files[0].contents == b"wow .ace"
         assert not files[0].password
         assert "ASCII text" in files[0].magic
         assert not files[0].selected
 
     def test_heuristics(self):
-        t = unpack(b"tests/files/ace_plain.ace", filename="foo")
+        t = unpack(b"tests/files/ace_plain.ace", filename=b"foo")
         assert t.unpacker == "acefile"
-        assert t.filename == "foo"
+        assert t.filename == b"foo"
 
-        t = unpack(b"tests/files/ace_nested.ace", filename="foo")
+        t = unpack(b"tests/files/ace_nested.ace", filename=b"foo")
         assert t.unpacker == "acefile"
-        assert t.filename == "foo"
+        assert t.filename == b"foo"
 
-        t = unpack(b"tests/files/ace_nested2.ace", filename="foo")
+        t = unpack(b"tests/files/ace_nested2.ace", filename=b"foo")
         assert t.unpacker == "acefile"
-        assert t.filename == "foo"
+        assert t.filename == b"foo"
 
     def test_doubledot(self):
         files = list(AceFile(f(b"ace_doubledot.ace")).unpack())
         assert len(files) == 1
         assert files[0].filename == (
-            "Procurement commercial terms & conditions..exe"
+            b"Procurement commercial terms & conditions..exe"
         )
 
     def test_inmemory(self):
