@@ -9,12 +9,11 @@ import glob
 import io
 import json
 import os.path
-import six
 import zipfile
 
 from sflock.abstracts import File, Unpacker
 from sflock.ident import identify
-from sflock.misc import zip_set_password
+from sflock.misc import zip_set_password, make_list
 from sflock.unpack import plugins
 
 def supported():
@@ -24,10 +23,8 @@ def supported():
     ret = []
     for plugin in plugins.values():
         if plugin(None).supported():
-            if isinstance(plugin.exts, six.string_types):
-                ret.append(plugin.exts)
-            else:
-                ret.extend(plugin.exts)
+            for ext in make_list(plugin.exts):
+                ret.append(ext)
     return ret
 
 def ident(f):
