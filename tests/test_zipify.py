@@ -44,8 +44,7 @@ def test_zipify5():
     assert b.children[0].mode == "failed"
 
     # Fortunately sflock is capable of bruteforcing "password".
-    x = zipify(a, b"password")
-    b = unpack(b"foo.zip", x)
+    b = unpack(b"foo.zip", zipify(a, b"password"))
     assert len(a.children) == len(b.children)
     assert a.children[0].relapath == b.children[0].relapath
     assert a.children[0].contents == b.children[0].contents

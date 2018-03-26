@@ -1,13 +1,12 @@
-# Copyright (C) 2015-2016 Jurriaan Bremer.
+# Copyright (C) 2015-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 import io
 import importlib
 import os
-import zipfile
 import six
-import binascii
+import zipfile
 
 import sflock
 
@@ -32,9 +31,10 @@ def import_plugins(dirpath, module_prefix, namespace, class_):
 
 def data_file(*path):
     """Return the path for the filepath of an embedded file."""
+    dirpath = sflock.__path__[0]
     if six.PY3:
-        return os.path.abspath(os.path.join(sflock.__path__[0].encode(), b"data", *path))
-    return os.path.abspath(os.path.join(sflock.__path__[0], "data", *path))
+        dirpath = dirpath.encode()
+    return os.path.abspath(os.path.join(dirpath, b"data", *path))
 
 class ZipCrypt(zipfile._ZipDecrypter):
     """Layer on top of zipfile's _ZipDecrypter class to also encrypt data."""
@@ -57,9 +57,7 @@ class ZipCrypt(zipfile._ZipDecrypter):
     def encrypt(self, ch):
         """Encrypt one character."""
         if six.PY3:
-            a = ord(ch)
-            b = self.__call__(ord(ch))
-            t = chr(a ^ b)
+            t = chr(ord(ch) ^ self.__call__(ord(ch)))
             zipfile._ZipDecrypter._UpdateKeys(self, ord(ch))
         else:
             t = chr(ord(self.__call__(ch)) ^ ord(ch))
@@ -88,20 +86,16 @@ class ZipInfoWithPassword(zipfile.ZipInfo):
         # Encrypted contents that may be written away as-is.
         c = ZipCrypt(password)
 
-        astr =""
         if six.PY3:
-            temp = self.pw_header + buf.decode()
+            contents = self.pw_header + buf.decode()
         else:
-            temp = self.pw_header + buf
+            contents = self.pw_header + buf
 
-        for ch in temp:
-            x = c.encrypt(ch)
-            astr = astr + x
-
+        contents = "".join(c.encrypt(ch) for ch in contents)
         if six.PY3:
-            self.contents = astr.encode('latin-1')
+            self.contents = contents.encode("latin-1")
         else:
-            self.contents = astr
+            self.contents = contents
 
     @property
     def CRC(self):

@@ -1,10 +1,11 @@
-# Copyright (C) 2016 Jurriaan Bremer.
+# Copyright (C) 2016-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 import io
-import zipfile
 import six
+import zipfile
+
 from sflock.misc import ZipCrypt, zip_set_password, make_list
 
 def test_zipdecryptor_decrypt():
@@ -12,35 +13,27 @@ def test_zipdecryptor_decrypt():
     s1 = ""
     for ch in "foobar":
         if six.PY3:
-            x = a(ord(ch))
-            s1 += chr(x)
+            s1 += chr(a(ord(ch)))
         else:
-            x = a(ch)
-            s1 += x
+            s1 += a(ch)
     s2 = ""
     for ch in "foobar":
         if six.PY3:
-            x= b.decrypt(ord(ch))
-            s2 += chr(x)
+            s2 += chr(b.decrypt(ord(ch)))
         else:
-            x = b.decrypt(ch)
-            s2 += x
-
+            s2 += b.decrypt(ch)
     assert s1 == s2
 
 def test_zipdecryptor_encrypt():
     a, b = zipfile._ZipDecrypter(b"password"), ZipCrypt(b"password")
-    str = ""
+    value = ""
     for ch in "barfoo":
         x = b.encrypt(ch)
         if six.PY3:
-            y = a(ord(x))
-            str += chr(y)
+            value += chr(a(ord(x)))
         else:
-            y = a(x)
-            str += y    
-    assert str == "barfoo"
-    #assert "".join(a() f   or ch in "barfoo") == "barfoo"
+            value += a(x)
+    assert value == "barfoo"
 
 def test_zip_passwd():
     r = io.BytesIO()
@@ -51,7 +44,7 @@ def test_zip_passwd():
 
     value = zip_set_password(z, b"password")
     z.close()
-    #raise Exception(len(value))
+
     z = zipfile.ZipFile(io.BytesIO(value))
     z.setpassword(b"password")
     assert z.read("a.txt") == b"hello world"

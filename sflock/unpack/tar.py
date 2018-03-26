@@ -4,6 +4,7 @@
 
 import bz2
 import gzip
+import six
 import tarfile
 
 from sflock.abstracts import Unpacker, File
@@ -31,8 +32,12 @@ class TarFile(Unpacker):
             if not entry.isfile():
                 continue
 
+            relapath = entry.path
+            if six.PY3:
+                relapath = relapath.encode()
+
             entries.append(File(
-                relapath=entry.path.encode(),
+                relapath=relapath,
                 contents=archive.extractfile(entry).read()
             ))
 

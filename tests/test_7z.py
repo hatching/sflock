@@ -1,8 +1,9 @@
-# Copyright (C) 2015-2017 Jurriaan Bremer.
+# Copyright (C) 2015-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 import hashlib
+import os.path
 import pytest
 
 from sflock.abstracts import File
@@ -10,7 +11,7 @@ from sflock.main import unpack
 from sflock.unpack import Zip7File
 
 def f(filename):
-    return File.from_path(b"tests/files/%s" % filename)
+    return File.from_path(os.path.join(b"tests", b"files", filename))
 
 @pytest.mark.skipif("not Zip7File(None).supported()")
 class Test7zFile(object):

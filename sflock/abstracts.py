@@ -166,7 +166,7 @@ class File(object):
     def __init__(self, filepath=None, contents=None, relapath=None,
                  filename=None, mode=None, password=None, description=None,
                  selected=None, stream=None, platform=None):
-        if six.PY3 and type(relapath) == str:
+        if six.PY3 and isinstance(relapath, str):
             relapath = relapath.encode()
 
         self.filepath = filepath

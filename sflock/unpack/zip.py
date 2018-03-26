@@ -20,27 +20,22 @@ class ZipFile(Unpacker):
     def handles(self):
         if super(ZipFile, self).handles():
             return True
-        if self.f.stream.read(2) == b'PK':
+        if self.f.stream.read(2) == b"PK":
             return True
         return False
 
     def decrypt(self, password, archive, entry):
         try:
             archive.setpassword(password)
-            if six.PY3 and type(entry.filename) == str:
+
+            if six.PY3 and isinstance(entry.filename, str):
                 entry.filename = entry.filename.encode()
 
-            #wrong password in py3
-            b = archive.read(entry)
-
-            a = File(
+            return File(
                 relapath=entry.filename,
-                contents=b,
+                contents=archive.read(entry),
                 password=password
             )
-
-            return a
-
         except (RuntimeError, zipfile.BadZipfile, OverflowError,
                 zlib.error) as e:
             msg = getattr(e, "message", None) or e.args[0]
