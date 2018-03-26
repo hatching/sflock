@@ -6,7 +6,8 @@
 [![codecov](https://codecov.io/gh/jbremer/sflock/branch/master/graph/badge.svg)](https://codecov.io/gh/jbremer/sflock)
 
 Sample staging &amp; detonation utility to be used as unpacking engine for
-other analysis tools.
+other analysis tools. Since version 0.3 sflock is compatible with both Python
+2 and Python 3 (to be precise, Python 2.7, 3.5, and 3.6).
 
 Birds tend to move around in flocks, therefore the sflock utility can digest a
 flock of samples, but also inverse flocks, i.e., sflock unpacks various
@@ -81,7 +82,7 @@ SFlock supports a number of (semi-)archive types, sorted by extension:
 * .eml (MIME RFC 822 email representation)
 * .gzip (gzip compressed data, `requires native tooling`)
 * .iso (ISO file container, `requires native tooling`)
-* .lzh (LZH/LHA archive)
+* .lzh (LZH/LHA archive, `requires native tooling`)
 * .msg (Outlook mail message)
 * .mso (Microsoft Office Macro reference file)
 * .pdf (Attachments embedded in PDF files)
