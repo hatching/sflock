@@ -157,7 +157,7 @@ def test_astree3():
         "selected": False,
         "preview": True,
         "password": None,
-        "size": 24951,
+        "size": 24607,
         "type": "container",
         "children": [{
             "duplicate": False,
