@@ -51,7 +51,7 @@ https://github.com/ahupp/python-magic#dependencies.
 To simplify the setup phase, sflock ships the required 32-bit binaries to use
 libmagic under Windows and as such Windows support works flawlessly.
 
-Note: on Windows the `7z`, `ace`, `cab`, `gzip`, `iso`, and `rar` file
+Note: on Windows the `7z`, `ace`, `cab`, `gzip`, `iso`, `lzh`, and `rar` file
 formats are not supported.
 
 Installation (macOS)
@@ -66,7 +66,7 @@ $ brew update
 $ brew install libmagic
 ```
 
-Note: on macOS the `7z`, `ace`, `cab`, `gzip`, `iso`, and `rar` file
+Note: on macOS the `7z`, `ace`, `cab`, `gzip`, `iso`, `lzh`, and `rar` file
 formats are not supported.
 
 Supported archives
@@ -81,6 +81,7 @@ SFlock supports a number of (semi-)archive types, sorted by extension:
 * .eml (MIME RFC 822 email representation)
 * .gzip (gzip compressed data, `requires native tooling`)
 * .iso (ISO file container, `requires native tooling`)
+* .lzh (LZH/LHA archive)
 * .msg (Outlook mail message)
 * .mso (Microsoft Office Macro reference file)
 * .pdf (Attachments embedded in PDF files)
@@ -94,8 +95,8 @@ Security
 ========
 
 Due to its nature of unpacking malicious archives with, depending on the
-extension, native tools (i.e., *.7z*, *.ace*, *.cab*, *.gzip*, *.iso*, and
-*.rar*), it is important that such operations happen securely. SFlock
+extension, native tools (i.e., *.7z*, *.ace*, *.cab*, *.gzip*, *.iso*, *.lzh*,
+and *.rar*), it is important that such operations happen securely. SFlock
 therefore wraps execution of the native tools in [zipjail][], a usermode
 sandbox written exactly for this purpose.
 

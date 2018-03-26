@@ -19,6 +19,8 @@ def test_extensions():
     assert guess(b"a.msg") == ["msgfile"]
     assert guess(b"a.mso") == ["msofile", "office"]
     assert guess(b"a.bup") == ["bupfile"]
+    assert guess(b"a.lzh") == ["lzhfile"]
+    assert guess(b"a.lha") == ["lzhfile"]
 
 def test_case():
     assert guess(b"A.ZIP") == ["zipfile"]
