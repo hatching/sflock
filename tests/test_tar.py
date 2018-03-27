@@ -141,35 +141,35 @@ class TestTarFile(object):
         assert not files[0].selected
 
     def test_heuristics(self):
-        t = unpack("tests/files/tar_plain.tar", filename=b"foo")
+        t = unpack(b"tests/files/tar_plain.tar", filename=b"foo")
         assert t.unpacker == "tarfile"
         assert t.filename == b"foo"
 
-        t = unpack("tests/files/tar_plain2.tar", filename=b"foo")
+        t = unpack(b"tests/files/tar_plain2.tar", filename=b"foo")
         assert t.unpacker == "tarfile"
         assert t.filename == b"foo"
 
-        t = unpack("tests/files/tar_plain2.tar.gz", filename=b"foo")
+        t = unpack(b"tests/files/tar_plain2.tar.gz", filename=b"foo")
         assert t.unpacker == "targzfile"
         assert t.filename == b"foo"
 
-        t = unpack("tests/files/tar_plain2.tar.bz2", filename=b"foo")
+        t = unpack(b"tests/files/tar_plain2.tar.bz2", filename=b"foo")
         assert t.unpacker == "tarbz2file"
         assert t.filename == b"foo"
 
-        t = unpack("tests/files/tar_nested.tar", filename=b"foo")
+        t = unpack(b"tests/files/tar_nested.tar", filename=b"foo")
         assert t.unpacker == "tarfile"
         assert t.filename == b"foo"
 
-        t = unpack("tests/files/tar_nested.tar.gz", filename=b"foo")
+        t = unpack(b"tests/files/tar_nested.tar.gz", filename=b"foo")
         assert t.unpacker == "targzfile"
         assert t.filename == b"foo"
 
-        t = unpack("tests/files/tar_nested.tar.bz2", filename=b"foo")
+        t = unpack(b"tests/files/tar_nested.tar.bz2", filename=b"foo")
         assert t.unpacker == "tarbz2file"
         assert t.filename == b"foo"
 
-        t = unpack("tests/files/tar_nested2.tar", filename=b"foo")
+        t = unpack(b"tests/files/tar_nested2.tar", filename=b"foo")
         assert t.unpacker == "tarfile"
         assert t.filename == b"foo"
 

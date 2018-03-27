@@ -27,7 +27,7 @@ class RarFile(Unpacker):
         try:
             subprocess.check_output([
                 self.zipjail, filepath, dirpath,
-                self.exe, "x", "-mt1", "-p%s" % (password or "-"),
+                self.exe, "x", "-mt1", b"-p%s" % (password or b"-"),
                 filepath, dirpath,
             ])
         except subprocess.CalledProcessError as e:
