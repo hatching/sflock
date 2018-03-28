@@ -5,3 +5,8 @@
 *.so
 *.pyc
 *.pyo
+
+.idea/
+.pytest_cache/
+SFlock.egg-info/
+dist/

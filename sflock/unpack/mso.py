@@ -1,4 +1,4 @@
-# Copyright (C) 2016-2017 Jurriaan Bremer.
+# Copyright (C) 2016-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -11,7 +11,7 @@ from sflock.exception import UnpackException
 
 class MsoFile(Unpacker):
     name = "msofile"
-    exts = ".mso"
+    exts = b".mso"
 
     def supported(self):
         return True
@@ -21,7 +21,7 @@ class MsoFile(Unpacker):
             return ole.openstream(os.path.join(*filename)).read()
 
     def locate_ole(self, contents):
-        for idx in xrange(1024):
+        for idx in range(1024):
             try:
                 obj = zlib.decompress(contents[idx:])
                 break
@@ -44,7 +44,7 @@ class MsoFile(Unpacker):
 
     def parse_ole10_native(self, ole, name):
         def parse_string(off):
-            ret = stream[off:stream.find("\x00", off)]
+            ret = stream[off:stream.find(b"\x00", off)]
             return off + len(ret) + 1, ret
 
         stream = self.get_stream(ole, "\x01Ole10Native")

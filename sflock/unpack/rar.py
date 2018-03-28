@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2016 Jurriaan Bremer.
+# Copyright (C) 2015-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -11,7 +11,7 @@ from sflock.abstracts import Unpacker
 class RarFile(Unpacker):
     name = "rarfile"
     exe = "/usr/bin/rar"
-    exts = ".rar"
+    exts = b".rar"
     magic = "RAR archive"
 
     def unpack(self, password=None, duplicates=None):
@@ -27,7 +27,7 @@ class RarFile(Unpacker):
         try:
             subprocess.check_output([
                 self.zipjail, filepath, dirpath,
-                self.exe, "x", "-mt1", "-p%s" % (password or "-"),
+                self.exe, "x", "-mt1", b"-p%s" % (password or b"-"),
                 filepath, dirpath,
             ])
         except subprocess.CalledProcessError as e:

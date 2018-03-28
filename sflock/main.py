@@ -1,17 +1,21 @@
-# Copyright (C) 2015-2017 Jurriaan Bremer.
+# Copyright (C) 2015-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
+
+from __future__ import print_function
 
 import click
 import glob
 import io
 import json
 import os.path
+import six
 import zipfile
 
 from sflock.abstracts import File, Unpacker
+from sflock.exception import IncorrectUsageException
 from sflock.ident import identify
-from sflock.misc import zip_set_password
+from sflock.misc import make_list
 from sflock.unpack import plugins
 
 def supported():
@@ -21,10 +25,8 @@ def supported():
     ret = []
     for plugin in plugins.values():
         if plugin(None).supported():
-            if isinstance(plugin.exts, basestring):
-                ret.append(plugin.exts)
-            else:
-                ret.extend(plugin.exts)
+            for ext in make_list(plugin.exts):
+                ret.append(ext)
     return ret
 
 def ident(f):
@@ -50,6 +52,13 @@ def unpack(filepath=None, contents=None, password=None, filename=None,
     if duplicates is None:
         duplicates = []
 
+    if six.PY3:
+        if isinstance(filepath, str) or isinstance(contents, str):
+            raise IncorrectUsageException
+
+        if isinstance(filename, str) or isinstance(password, str):
+            raise IncorrectUsageException
+
     if contents:
         f = File(filepath, contents, filename=filename)
     else:
@@ -60,27 +69,22 @@ def unpack(filepath=None, contents=None, password=None, filename=None,
     ident(f)
     return f
 
-def zipify(f, password=None):
+def zipify(f):
     """Turns any type of archive into an equivalent .zip file."""
     r = io.BytesIO()
     z = zipfile.ZipFile(r, "w")
 
     for child in f.children:
         filepath = child.temp_path()
-        z.write(filepath, child.relapath)
+        z.write(filepath, child.relapath.decode())
         os.unlink(filepath)
-
-    if password:
-        ret = zip_set_password(z, password)
-        z.close()
-        return ret
 
     z.close()
     return r.getvalue()
 
 def process_file(filepath, extract):
     f = unpack(filepath)
-    print json.dumps(f.astree())
+    print(json.dumps(f.astree()))
 
     extract and f.extract(extract)
 

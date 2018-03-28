@@ -6,7 +6,8 @@
 [![codecov](https://codecov.io/gh/jbremer/sflock/branch/master/graph/badge.svg)](https://codecov.io/gh/jbremer/sflock)
 
 Sample staging &amp; detonation utility to be used as unpacking engine for
-other analysis tools.
+other analysis tools. Since version 0.3 sflock is compatible with both Python
+2 and Python 3 (to be precise, Python 2.7, 3.5, and 3.6).
 
 Birds tend to move around in flocks, therefore the sflock utility can digest a
 flock of samples, but also inverse flocks, i.e., sflock unpacks various
@@ -51,15 +52,13 @@ https://github.com/ahupp/python-magic#dependencies.
 To simplify the setup phase, sflock ships the required 32-bit binaries to use
 libmagic under Windows and as such Windows support works flawlessly.
 
-Note: on Windows the `7z`, `ace`, `cab`, and `rar` file formats are not
-supported.
-Note: for decrypting Microsoft Office files it is required to manually install
-the PyCrypto Python package.
+Note: on Windows the `7z`, `ace`, `cab`, `gzip`, `iso`, `lzh`, and `rar` file
+formats are not supported.
 
-Installation (Mac OS X)
+Installation (macOS)
 =======================
 
-Since version 0.2 sflock properly supports Mac OS X-based operating systems.
+Since version 0.2 sflock properly supports macOS-based operating systems.
 One does have to manually install `libmagic` though. This may be done through
 the `brew` package manager.
 
@@ -68,10 +67,8 @@ $ brew update
 $ brew install libmagic
 ```
 
-Note: on Mac OS X the `7z`, `ace`, `cab`, and `rar` file formats are not
-supported.
-Note: for decrypting Microsoft Office files it is required to manually install
-the PyCrypto Python package.
+Note: on macOS the `7z`, `ace`, `cab`, `gzip`, `iso`, `lzh`, and `rar` file
+formats are not supported.
 
 Supported archives
 ==================
@@ -83,6 +80,9 @@ SFlock supports a number of (semi-)archive types, sorted by extension:
 * .bup (McAfee quarantine files)
 * .cab (Microsoft Cabinet archive, `requires native tooling`)
 * .eml (MIME RFC 822 email representation)
+* .gzip (gzip compressed data, `requires native tooling`)
+* .iso (ISO file container, `requires native tooling`)
+* .lzh (LZH/LHA archive, `requires native tooling`)
 * .msg (Outlook mail message)
 * .mso (Microsoft Office Macro reference file)
 * .pdf (Attachments embedded in PDF files)
@@ -96,9 +96,9 @@ Security
 ========
 
 Due to its nature of unpacking malicious archives with, depending on the
-extension, native tools (i.e., *.7z*, *.ace*, *.cab*, *.rar*), it is
-important that such operations happen securely. SFlock therefore wraps
-execution of the native tools in [zipjail][], a usermode sandbox written
-exactly for this purpose.
+extension, native tools (i.e., *.7z*, *.ace*, *.cab*, *.gzip*, *.iso*, *.lzh*,
+and *.rar*), it is important that such operations happen securely. SFlock
+therefore wraps execution of the native tools in [zipjail][], a usermode
+sandbox written exactly for this purpose.
 
 [zipjail]: https://github.com/jbremer/tracy/tree/master/src/zipjail

@@ -1,9 +1,10 @@
-# Copyright (C) 2015-2017 Jurriaan Bremer.
+# Copyright (C) 2015-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 import bz2
 import gzip
+import six
 import tarfile
 
 from sflock.abstracts import Unpacker, File
@@ -11,7 +12,7 @@ from sflock.abstracts import Unpacker, File
 class TarFile(Unpacker):
     name = "tarfile"
     mode = "r:"
-    exts = ".tar"
+    exts = b".tar"
     magic = "POSIX tar archive"
 
     def supported(self):
@@ -31,8 +32,12 @@ class TarFile(Unpacker):
             if not entry.isfile():
                 continue
 
+            relapath = entry.path
+            if six.PY3:
+                relapath = relapath.encode()
+
             entries.append(File(
-                relapath=entry.path,
+                relapath=relapath,
                 contents=archive.extractfile(entry).read()
             ))
 
@@ -41,7 +46,7 @@ class TarFile(Unpacker):
 class TargzFile(TarFile, Unpacker):
     name = "targzfile"
     mode = "r:gz"
-    exts = ".tar.gz"
+    exts = b".tar.gz"
 
     def handles(self):
         if self.f.filename and self.f.filename.lower().endswith(self.exts):
@@ -60,7 +65,7 @@ class TargzFile(TarFile, Unpacker):
 class Tarbz2File(TarFile, Unpacker):
     name = "tarbz2file"
     mode = "r:bz2"
-    exts = ".tar.bz2"
+    exts = b".tar.bz2"
 
     def handles(self):
         if self.f.filename and self.f.filename.lower().endswith(self.exts):

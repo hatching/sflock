@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# Copyright (C) 2015-2017 Jurriaan Bremer.
+# Copyright (C) 2015-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -7,7 +6,7 @@ from setuptools import setup
 
 setup(
     name="SFlock",
-    version="0.2.17",
+    version="0.3.0",
     author="Jurriaan Bremer",
     author_email="jbr@cuckoo.sh",
     packages=[
@@ -26,13 +25,9 @@ setup(
     include_package_data=True,
     install_requires=[
         "click==6.6",
+        "cryptography>=2.1",
         "olefile==0.43",
-        "peepdf>=0.3.4",
+        "peepdf>=0.4.1",
         "python-magic==0.4.12",
     ],
-    extras_require={
-        ":sys_platform == 'linux2'": [
-            "pycrypto==2.6.1",
-        ],
-    },
 )

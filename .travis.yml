@@ -4,36 +4,33 @@ matrix:
   fast_finish: true
   include:
     - python: 2.7
+    - python: 3.5
+    - python: 3.6
     - os: osx
       language: generic
 
-install:
-  - python setup.py develop
-  - pip install pytest pytest-cov codecov coveralls mock
+before_install:
   - |
     if [[ $TRAVIS_OS_NAME == "osx" ]]; then
       brew update || brew update
       brew install libmagic
+      # The following wasn't required in the past and therefore may become
+      # obsolete once again in the future. Let's wait and see.
+      wget https://bootstrap.pypa.io/get-pip.py
+      sudo python get-pip.py
+      sudo pip install virtualenv
+      virtualenv $HOME
+      source $HOME/bin/activate
     fi
 
+install:
+  - pip install -e .
+  - pip install pytest pytest-cov codecov coveralls mock
+
 script:
-  - 'python -c "import sflock ; exit(len(sflock.supported()) != 9)"'
   - 'py.test --cov=sflock'
 
-  - '[[ $TRAVIS_OS_NAME == "linux" ]] && sudo apt-get -y install p7zip-full || true'
-  - '[[ $TRAVIS_OS_NAME == "linux" ]] && python -c "import sflock ; exit(len(sflock.supported()) != 11)" || true'
-  - '[[ $TRAVIS_OS_NAME == "linux" ]] && py.test --cov=sflock --cov-append || true'
-
-  - '[[ $TRAVIS_OS_NAME == "linux" ]] && sudo apt-get -y install rar || true'
-  - '[[ $TRAVIS_OS_NAME == "linux" ]] && python -c "import sflock ; exit(len(sflock.supported()) != 12)" || true'
-  - '[[ $TRAVIS_OS_NAME == "linux" ]] && py.test --cov=sflock --cov-append || true'
-
-  - '[[ $TRAVIS_OS_NAME == "linux" ]] && sudo apt-get -y install unace-nonfree || true'
-  - '[[ $TRAVIS_OS_NAME == "linux" ]] && python -c "import sflock ; exit(len(sflock.supported()) != 13)" || true'
-  - '[[ $TRAVIS_OS_NAME == "linux" ]] && py.test --cov=sflock --cov-append || true'
-
-  - '[[ $TRAVIS_OS_NAME == "linux" ]] && sudo apt-get -y install cabextract || true'
-  - '[[ $TRAVIS_OS_NAME == "linux" ]] && python -c "import sflock ; exit(len(sflock.supported()) != 14)" || true'
+  - '[[ $TRAVIS_OS_NAME == "linux" ]] && sudo apt-get -y install p7zip-full rar unace-nonfree cabextract || true'
   - '[[ $TRAVIS_OS_NAME == "linux" ]] && py.test --cov=sflock --cov-append || true'
 
 after_success:

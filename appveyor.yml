@@ -3,7 +3,7 @@ environment:
     - PYTHON: "C:/Python27"
 
 install:
-  - "%PYTHON%/Python.exe setup.py develop"
+  - "%PYTHON%/Scripts/pip.exe install -e ."
   - "%PYTHON%/Scripts/pip.exe install pytest pytest-cov codecov mock"
 
 build: false

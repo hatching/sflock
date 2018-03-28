@@ -1,10 +1,9 @@
-# Copyright (C) 2017 Jurriaan Bremer.
+# Copyright (C) 2017-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 from sflock.abstracts import Unpacker
 from sflock.decode import plugins
-from sflock.exception import DecoderException
 
 class OfficeFile(Unpacker):
     name = "office"
@@ -17,19 +16,12 @@ class OfficeFile(Unpacker):
         if password is None:
             return
 
-        try:
-            d = plugins["office"](self.f, password)
-        except DecoderException:
-            # TODO Should this be moved to the supported() method?
-            self.f.mode = "failed"
-            self.f.error = (
-                "To decrypt a Microsoft Office document PyCrypto is required!"
-            )
-            return
-
-        return d.decode()
+        return plugins["office"](self.f, password).decode()
 
     def unpack(self, password=None, duplicates=None):
+        # Avoiding recursive imports. TODO Can this be generalized?
+        from sflock import ident
+
         entries = []
 
         f = self.bruteforce(password)
@@ -38,4 +30,6 @@ class OfficeFile(Unpacker):
             self.f.preview = True
             self.f.selected = False
 
-        return self.process(entries, duplicates)
+        ret = self.process(entries, duplicates)
+        f and ident(f)
+        return ret

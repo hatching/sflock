@@ -1,15 +1,16 @@
-# Copyright (C) 2017 Jurriaan Bremer.
+# Copyright (C) 2017-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 import os
 import peepdf
+import six
 
 from sflock.abstracts import Unpacker, File
 
 class PdfFile(Unpacker):
     name = "pdffile"
-    exts = ".pdf"
+    exts = b".pdf"
     package = "pdf"
 
     def supported(self):
@@ -30,7 +31,7 @@ class PdfFile(Unpacker):
             filepath, forceMode=True, looseMode=True, manualAnalysis=False
         )
 
-        for version in xrange(f.updates + 1):
+        for version in range(f.updates + 1):
             for obj in f.body[version].objects.values():
                 if not isinstance(obj.object, peepdf.PDFCore.PDFDictionary):
                     continue
@@ -59,15 +60,21 @@ class PdfFile(Unpacker):
                     continue
 
                 obj = f.body[version].objects[ref.id]
+                contents = obj.object.decodedStream
+                filename = filename.value
+
+                if six.PY3:
+                    contents = contents.encode("latin-1")
+                    filename = filename.encode()
+
                 entries.append(File(
-                    contents=obj.object.decodedStream,
-                    filename=filename.value,
+                    contents=contents,
+                    filename=filename,
                     selected=False
                 ))
 
         if temporary:
             os.unlink(filepath)
-
         if entries:
             self.f.preview = False
         return self.process(entries, duplicates)

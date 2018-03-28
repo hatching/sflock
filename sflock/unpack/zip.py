@@ -1,7 +1,8 @@
-# Copyright (C) 2015-2017 Jurriaan Bremer.
+# Copyright (C) 2015-2018 Jurriaan Bremer.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import six
 import zipfile
 import zlib
 
@@ -10,7 +11,7 @@ from sflock.exception import UnpackException
 
 class ZipFile(Unpacker):
     name = "zipfile"
-    exts = ".zip"
+    exts = b".zip"
     magic = "Zip archive data"
 
     def supported(self):
@@ -19,20 +20,25 @@ class ZipFile(Unpacker):
     def handles(self):
         if super(ZipFile, self).handles():
             return True
-        if self.f.stream.read(2) == "PK":
+        if self.f.stream.read(2) == b"PK":
             return True
         return False
 
     def decrypt(self, password, archive, entry):
         try:
             archive.setpassword(password)
+
+            if six.PY3 and isinstance(entry.filename, str):
+                entry.filename = entry.filename.encode()
+
             return File(
                 relapath=entry.filename,
                 contents=archive.read(entry),
                 password=password
             )
-        except (RuntimeError, zipfile.BadZipfile, zlib.error) as e:
-            msg = e.message or e.args[0]
+        except (RuntimeError, zipfile.BadZipfile, OverflowError,
+                zlib.error) as e:
+            msg = getattr(e, "message", None) or e.args[0]
             if "Bad password" in msg:
                 return
             if "Bad CRC-32" in msg:
@@ -42,6 +48,8 @@ class ZipFile(Unpacker):
             if "Truncated file header" in msg:
                 return
             if "invalid distance too far back" in msg:
+                return
+            if "cannot fit 'long' into" in msg:
                 return
 
             raise UnpackException("Unknown zipfile error: %s" % e)
