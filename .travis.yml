@@ -33,6 +33,8 @@ script:
   - '[[ $TRAVIS_OS_NAME == "linux" ]] && sudo apt-get -y install p7zip-full rar unace-nonfree cabextract || true'
   - '[[ $TRAVIS_OS_NAME == "linux" ]] && py.test --cov=sflock --cov-append || true'
 
+  - python -c 'import sflock, sys ; assert "pkg_resources" not in sys.modules'
+
 after_success:
   - codecov
   - coveralls
