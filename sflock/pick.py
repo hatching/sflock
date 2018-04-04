@@ -18,7 +18,7 @@ ppt_ext = (
     b".ppsm", b".pot", b".ppam", b".sldx", b".sldm",
 )
 ie_ext = (
-    b".htm", b".html", b".hta", b".mht", b".mhtml",
+    b".htm", b".html", b".hta", b".mht", b".mhtml", b".url",
 )
 
 def package(f):

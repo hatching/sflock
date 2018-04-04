@@ -68,3 +68,8 @@ def test_oledoc1():
     f = unpack(b"tests/files/oledoc1.doc_")
     assert f.package == "doc"
     assert f.platform == "windows"
+
+def test_url():
+    f = unpack(b"tests/files/1.url")
+    assert f.package == "ie"
+    assert f.platform == "windows"
