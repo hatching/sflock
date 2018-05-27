@@ -73,3 +73,13 @@ def test_url():
     f = unpack(b"tests/files/1.url")
     assert f.package == "ie"
     assert f.platform == "windows"
+
+def test_slk():
+    f = unpack(b"tests/files/1.slk")
+    assert f.package == "xls"
+    assert f.platform == "windows"
+
+def test_iqy():
+    f = unpack(b"tests/files/1.iqy")
+    assert f.package == "xls"
+    assert f.platform == "windows"

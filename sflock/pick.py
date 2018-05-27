@@ -11,7 +11,7 @@ doc_hdr = (
 )
 xls_ext = (
     b".xls", b".xlsx", b".xlm", b".xlt", b".xltx", b".xlsm", b".xltm",
-    b".xlsb", b".xla", b".xlam", b".xll", b".xlw",
+    b".xlsb", b".xla", b".xlam", b".xll", b".xlw", b".slk", b".iqy"
 )
 ppt_ext = (
     b".ppt", b".pptx", b".pps", b".ppsx", b".pptm", b".potm", b".potx",
