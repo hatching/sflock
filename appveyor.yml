@@ -1,6 +1,7 @@
 environment:
   matrix:
     - PYTHON: "C:/Python27"
+    - PYTHON: "C:/Python27-x64"
 
 install:
   - "%PYTHON%/Scripts/pip.exe install -e ."
@@ -13,4 +14,4 @@ test_script:
   - '%PYTHON%/Scripts/pytest.exe --cov=sflock'
 
 after_test:
-  - "codecov.exe"
+  - "%PYTHON%/Scripts/codecov.exe"
