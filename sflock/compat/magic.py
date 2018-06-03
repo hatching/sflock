@@ -30,19 +30,9 @@ if sys.platform == "win32":
 # Therefore only import libmagic at this point.
 import magic
 
-def patch():
-    """Patch libmagic to use our magic.mgc file, so that it the same across
-    multiple operating systems, Linux distributions, etc."""
-    if sys.platform != "win32" or magic._instances:
-        return
-
+if sys.platform == "win32":
     magic._instances[False] = magic.Magic(mime=False, magic_file=magic_file)
     magic._instances[True] = magic.Magic(mime=True, magic_file=magic_file)
 
-def from_file(*args, **kwargs):
-    patch()
-    return magic.from_file(*args, **kwargs)
-
-def from_buffer(*args, **kwargs):
-    patch()
-    return magic.from_buffer(*args, **kwargs)
+from_file = magic.from_file
+from_buffer = magic.from_buffer
