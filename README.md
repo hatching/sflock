@@ -45,12 +45,9 @@ Installation (Windows)
 ======================
 
 Since version 0.2 sflock properly supports Windows-based operating systems.
-However, as-is only 32-bit Python setups are fully supported, as currently no
-support exists for libmagic in 64-bit Python, see also
-https://github.com/ahupp/python-magic#dependencies.
 
-To simplify the setup phase, sflock ships the required 32-bit binaries to use
-libmagic under Windows and as such Windows support works flawlessly.
+To avoid difficult setup instructions, sflock ships the required 32-bit and
+64-bit binaries to use libmagic under Windows such that it works flawlessly.
 
 Note: on Windows the `7z`, `ace`, `cab`, `gzip`, `iso`, `lzh`, and `rar` file
 formats are not supported.
