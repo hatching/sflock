@@ -4,10 +4,11 @@
 
 import io
 import os.path
+import tempfile
 import zipfile
 
 from sflock.abstracts import File
-from sflock.main import unpack
+from sflock.main import unpack, zipify
 from sflock.unpack import ZipFile
 
 def f(filename):
@@ -174,3 +175,22 @@ class TestZipfile(object):
         t = ZipFile(f(b"partial.zip"))
         assert t.handles()
         assert not t.unpack()
+
+    def test_corrupt_directory(self):
+        """Tests .zip files with an incorrectly named directory in it, namely
+        by its filename missing the trailing slash."""
+        buf = io.BytesIO()
+        z = zipfile.ZipFile(buf, "w")
+        z.writestr("foo", "")
+        z.writestr("foo/bar", "baz")
+        z.close()
+
+        dirpath = tempfile.mkdtemp()
+
+        # Test that zipfile.ZipFile().extractall() works on our zipped
+        # version after unpacking. Zipception, basically.
+        f = zipify(unpack(contents=buf.getvalue()))
+        zipfile.ZipFile(io.BytesIO(f)).extractall(dirpath)
+
+        filepath = os.path.join(dirpath, "foo", "bar")
+        assert open(filepath, "rb").read() == b"baz"

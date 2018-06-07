@@ -2,6 +2,7 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import os.path
 import six
 import zipfile
 import zlib
@@ -62,7 +63,7 @@ class ZipFile(Unpacker):
             self.f.error = e
             return []
 
-        entries = []
+        entries, directories = [], []
         for entry in archive.infolist():
             if entry.filename.endswith("/"):
                 continue
@@ -73,5 +74,18 @@ class ZipFile(Unpacker):
                 mode="failed",
                 description="Error decrypting file"
             ))
+
+            if entries[-1].relaname:
+                directories.append(os.path.dirname(entries[-1].relaname))
+
+        # This fixes an issue when a directory name is identified as "foo"
+        # instead of "foo/" as required by zipfile (and likely the majority
+        # of other .zip implementations). The issue being "foo" being created
+        # as an empty file rather than a directory.
+        # TODO We should likely move this to self.process(), assuming this
+        # is also an issue with other archive formats.
+        for idx, entry in enumerate(entries[:]):
+            if entry.relaname in directories:
+                entries.pop(idx)
 
         return self.process(entries, duplicates)
