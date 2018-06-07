@@ -6,7 +6,7 @@ from setuptools import setup
 
 setup(
     name="SFlock",
-    version="0.3.4",
+    version="0.3.5",
     author="Jurriaan Bremer",
     author_email="jbr@cuckoo.sh",
     packages=[
