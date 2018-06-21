@@ -194,3 +194,24 @@ class TestZipfile(object):
 
         filepath = os.path.join(dirpath, "foo", "bar")
         assert open(filepath, "rb").read() == b"baz"
+
+    def test_whitespace_filename(self):
+        """Tests .zip files with whitespace filenames in it, which can't be
+        unpacked on Windows."""
+        buf = io.BytesIO()
+        z = zipfile.ZipFile(buf, "w")
+        z.writestr(" ", "foo")
+        z.writestr("  ", "bar")
+        z.writestr("1.js", "baz")
+        z.close()
+
+        dirpath = tempfile.mkdtemp()
+
+        # Test that zipfile.ZipFile().extractall() works on our zipped
+        # version after unpacking. Zipception, basically.
+        f = zipify(unpack(contents=buf.getvalue()))
+        zipfile.ZipFile(io.BytesIO(f)).extractall(dirpath)
+
+        assert len(os.listdir(dirpath)) == 1
+        filepath = os.path.join(dirpath, "1.js")
+        assert open(filepath, "rb").read() == b"baz"

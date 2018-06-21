@@ -68,6 +68,11 @@ class ZipFile(Unpacker):
             if entry.filename.endswith("/"):
                 continue
 
+            # TODO We should likely move this to self.process(), assuming
+            # this is also an issue with other archive formats.
+            if not entry.filename.strip():
+                continue
+
             f = self.bruteforce(password, archive, entry)
             entries.append(f or File(
                 filename=entry.filename,
