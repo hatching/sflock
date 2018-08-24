@@ -52,6 +52,8 @@ class ZipFile(Unpacker):
                 return
             if "cannot fit 'long' into" in msg:
                 return
+            if "Bad magic number for" in msg:
+                return
 
             raise UnpackException("Unknown zipfile error: %s" % e)
 
