@@ -78,7 +78,8 @@ class EmlFile(Unpacker):
         def re_compile_our(pattern):
             return re_compile_orig(pattern.replace("?P<end>--", "?P<end>--+"))
 
-        re.compile = re_compile_our
+        if six.PY2:
+            re.compile = re_compile_our
 
         try:
             entries = self.real_unpack(password, duplicates)
