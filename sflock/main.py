@@ -9,6 +9,7 @@ import glob
 import io
 import json
 import os.path
+import re
 import six
 import zipfile
 
@@ -75,6 +76,9 @@ def zipify(f):
     z = zipfile.ZipFile(r, "w")
 
     for child in f.children:
+        # Avoid specific characters that aren't allowed under Windows NTFS.
+        if re.search('["*<>?]', child.relapath.decode()):
+            continue
         filepath = child.temp_path()
         z.write(filepath, child.relapath.decode())
         os.unlink(filepath)

@@ -215,3 +215,30 @@ class TestZipfile(object):
         assert len(os.listdir(dirpath)) == 1
         filepath = os.path.join(dirpath, "1.js")
         assert open(filepath, "rb").read() == b"baz"
+
+    def test_invalid_characters(self):
+        """Tests .zip files with invalid character filenames in it, which
+        can't be unpacked on Windows."""
+        buf = io.BytesIO()
+        z = zipfile.ZipFile(buf, "w")
+        z.writestr('foo"bar', "foo1")
+        z.writestr("foo*bar", "foo2")
+        z.writestr("foo<bar", "foo3")
+        z.writestr("foo>bar", "foo4")
+        z.writestr("foo?bar", "foo5")
+        z.writestr("foo@bar", "foo5")
+        z.writestr("1.js", "bar")
+        z.close()
+
+        dirpath = tempfile.mkdtemp()
+
+        # Test that zipfile.ZipFile().extractall() works on our zipped
+        # version after unpacking. Zipception, basically.
+        f = zipify(unpack(contents=buf.getvalue()))
+        zipfile.ZipFile(io.BytesIO(f)).extractall(dirpath)
+
+        assert len(os.listdir(dirpath)) == 2
+        filepath1 = os.path.join(dirpath, "foo@bar")
+        filepath2 = os.path.join(dirpath, "1.js")
+        assert open(filepath1, "rb").read() == b"foo5"
+        assert open(filepath2, "rb").read() == b"bar"
