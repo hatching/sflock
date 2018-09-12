@@ -1,4 +1,5 @@
 # Copyright (C) 2016 Jurriaan Bremer.
+# Copyright (C) 2018 Hatching B.V.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -24,14 +25,11 @@ class AceFile(Unpacker):
             filepath = self.f.temp_path(".ace")
             temporary = True
 
-        try:
-            subprocess.check_call([
-                self.zipjail, filepath, dirpath,
-                self.exe, "x", filepath, dirpath + os.sep,
-            ], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-        except subprocess.CalledProcessError as e:
-            self.f.mode = "failed"
-            self.f.error = e
+        ret = self.zipjail(
+            filepath, dirpath, "x", filepath, dirpath + os.sep
+        )
+        if not ret:
+            return []
 
         if temporary:
             os.unlink(filepath)

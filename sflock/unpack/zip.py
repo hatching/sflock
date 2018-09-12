@@ -1,4 +1,5 @@
 # Copyright (C) 2015-2018 Jurriaan Bremer.
+# Copyright (C) 2018 Hatching B.V.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -8,6 +9,7 @@ import zipfile
 import zlib
 
 from sflock.abstracts import File, Unpacker
+from sflock.config import MAX_TOTAL_SIZE
 from sflock.exception import UnpackException
 
 class ZipFile(Unpacker):
@@ -65,15 +67,22 @@ class ZipFile(Unpacker):
             self.f.error = e
             return []
 
-        entries, directories = [], []
+        entries, directories, total_size = [], [], 0
         for entry in archive.infolist():
-            if entry.filename.endswith("/"):
+            if entry.filename.endswith("/") or entry.file_size < 0:
                 continue
 
             # TODO We should likely move this to self.process(), assuming
             # this is also an issue with other archive formats.
             if not entry.filename.strip():
                 continue
+
+            # TODO Improve this. Also take precedence for native decompression
+            # utilities over the Python implementation in the future.
+            total_size += entry.file_size
+            if total_size >= MAX_TOTAL_SIZE:
+                self.f.error = "files_too_large"
+                return []
 
             f = self.bruteforce(password, archive, entry)
             entries.append(f or File(

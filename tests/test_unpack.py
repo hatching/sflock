@@ -1,4 +1,5 @@
 # Copyright (C) 2016-2018 Jurriaan Bremer.
+# Copyright (C) 2018 Hatching B.V.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -442,3 +443,24 @@ def test_duplicate2():
     assert unpack(
         b"tests/files/7z_nested.7z", duplicates=duplicates
     ).children[0].duplicate is True
+
+def test_maxsize_7z():
+    if ".7z" not in supported():
+        return
+
+    f = unpack(b"tests/files/1025mb.7z")
+    assert f.unpacker == "7zfile"
+    assert not f.children
+    assert f.error == "files_too_large"
+
+def test_maxsize_tar():
+    f = unpack(b"tests/files/1025mb.tar.bz2")
+    assert f.unpacker == "tarbz2file"
+    assert not f.children
+    assert f.error == "files_too_large"
+
+def test_maxsize_zip():
+    f = unpack(b"tests/files/1025mb.zip")
+    assert f.unpacker == "zipfile"
+    assert not f.children
+    assert f.error == "files_too_large"

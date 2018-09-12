@@ -1,4 +1,5 @@
 # Copyright (C) 2015-2018 Jurriaan Bremer.
+# Copyright (C) 2018 Hatching B.V.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -8,6 +9,7 @@ import six
 import tarfile
 
 from sflock.abstracts import Unpacker, File
+from sflock.config import MAX_TOTAL_SIZE
 
 class TarFile(Unpacker):
     name = "tarfile"
@@ -26,11 +28,18 @@ class TarFile(Unpacker):
             self.f.error = e
             return []
 
-        entries = []
+        entries, total_size = [], 0
         for entry in archive:
             # Ignore anything that's not a file for now.
-            if not entry.isfile():
+            if not entry.isfile() or entry.size < 0:
                 continue
+
+            # TODO Improve this. Also take precedence for native decompression
+            # utilities over the Python implementation in the future.
+            total_size += entry.size
+            if total_size >= MAX_TOTAL_SIZE:
+                self.f.error = "files_too_large"
+                return []
 
             relapath = entry.path
             if six.PY3:

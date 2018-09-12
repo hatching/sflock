@@ -1,4 +1,5 @@
 # Copyright (C) 2015-2018 Jurriaan Bremer.
+# Copyright (C) 2018 Hatching B.V.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -10,6 +11,7 @@ import os.path
 import re
 import six
 import shutil
+import subprocess
 import tempfile
 
 from sflock.compat import magic
@@ -39,9 +41,21 @@ class Unpacker(object):
     def supported(self):
         return os.path.exists(self.exe)
 
-    @property
-    def zipjail(self):
-        return data_file(b"zipjail.elf")
+    def zipjail(self, filepath, dirpath, *args):
+        zipjail = data_file(b"zipjail.elf")
+
+        p = subprocess.Popen((
+            zipjail, filepath, dirpath, "--", self.exe
+        ) + args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        return_code = p.wait()
+        out, err = p.communicate()
+
+        if b"Excessive writing caused incomplete unpacking!" in err:
+            self.f.error = "files_too_large"
+            return False
+
+        return not return_code
 
     def handles(self):
         if self.f.filename and self.f.filename.lower().endswith(self.exts):

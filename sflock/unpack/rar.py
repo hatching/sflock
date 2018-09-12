@@ -1,4 +1,5 @@
 # Copyright (C) 2015-2018 Jurriaan Bremer.
+# Copyright (C) 2018 Hatching B.V.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -24,15 +25,12 @@ class RarFile(Unpacker):
             filepath = self.f.temp_path()
             temporary = True
 
-        try:
-            subprocess.check_output([
-                self.zipjail, filepath, dirpath,
-                self.exe, "x", "-mt1", b"-p%s" % (password or b"-"),
-                filepath, dirpath,
-            ])
-        except subprocess.CalledProcessError as e:
-            self.f.mode = "failed"
-            self.f.error = e
+        ret = self.zipjail(
+            filepath, dirpath, "x", "-mt1", b"-p%s" % (password or b"-"),
+            filepath, dirpath
+        )
+        if not ret:
+            return []
 
         if temporary:
             os.unlink(filepath)

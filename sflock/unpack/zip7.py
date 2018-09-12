@@ -1,4 +1,5 @@
 # Copyright (C) 2015-2018 Jurriaan Bremer.
+# Copyright (C) 2018 Hatching B.V.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -33,14 +34,12 @@ class Zip7File(Unpacker):
             filepath = self.f.temp_path(b".7z")
             temporary = True
 
-        try:
-            subprocess.check_output([
-                self.zipjail, filepath, dirpath,
-                self.exe, "x", "-mmt=off", "-o%s" % dirpath.decode(), filepath,
-            ])
-        except subprocess.CalledProcessError as e:
-            self.f.mode = "failed"
-            self.f.error = e
+        ret = self.zipjail(
+            filepath, dirpath, "x", "-mmt=off",
+            "-o%s" % dirpath.decode(), filepath
+        )
+        if not ret:
+            return []
 
         if temporary:
             os.unlink(filepath)
@@ -63,14 +62,11 @@ class GzipFile(Unpacker):
             filepath = self.f.temp_path(".7z")
             temporary = True
 
-        try:
-            subprocess.check_output([
-                self.zipjail, filepath, dirpath,
-                self.exe, "x", "-o%s" % dirpath, filepath,
-            ])
-        except subprocess.CalledProcessError as e:
-            self.f.mode = "failed"
-            self.f.error = e
+        ret = self.zipjail(
+            filepath, dirpath, "x", "-o%s" % dirpath, filepath
+        )
+        if not ret:
+            return []
 
         if temporary:
             os.unlink(filepath)
@@ -93,14 +89,11 @@ class LzhFile(Unpacker):
             filepath = self.f.temp_path(".7z")
             temporary = True
 
-        try:
-            subprocess.check_output([
-                self.zipjail, filepath, dirpath,
-                self.exe, "x", "-o%s" % dirpath, filepath,
-            ])
-        except subprocess.CalledProcessError as e:
-            self.f.mode = "failed"
-            self.f.error = e
+        ret = self.zipjail(
+            filepath, dirpath, "x", "-o%s" % dirpath, filepath
+        )
+        if not ret:
+            return []
 
         if temporary:
             os.unlink(filepath)
