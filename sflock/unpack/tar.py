@@ -5,8 +5,11 @@
 
 import bz2
 import gzip
+import os
+import shutil
 import six
 import tarfile
+import tempfile
 
 from sflock.abstracts import Unpacker, File
 from sflock.config import MAX_TOTAL_SIZE
@@ -83,9 +86,55 @@ class Tarbz2File(TarFile, Unpacker):
         if not self.f.filesize:
             return False
 
-        try:
-            f = File(contents=bz2.decompress(self.f.contents))
-        except IOError:
-            return False
+        fd, filepath = tempfile.mkstemp()
+        os.write(fd, self.f.stream.read(0x1000))
+        os.close(fd)
 
-        return self.magic in f.magic
+        d = bz2.BZ2File(filepath, "r")
+
+        try:
+            ret = False
+            if d.read(0x1000):
+                ret = True
+        except IOError:
+            pass
+
+        d.close()
+        os.unlink(filepath)
+        return ret
+
+    def unpack(self, password=None, duplicates=None):
+        dirpath = tempfile.mkdtemp()
+
+        if not self.f.filepath:
+            filepath = self.f.temp_path(".bz2")
+            temporary = True
+        else:
+            filepath = self.f.filepath
+            temporary = False
+
+        f = open(os.path.join(dirpath, "output"), "wb")
+        d = bz2.BZ2File(filepath, "r")
+
+        while f.tell() < MAX_TOTAL_SIZE:
+            try:
+                buf = d.read(0x10000)
+            except IOError:
+                break
+            if not buf:
+                break
+            f.write(buf)
+
+        if temporary:
+            os.unlink(filepath)
+
+        filesize = f.tell()
+        d.close()
+        f.close()
+        shutil.rmtree(dirpath)
+
+        if filesize >= MAX_TOTAL_SIZE:
+            self.f.error = "files_too_large"
+            return []
+
+        return self.process_directory(dirpath, duplicates)

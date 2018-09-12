@@ -222,6 +222,8 @@ class File(object):
         )
 
     def temp_path(self, suffix=""):
+        # TODO Depending on use-case we may not need a full copy. Perhaps
+        # abstract away the "if self.f.filepath ... else ..." logic?
         fd, filepath = tempfile.mkstemp(suffix=suffix)
         shutil.copyfileobj(self.stream, os.fdopen(fd, "wb"))
         return filepath

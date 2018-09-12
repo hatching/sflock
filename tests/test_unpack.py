@@ -18,6 +18,8 @@ def test_unpack1():
 def test_unpack2():
     f = unpack(b"tests/files/tar_nested.tar.bz2")
     assert len(f.children) == 1
+    f = f.children[0]
+    assert len(f.children) == 1
     assert f.children[0].relapath == b"foo/bar.txt"
     assert f.children[0].relaname == b"foo/bar.txt"
     assert f.children[0].contents == b"hello world\n"

@@ -1,4 +1,5 @@
 # Copyright (C) 2015-2018 Jurriaan Bremer.
+# Copyright (C) 2018 Hatching B.V.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -68,6 +69,8 @@ class TestTarFile(object):
         assert t.handles() is True
         assert not t.f.selected
         files = list(t.unpack())
+        assert len(files) == 1
+        files = files[0].children
         assert len(files) == 2
         assert files[0].relapath == b"sflock.txt"
         assert files[0].contents == b"sflock_plain_tar\n"
@@ -102,7 +105,8 @@ class TestTarFile(object):
         assert not t.f.selected
         files = list(t.unpack())
         assert len(files) == 1
-
+        files = files[0].children
+        assert len(files) == 1
         assert files[0].relapath == b"foo/bar.txt"
         assert files[0].parentdirs == [b"foo"]
         assert files[0].contents == b"hello world\n"

@@ -18,7 +18,7 @@ class Zip7File(Unpacker):
     magic = "7-zip archive", "# ISO 9660"
 
     def unpack(self, password=None, duplicates=None):
-        dirpath = tempfile.mkdtemp().encode()
+        dirpath = tempfile.mkdtemp()
 
         if password:
             raise UnpackException(
@@ -35,8 +35,7 @@ class Zip7File(Unpacker):
             temporary = True
 
         ret = self.zipjail(
-            filepath, dirpath, "x", "-mmt=off",
-            "-o%s" % dirpath.decode(), filepath
+            filepath, dirpath, "x", "-mmt=off", "-o%s" % dirpath, filepath
         )
         if not ret:
             return []
