@@ -36,16 +36,17 @@ class PdfFile(Unpacker):
                 if not isinstance(obj.object, peepdf.PDFCore.PDFDictionary):
                     continue
 
-                if "/F" not in obj.object.elements:
+                el = obj.object.elements
+                if "/F" not in el and "/UF" not in el:
                     continue
-                if "/EF" not in obj.object.elements:
+                if "/EF" not in el:
                     continue
 
-                filename = obj.object.elements["/F"]
+                filename = el.get("/F") or el.get("/UF")
                 if not isinstance(filename, peepdf.PDFCore.PDFString):
                     continue
 
-                ref = obj.object.elements["/EF"]
+                ref = el["/EF"]
                 if not isinstance(ref, peepdf.PDFCore.PDFDictionary):
                     continue
 

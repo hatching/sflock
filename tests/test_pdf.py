@@ -45,6 +45,14 @@ def test_pdf_is_embedded():
     assert len(files[0].children) == 1
     assert files[0].children[0].package == "doc"
 
+def test_bypass_minimized():
+    m = PdfFile(f(b"bypass_minimized.pdf"))
+    files = list(m.unpack())
+    assert len(files) == 1
+    assert files[0].filename == b"test.txt"
+    # TODO Fix actually reading the contents of this file correctly (which is
+    # a peepdf issue, AFAICT).
+
 def test_garbage():
     m = PdfFile(f(b"garbage.bin"))
     assert m.handles() is False
