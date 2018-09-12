@@ -44,9 +44,11 @@ class Unpacker(object):
     def zipjail(self, filepath, dirpath, *args):
         zipjail = data_file(b"zipjail.elf")
 
-        p = subprocess.Popen((
-            zipjail, filepath, dirpath, "--", self.exe
-        ) + args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = subprocess.Popen(
+            (zipjail, filepath, dirpath, "--", self.exe) + args,
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
 
         return_code = p.wait()
         out, err = p.communicate()

@@ -131,7 +131,6 @@ class Tarbz2File(TarFile, Unpacker):
         filesize = f.tell()
         d.close()
         f.close()
-        shutil.rmtree(dirpath)
 
         if filesize >= MAX_TOTAL_SIZE:
             self.f.error = "files_too_large"
