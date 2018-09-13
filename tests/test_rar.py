@@ -1,4 +1,5 @@
 # Copyright (C) 2015-2018 Jurriaan Bremer.
+# Copyright (C) 2018 Hatching B.V.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -92,6 +93,11 @@ class TestRarFile:
         )
         assert t.unpacker == "rarfile"
         assert t.filename == b"foo"
+
+    def test_symlink(self):
+        t = unpack(b"tests/files/symlink.rar")
+        assert t.unpacker == "rarfile"
+        assert t.error == "malicious_symlink"
 
     def test_inmemory(self):
         contents = open(b"tests/files/rar_plain.rar", "rb").read()

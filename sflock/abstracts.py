@@ -57,6 +57,14 @@ class Unpacker(object):
             self.f.error = "files_too_large"
             return False
 
+        if b"Detected potential out-of-path arbitrary overwrite!" in err:
+            self.f.error = "directory_traversal"
+            return False
+
+        if b"Blocked system call" in err and b"syscall=symlink" in err:
+            self.f.error = "malicious_symlink"
+            return False
+
         return not return_code
 
     def handles(self):
@@ -393,6 +401,7 @@ class File(object):
             "package": self.package,
             "selected": self.selected,
             "preview": self.preview,
+            "error": self.error,
         }
 
     def astree(self, finger=True, sanitize=False):
@@ -410,6 +419,7 @@ class File(object):
             "type": "container" if self.children else "file",
             "children": [],
             "preview": self.preview,
+            "error": self.error,
         }
 
         if not sanitize:

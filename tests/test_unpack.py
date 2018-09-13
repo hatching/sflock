@@ -50,6 +50,7 @@ def test_astree1():
         "platform": None,
         "selected": False,
         "preview": True,
+        "error": None,
         "type": "container",
         "children": [{
             "type": "directory",
@@ -74,6 +75,7 @@ def test_astree1():
                     "platform": None,
                     "selected": False,
                     "preview": True,
+                    "error": None,
                     "type": "file",
                     "children": [],
                 }],
@@ -97,6 +99,7 @@ def test_astree2():
         "platform": None,
         "selected": False,
         "preview": True,
+        "error": None,
         "type": "container",
         "children": [{
             "type": "container",
@@ -113,6 +116,7 @@ def test_astree2():
             "platform": None,
             "selected": False,
             "preview": True,
+            "error": None,
             "size": 10240,
             "children": [{
                 "type": "directory",
@@ -132,6 +136,7 @@ def test_astree2():
                         "platform": None,
                         "selected": False,
                         "preview": True,
+                        "error": None,
                         "filename": b"bar.txt",
                         "relapath": b"deepfoo/foo/bar.txt",
                         "relaname": b"deepfoo/foo/bar.txt",
@@ -161,6 +166,7 @@ def test_astree3():
         "preview": True,
         "password": None,
         "size": 24607,
+        "error": None,
         "type": "container",
         "children": [{
             "duplicate": False,
@@ -177,6 +183,7 @@ def test_astree3():
             "preview": True,
             "password": None,
             "size": 17482,
+            "error": None,
             "type": "container",
             "children": [{
                 "duplicate": False,
@@ -194,6 +201,7 @@ def test_astree3():
                 "preview": True,
                 "password": None,
                 "size": 12,
+                "error": None,
                 "type": "file",
                 "children": [],
             }, {
@@ -212,6 +220,7 @@ def test_astree3():
                 "preview": True,
                 "password": None,
                 "size": 11970,
+                "error": None,
                 "type": "file",
                 "children": [],
             }],
@@ -230,6 +239,7 @@ def test_astree3():
             "preview": True,
             "password": None,
             "size": 12,
+            "error": None,
             "type": "file",
             "children": [],
         }],
@@ -250,6 +260,8 @@ def test_astree4():
         "selected": False,
         "preview": True,
         "password": None,
+        "error": None,
+        "error": None,
         "type": "container",
         "children": [{
             "duplicate": False,
@@ -266,6 +278,7 @@ def test_astree4():
             "preview": True,
             "password": None,
             "size": 1137,
+            "error": None,
             "type": "file",
             "children": [],
         }, {
@@ -283,6 +296,7 @@ def test_astree4():
             "preview": True,
             "password": None,
             "size": 1132,
+            "error": None,
             "type": "file",
             "children": [],
         }, {
@@ -300,6 +314,7 @@ def test_astree4():
             "preview": True,
             "password": None,
             "size": 234898,
+            "error": None,
             "type": "container",
             "children": [{
                 "duplicate": False,
@@ -317,6 +332,7 @@ def test_astree4():
                 "preview": True,
                 "password": None,
                 "size": 249336,
+                "error": None,
                 "type": "file",
                 "children": [],
             }],
@@ -466,3 +482,4 @@ def test_maxsize_zip():
     assert f.unpacker == "zipfile"
     assert not f.children
     assert f.error == "files_too_large"
+    assert f.astree()["error"] == "files_too_large"
