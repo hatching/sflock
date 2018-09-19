@@ -261,7 +261,6 @@ def test_astree4():
         "preview": True,
         "password": None,
         "error": None,
-        "error": None,
         "type": "container",
         "children": [{
             "duplicate": False,

@@ -1,4 +1,5 @@
 # Copyright (C) 2015-2018 Jurriaan Bremer.
+# Copyright (C) 2018 Hatching B.V.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -6,9 +7,9 @@ from setuptools import setup
 
 setup(
     name="SFlock",
-    version="0.3.5",
-    author="Jurriaan Bremer",
-    author_email="jbr@cuckoo.sh",
+    version="0.3.6",
+    author="Hatching B.V.",
+    author_email="jbr@hatching.io",
     packages=[
         "sflock",
         "sflock.unpack",
