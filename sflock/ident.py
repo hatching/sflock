@@ -17,6 +17,7 @@ mimes = {
     "application/x-tar": "tar",
     "application/java-archive": "jar",
     "application/x-dosexec": "exe",
+    "application/vnd.ms-cab-compressed": "cab",
 
 }
 
@@ -26,6 +27,13 @@ magics = {
     "PE32+ executable (DLL)": "dll",
     "PE32 executable": "exe",
     "PE32+ executable": "exe",
+    "Microsoft PowerPoint": "ppt",
+    "Microsoft Office Excel": "xls",
+    "Microsoft Excel": "xls",
+    "Rich Text Format": "doc",
+    "Microsoft Office Word": "doc",
+    "Microsoft Word": "doc",
+            
 }
 
 def xxe(f):
