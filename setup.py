@@ -7,7 +7,7 @@ from setuptools import setup
 
 setup(
     name="SFlock",
-    version="0.3.7",
+    version="0.3.8",
     author="Hatching B.V.",
     author_email="jbr@hatching.io",
     packages=[
