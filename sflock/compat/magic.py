@@ -35,14 +35,14 @@ if sys.platform == "win32":
     magic._instances[False] = magic.Magic(mime=False, magic_file=magic_file)
     magic._instances[True] = magic.Magic(mime=True, magic_file=magic_file)
 
-def from_file(f):
+def from_file(f, mime=False):
     try:
-        return magic.from_file(f)
+        return magic.from_file(f, mime)
     except magic.MagicException as e:
         return e.message
 
-def from_buffer(buf):
+def from_buffer(buf, mime=False):
     try:
-        return magic.from_buffer(buf)
+        return magic.from_buffer(buf, mime)
     except magic.MagicException as e:
         return e.message
