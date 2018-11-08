@@ -1,4 +1,5 @@
 # Copyright (C) 2016-2018 Jurriaan Bremer.
+# Copyright (C) 2018 Hatching B.V.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -34,5 +35,14 @@ if sys.platform == "win32":
     magic._instances[False] = magic.Magic(mime=False, magic_file=magic_file)
     magic._instances[True] = magic.Magic(mime=True, magic_file=magic_file)
 
-from_file = magic.from_file
-from_buffer = magic.from_buffer
+def from_file(f):
+    try:
+        return magic.from_file(f)
+    except magic.MagicException as e:
+        return e.message
+
+def from_buffer(buf):
+    try:
+        return magic.from_buffer(buf)
+    except magic.MagicException as e:
+        return e.message

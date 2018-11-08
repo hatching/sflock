@@ -1,4 +1,5 @@
 # Copyright (C) 2018 Jurriaan Bremer.
+# Copyright (C) 2018 Hatching B.V.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -14,3 +15,11 @@ def test_magic():
     assert magic.from_file("tests/files/cab2.cab").startswith(
         "Microsoft Cabinet"
     )
+
+def test_magic_exception():
+    assert magic.from_file(
+        "tests/files/invld.elf_"
+    ).startswith("ELF")
+    assert magic.from_buffer(
+        open("tests/files/invld.elf_", "rb").read()
+    ).startswith("ELF")
