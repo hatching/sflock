@@ -27,7 +27,7 @@ def package(f):
     header = f.stream.read(0x1000)
 
     if "DLL" in f.magic:
-        if filename.endswith(".cpl"):
+        if filename.endswith(b".cpl"):
             return "cpl"
         # TODO Support PE exports to identify COM objects.
         return "dll"
