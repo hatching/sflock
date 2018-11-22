@@ -15,7 +15,7 @@ class Zip7File(Unpacker):
     exe = "/usr/bin/7z"
     exts = b".7z", b".iso"
     # TODO Should we use "isoparser" (check PyPI) instead of 7z?
-    magic = "7-zip archive", "# ISO 9660"
+    magic = "7-zip archive", "ISO 9660"
 
     def unpack(self, password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()
