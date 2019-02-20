@@ -1,4 +1,5 @@
 # Copyright (C) 2018 Jurriaan Bremer.
+# Copyright (C) 2019 Hatching B.V.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
@@ -22,6 +23,7 @@ class TestLzhFile(object):
         assert len(files) == 1
         assert not files[0].filepath
         assert files[0].relapath == b"MICROTECH%20PRECISION%20ENGINEERING.exe"
+        assert len(files[0].contents) == 652288
         assert "PE32 executable" in files[0].magic
         assert not files[0].parentdirs
         assert files[0].selected is True
