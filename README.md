@@ -49,8 +49,8 @@ Since version 0.2 sflock properly supports Windows-based operating systems.
 To avoid difficult setup instructions, sflock ships the required 32-bit and
 64-bit binaries to use libmagic under Windows such that it works flawlessly.
 
-Note: on Windows the `7z`, `ace`, `cab`, `gzip`, `iso`, `lzh`, and `rar` file
-formats are not supported.
+Note: on Windows the `7z`, `ace`, `cab`, `daa`, `gzip`, `iso`, `lzh`, and
+`rar` file formats are not supported.
 
 Installation (macOS)
 =======================
@@ -64,8 +64,8 @@ $ brew update
 $ brew install libmagic
 ```
 
-Note: on macOS the `7z`, `ace`, `cab`, `gzip`, `iso`, `lzh`, and `rar` file
-formats are not supported.
+Note: on macOS the `7z`, `ace`, `cab`, `daa`, `gzip`, `iso`, `lzh`, and `rar`
+file formats are not supported.
 
 Supported archives
 ==================
@@ -76,6 +76,7 @@ SFlock supports a number of (semi-)archive types, sorted by extension:
 * .ace (ACE archive, `requires native tooling`)
 * .bup (McAfee quarantine files)
 * .cab (Microsoft Cabinet archive, `requires native tooling`)
+* .daa (PowerISO, `requires included Linux native tooling`)
 * .eml (MIME RFC 822 email representation)
 * .gzip (gzip compressed data, `requires native tooling`)
 * .iso (ISO file container, `requires native tooling`)
@@ -93,9 +94,9 @@ Security
 ========
 
 Due to its nature of unpacking malicious archives with, depending on the
-extension, native tools (i.e., *.7z*, *.ace*, *.cab*, *.gzip*, *.iso*, *.lzh*,
-and *.rar*), it is important that such operations happen securely. SFlock
-therefore wraps execution of the native tools in [zipjail][], a usermode
-sandbox written exactly for this purpose.
+extension, native tools (i.e., *.7z*, *.ace*, *.cab*, *.daa*, *.gzip*, *.iso*,
+*.lzh*, and *.rar*), it is important that such operations happen securely.
+SFlock therefore wraps execution of the native tools in [zipjail][], a
+usermode sandbox written exactly for this purpose.
 
 [zipjail]: https://github.com/jbremer/tracy/tree/master/src/zipjail
