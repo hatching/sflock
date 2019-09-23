@@ -98,3 +98,30 @@ class LzhFile(Unpacker):
             os.unlink(filepath)
 
         return self.process_directory(dirpath, duplicates)
+
+class XZFile(Unpacker):
+    name = "xzfile"
+    exe = "/usr/bin/7z"
+    exts = b".xz"
+    magic = "XZ compressed data"
+
+    def unpack(self, password=None, duplicates=None):
+        dirpath = tempfile.mkdtemp()
+
+        if self.f.filepath:
+            filepath = self.f.filepath
+            temporary = False
+        else:
+            filepath = self.f.temp_path(".7z")
+            temporary = True
+
+        ret = self.zipjail(
+            filepath, dirpath, "x", "-o%s" % dirpath, filepath
+        )
+        if not ret:
+            return []
+
+        if temporary:
+            os.unlink(filepath)
+
+        return self.process_directory(dirpath, duplicates)
