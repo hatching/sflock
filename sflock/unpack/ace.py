@@ -17,8 +17,11 @@ class AceFile(Unpacker):
 
     def unpack(self, password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()
-
+        original_path = self.f.filepath
         if self.f.filepath:
+            if not self.f.filepath.endswith(".ace"):
+                os.rename(self.f.filepath, self.f.filepath+".ace")
+                self.f.filepath = self.f.filepath+".ace"
             filepath = os.path.abspath(self.f.filepath)
             temporary = False
         else:
@@ -33,5 +36,9 @@ class AceFile(Unpacker):
 
         if temporary:
             os.unlink(filepath)
+
+        if original_path != self.f.filepath:
+            os.rename(self.f.filepath, original_path)
+            self.f.filepath = original_path
 
         return self.process_directory(dirpath, duplicates)
