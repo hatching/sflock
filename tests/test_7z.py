@@ -140,6 +140,38 @@ class Test7zFile(object):
         assert files[0].selected is True
         assert files[0].duplicate is False
 
+    def test_udf_iso(self):
+        t = Zip7File(f(b"test.udf"))
+        assert t.handles() is True
+        assert not t.f.selected
+        files = t.unpack()
+        assert len(files) == 1
+        assert hashlib.md5(files[0].contents).hexdigest() == (
+            "abcadf05c43f6d03409450cd3eae2710"
+        )
+        assert not files[0].children
+        assert files[0].relaname == (
+            b"PURCHASE_ORDER_invoice_06_25th_sep.exe"
+        )
+        assert files[0].selected is True
+        assert files[0].duplicate is False
+
+    def test_xz(self):
+        t = Zip7File(f(b"test.xz"))
+        assert t.handles() is True
+        assert not t.f.selected
+        files = t.unpack()
+        assert len(files) == 1
+        assert hashlib.md5(files[0].contents).hexdigest() == (
+            "b9d072036f2627112bb510eca81f6f8c"
+        )
+        assert not files[0].children
+        assert files[0].relaname == (
+            b"test"
+        )
+        assert files[0].selected is False
+        assert files[0].duplicate is False
+
 @pytest.mark.skipif("Zip7File(None).supported()")
 def test_no7z_plain():
     assert "7-zip archive" in f(b"7z_plain.7z").magic
