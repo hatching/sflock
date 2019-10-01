@@ -25,7 +25,7 @@ def test_count_supported():
         count += 1
 
     if Zip7File(None).supported():
-        count += 7
+        count += 8
 
     assert count == len(supported())
 

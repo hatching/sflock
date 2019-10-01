@@ -6,29 +6,16 @@ import re
 from sflock.aux.decode_vbe_jse import DecodeVBEJSE
 
 mimes = {
-    "application/x-lzh-compressed": "lzh",
-    "application/x-iso9660-image": "iso",
-    "application/zip": "zip",
-    "application/gzip": "gzip",
     "text/x-python": "py",
     "application/x-rar": "rar",
-    "application/x-7z-compressed": "7z",
     "application/x-bzip2": "bzip2",
-    "application/x-tar": "tar",
-    #"application/java-archive": "jar",
-    "application/x-dosexec": "exe",
-    "application/vnd.ms-cab-compressed": "cab",
 
 }
 
 magics = {
     "ACE archive data": "ace",
-    "PE32 executable (DLL)": "dll",
-    "PE32+ executable (DLL)": "dll",
-    "PE32 executable": "exe",
-    "PE32+ executable": "exe",
     "Microsoft PowerPoint": "ppt",
-    "Microsoft Office Excel": "xls",
+    "Microsoft Office E| mxcel": "xls",
     "Microsoft Excel": "xls",
     "Rich Text Format": "doc",
     "Microsoft Office Word": "doc",
@@ -239,4 +226,5 @@ identifiers = [
     office_zip, office_ole, office_webarchive, office_activemime,
     hta, powershell, javascript, visualbasic, android, java, wsf,
     xxe, pub, vbe_jse
+
 ]
