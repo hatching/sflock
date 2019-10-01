@@ -13,7 +13,7 @@ def test_supported():
     assert supported()
 
 def test_count_supported():
-    count = 9
+    count = 10
 
     if AceFile(None).supported():
         count += 1
@@ -25,7 +25,7 @@ def test_count_supported():
         count += 1
 
     if Zip7File(None).supported():
-        count += 6
+        count += 5
 
     assert count == len(supported())
 
