@@ -19,7 +19,7 @@ class AceFile(Unpacker):
         dirpath = tempfile.mkdtemp()
         original_path = self.f.filepath
         if self.f.filepath:
-            if not self.f.filepath.endswith(".ace"):
+            if not self.f.filepath.endswith(b".ace"):
                 os.rename(self.f.filepath, self.f.filepath+b".ace")
                 self.f.filepath = self.f.filepath+b".ace"
             filepath = os.path.abspath(self.f.filepath)
