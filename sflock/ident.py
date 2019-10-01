@@ -15,7 +15,7 @@ mimes = {
 magics = {
     "ACE archive data": "ace",
     "Microsoft PowerPoint": "ppt",
-    "Microsoft Office E| mxcel": "xls",
+    "Microsoft Office Excel": "xls",
     "Microsoft Excel": "xls",
     "Rich Text Format": "doc",
     "Microsoft Office Word": "doc",
@@ -214,13 +214,14 @@ def identify(f):
         package = identifier(f)
         if package:
             return package
-
+        """
         if f.mime in mimes:
             return mimes[f.mime]
 
         for magic_types in magics:
             if f.magic.startswith(magic_types):
                 return magics[magic_types]
+        """
 
 identifiers = [
     office_zip, office_ole, office_webarchive, office_activemime,
