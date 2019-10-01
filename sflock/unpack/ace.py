@@ -13,7 +13,7 @@ class AceFile(Unpacker):
     name = "acefile"
     exe = "/usr/bin/unace"
     exts = b".ace"
-    magic = b"ACE archive"
+    magic = "ACE archive"
 
     def unpack(self, password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()
