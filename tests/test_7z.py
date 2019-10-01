@@ -143,7 +143,6 @@ class Test7zFile(object):
     def test_udf_iso(self):
         t = Zip7File(f(b"test.udf"))
         assert t.handles() is True
-        assert not t.f.selected
         files = t.unpack()
         assert len(files) == 1
         assert hashlib.md5(files[0].contents).hexdigest() == (
@@ -159,7 +158,6 @@ class Test7zFile(object):
     def test_xz(self):
         t = Zip7File(f(b"test.xz"))
         assert t.handles() is True
-        assert not t.f.selected
         files = t.unpack()
         assert len(files) == 1
         assert hashlib.md5(files[0].contents).hexdigest() == (

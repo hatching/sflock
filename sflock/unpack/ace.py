@@ -13,15 +13,15 @@ class AceFile(Unpacker):
     name = "acefile"
     exe = "/usr/bin/unace"
     exts = b".ace"
-    magic = "ACE archive"
+    magic = b"ACE archive"
 
     def unpack(self, password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()
         original_path = self.f.filepath
         if self.f.filepath:
             if not self.f.filepath.endswith(".ace"):
-                os.rename(self.f.filepath, self.f.filepath+".ace")
-                self.f.filepath = self.f.filepath+".ace"
+                os.rename(self.f.filepath, self.f.filepath+b".ace")
+                self.f.filepath = self.f.filepath+b".ace"
             filepath = os.path.abspath(self.f.filepath)
             temporary = False
         else:
