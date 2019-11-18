@@ -48,7 +48,7 @@ class Zip7File(Unpacker):
 class GzipFile(Unpacker):
     name = "gzipfile"
     exe = "/usr/bin/7z"
-    exts = b".gzip"
+    exts = b".gzip", b".gz"
     magic = "gzip compressed data, was"
 
     def unpack(self, password=None, duplicates=None):
