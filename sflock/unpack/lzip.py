@@ -21,7 +21,7 @@ class LzipFile(Unpacker):
             temporary = True
 
         ret = self.zipjail(
-            filepath, dirpath, "-e", filepath
+            filepath, os.path.dirname(filepath), "-d", filepath
         )
         if not ret:
             return []
