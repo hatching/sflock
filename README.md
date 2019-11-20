@@ -26,7 +26,7 @@ following packages alongside sflock. It is currently not possible to run the
 unpackers that require native tooling support on non-Linux platforms.
 
 ```bash
-$ sudo apt-get install p7zip-full rar unace-nonfree cabextract
+$ sudo apt-get install p7zip-full rar unace-nonfree cabextract lzip
 ```
 
 Installation of sflock itself may be done as follows.
@@ -81,6 +81,7 @@ SFlock supports a number of (semi-)archive types, sorted by extension:
 * .gzip (gzip compressed data, `requires native tooling`)
 * .iso (ISO file container, `requires native tooling`)
 * .lzh (LZH/LHA archive, `requires native tooling`)
+* .lz (Lzip compressed data, `requires native tooling`)
 * .msg (Outlook mail message)
 * .mso (Microsoft Office Macro reference file)
 * .pdf (Attachments embedded in PDF files)
