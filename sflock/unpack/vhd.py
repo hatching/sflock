@@ -45,9 +45,6 @@ class VHDFile(Unpacker):
         g.umount_all()
         g.close()
 
-        if not ret:
-            return []
-
         if temporary:
             os.unlink(filepath)
 
