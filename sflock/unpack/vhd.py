@@ -11,7 +11,7 @@ from sflock.abstracts import Unpacker
 
 class VHDFile(Unpacker):
     name = "vhdfile"
-    exts = b".vhd"
+    exts = b".vhd", b".vhdx"
     magic = " Microsoft Disk Image"
 
     def unpack(self, password=None, duplicates=None):
@@ -41,7 +41,7 @@ class VHDFile(Unpacker):
 
         files = g.ls("/")
         if files:
-            g.copy_out("/", tmp_dir)
+            g.copy_out("/", dirpath)
         g.umount_all()
         g.close()
 
