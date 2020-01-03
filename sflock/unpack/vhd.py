@@ -9,20 +9,16 @@ import tempfile
 
 from sflock.abstracts import Unpacker
 
-try:
-    from guestfs import GuestFS
-    HAVE_GUESTFS = True
-except ImportError:
-    print("missed guestfs library. pip3 install http://download.libguestfs.org/python/guestfs-1.40.2.tar.gz or newer")
-    HAVE_GUESTFS = False
-
 class VHDFile(Unpacker):
     name = "vhdfile"
     exts = b".vhd"
     magic = " Microsoft Disk Image"
 
     def unpack(self, password=None, duplicates=None):
-        if not HAVE_GUESTFS:
+        try:
+            from guestfs import GuestFS
+        except ImportError:
+            print("missed guestfs library. pip3 install http://download.libguestfs.org/python/guestfs-1.40.2.tar.gz or newer")
             return []
 
         if self.f.filepath:
