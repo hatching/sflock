@@ -2,23 +2,25 @@
 # Copyright (C) 2018 Hatching B.V.
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
+from __future__ import absolute_import
+from __future__ import print_function
 
 import os
-import subprocess
+import logging
 import tempfile
-
 from sflock.abstracts import Unpacker
 
 class VHDFile(Unpacker):
     name = "vhdfile"
     exts = b".vhd", b".vhdx"
     magic = " Microsoft Disk Image"
+    exe = ""
 
     def unpack(self, password=None, duplicates=None):
         try:
             from guestfs import GuestFS
         except ImportError:
-            print("missed guestfs library. pip3 install http://download.libguestfs.org/python/guestfs-1.40.2.tar.gz or newer")
+            logging.info("missed guestfs library. pip3 install http://download.libguestfs.org/python/guestfs-1.40.2.tar.gz or newer")
             return []
 
         if self.f.filepath:
@@ -35,7 +37,7 @@ class VHDFile(Unpacker):
         try:
             g.mount_ro("/dev/sda1", "/")
         except RuntimeError as msg:
-            log.error("Error mounting Microsoft Disk Image: {} - {}".format((filepath, msg)))
+            logging.error("Error mounting Microsoft Disk Image: {} - {}".format((filepath, msg)))
             g.close()
             return []
 
