@@ -3,6 +3,9 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+from __future__ import absolute_import
+from __future__ import print_function
+
 import os
 import tempfile
 
@@ -90,6 +93,35 @@ class LzhFile(Unpacker):
         ret = self.zipjail(
             filepath, dirpath, "x", "-o%s" % dirpath, filepath
         )
+        if not ret:
+            return []
+
+        if temporary:
+            os.unlink(filepath)
+
+        return self.process_directory(dirpath, duplicates)
+
+
+class VHDFile(Unpacker):
+    name = "vhdfile"
+    exe = "/usr/bin/7z"
+    exts = b".vhd", b".vhdx"
+    magic = " Microsoft Disk Image"
+
+    def unpack(self, password=None, duplicates=None):
+        dirpath = tempfile.mkdtemp()
+
+        if self.f.filepath:
+            filepath = self.f.filepath
+            temporary = False
+        else:
+            filepath = self.f.temp_path(".vhd")
+            temporary = True
+
+        ret = self.zipjail(
+            filepath, dirpath, "x", "-o%s" % dirpath, filepath
+        )
+
         if not ret:
             return []
 
