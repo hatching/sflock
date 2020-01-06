@@ -119,7 +119,7 @@ class VHDFile(Unpacker):
             temporary = True
 
         ret = self.zipjail(
-            filepath, dirpath, "x", "-o%s" % dirpath, filepath
+            filepath, dirpath, "x", "-xr\![SYSTEM]*" "-o%s" % dirpath, filepath
         )
 
         if not ret:
