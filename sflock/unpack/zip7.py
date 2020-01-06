@@ -98,3 +98,33 @@ class LzhFile(Unpacker):
             os.unlink(filepath)
 
         return self.process_directory(dirpath, duplicates)
+
+
+
+class VHDFile(Unpacker):
+    name = "vhdfile"
+    exe = "/usr/bin/7z"
+    exts = b".vhd", b".vhdx"
+    magic = " Microsoft Disk Image"
+
+    def unpack(self, password=None, duplicates=None):
+        dirpath = tempfile.mkdtemp()
+
+        if self.f.filepath:
+            filepath = self.f.filepath
+            temporary = False
+        else:
+            filepath = self.f.temp_path(".vhd")
+            temporary = True
+
+        ret = self.zipjail(
+            filepath, dirpath, "x", "-xr![SYSTEM]*", "-o%s" % dirpath, filepath
+        )
+
+        if not ret:
+            return []
+
+        if temporary:
+            os.unlink(filepath)
+
+        return self.process_directory(dirpath, duplicates)
