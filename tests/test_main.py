@@ -13,7 +13,7 @@ def test_supported():
     assert supported()
 
 def test_count_supported():
-    count = 9
+    count = 10
 
     if AceFile(None).supported():
         count += 1

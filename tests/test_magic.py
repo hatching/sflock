@@ -18,8 +18,8 @@ def test_magic():
 
 def test_magic_exception():
     assert magic.from_file(
-        "tests/files/invld.elf_"
-    ).startswith("ELF")
+        b"tests/files/invld.elf_"
+    ).startswith(b"ELF")
     assert magic.from_buffer(
-        open("tests/files/invld.elf_", "rb").read()
+        open(b"tests/files/invld.elf_", "rb").read()
     ).startswith("ELF")
