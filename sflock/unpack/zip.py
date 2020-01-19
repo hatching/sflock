@@ -30,9 +30,6 @@ class ZipFile(Unpacker):
         try:
             archive.setpassword(password)
 
-            if isinstance(entry.filename, str):
-                entry.filename = entry.filename.encode()
-
             return File(
                 relapath=entry.filename,
                 contents=archive.read(entry),
@@ -83,6 +80,7 @@ class ZipFile(Unpacker):
                 self.f.error = "files_too_large"
                 return []
 
+            entry.filename = entry.filename.encode()
             f = self.bruteforce(password, archive, entry)
             entries.append(f or File(
                 filename=entry.filename,
