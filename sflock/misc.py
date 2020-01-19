@@ -4,7 +4,6 @@
 
 import importlib
 import os
-import six
 
 import sflock
 
@@ -29,9 +28,7 @@ def import_plugins(dirpath, module_prefix, namespace, class_):
 
 def data_file(*path):
     """Return the path for the filepath of an embedded file."""
-    dirpath = sflock.__path__[0]
-    if six.PY3:
-        dirpath = dirpath.encode()
+    dirpath = sflock.__path__[0].encode()
     return os.path.abspath(os.path.join(dirpath, b"data", *path))
 
 def make_list(obj):

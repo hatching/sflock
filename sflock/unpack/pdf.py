@@ -5,7 +5,6 @@
 
 import os
 import peepdf
-import six
 
 from sflock.abstracts import Unpacker, File
 
@@ -62,12 +61,8 @@ class PdfFile(Unpacker):
                     continue
 
                 obj = f.body[version].objects[ref.id]
-                contents = obj.object.decodedStream
-                filename = filename.value
-
-                if six.PY3:
-                    contents = contents.encode("latin-1")
-                    filename = filename.encode()
+                contents = obj.object.decodedStream.encode("latin-1")
+                filename = filename.value.encode()
 
                 entries.append(File(
                     contents=contents,

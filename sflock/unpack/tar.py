@@ -7,7 +7,6 @@ import bz2
 import gzip
 import os
 import shutil
-import six
 import tarfile
 import tempfile
 
@@ -44,9 +43,7 @@ class TarFile(Unpacker):
                 self.f.error = "files_too_large"
                 return []
 
-            relapath = entry.path
-            if six.PY3:
-                relapath = relapath.encode()
+            relapath = entry.path.encode()
 
             entries.append(File(
                 relapath=relapath,

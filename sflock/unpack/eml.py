@@ -5,7 +5,6 @@
 import email
 import email.header
 import re
-import six
 
 from sflock.abstracts import Unpacker, File
 
@@ -37,10 +36,7 @@ class EmlFile(Unpacker):
     def real_unpack(self, password, duplicates):
         entries = []
 
-        if six.PY3:
-            e = email.message_from_string(self.f.contents.decode("latin-1"))
-        else:
-            e = email.message_from_string(self.f.contents)
+        e = email.message_from_string(self.f.contents.decode("latin-1"))
 
         for part in e.walk():
             if part.is_multipart():
@@ -56,11 +52,7 @@ class EmlFile(Unpacker):
 
             filename = part.get_filename()
 
-            if six.PY2 and filename:
-                filename = unicode(email.header.make_header(
-                    email.header.decode_header(filename)
-                )).encode('utf-8')
-            if six.PY3 and filename:
+            if filename:
                 filename = email.header.make_header(
                     email.header.decode_header(filename)
                 )
@@ -74,12 +66,6 @@ class EmlFile(Unpacker):
 
     def unpack(self, password=None, duplicates=None):
         re_compile_orig = re.compile
-
-        def re_compile_our(pattern):
-            return re_compile_orig(pattern.replace("?P<end>--", "?P<end>--+"))
-
-        if six.PY2:
-            re.compile = re_compile_our
 
         try:
             entries = self.real_unpack(password, duplicates)

@@ -2,8 +2,6 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
-import six
-
 from sflock.abstracts import Unpacker, File
 
 class MsgFile(Unpacker):
@@ -34,7 +32,7 @@ class MsgFile(Unpacker):
         # If available, the unicode stream takes precedence.
         stream = self.get_stream(unicode_filename)
         if stream:
-            return stream.decode("utf16")
+            return stream.decode("utf16").encode()
 
         return self.get_stream(ascii_filename)
 
@@ -58,8 +56,6 @@ class MsgFile(Unpacker):
         for dirname in self.f.ole.listdir():
             if dirname[0].startswith("__attach") and dirname[0] not in seen:
                 filename, contents = self.get_attachment(dirname[0])
-                if six.PY3 and isinstance(filename, str):
-                    filename = filename.encode()
                 entries.append(File(
                     relapath=filename, contents=contents
                 ))

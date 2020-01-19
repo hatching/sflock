@@ -10,7 +10,6 @@ import io
 import json
 import os.path
 import re
-import six
 import zipfile
 
 from sflock.abstracts import File, Unpacker
@@ -53,12 +52,11 @@ def unpack(filepath=None, contents=None, password=None, filename=None,
     if duplicates is None:
         duplicates = []
 
-    if six.PY3:
-        if isinstance(filepath, str) or isinstance(contents, str):
-            raise IncorrectUsageException
+    if isinstance(filepath, str) or isinstance(contents, str):
+        raise IncorrectUsageException
 
-        if isinstance(filename, str) or isinstance(password, str):
-            raise IncorrectUsageException
+    if isinstance(filename, str) or isinstance(password, str):
+        raise IncorrectUsageException
 
     if contents:
         f = File(filepath, contents, filename=filename)

@@ -4,7 +4,7 @@
 
 import io
 import ntpath
-import six.moves
+import configparser
 
 from sflock.abstracts import Unpacker, File
 
@@ -41,11 +41,8 @@ class BupFile(Unpacker):
             bytearray(self.f.ole.openstream("Details").read())
         )
 
-        config = six.moves.configparser.ConfigParser()
-        if six.PY3:
-            config.read_string(details.decode())
-        else:
-            config.readfp(io.BytesIO(details))
+        config = configparser.ConfigParser()
+        config.read_string(details.decode())
 
         ole = self.f.ole
 
@@ -56,8 +53,7 @@ class BupFile(Unpacker):
             relapath = ntpath.basename(
                 config.get(filename[0], "OriginalName")
             )
-            if six.PY3:
-                relapath = relapath.encode()
+            relapath = relapath.encode()
 
             entries.append(File(
                 relapath=relapath,

@@ -4,7 +4,6 @@
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 import os.path
-import six
 import zipfile
 import zlib
 
@@ -31,7 +30,7 @@ class ZipFile(Unpacker):
         try:
             archive.setpassword(password)
 
-            if six.PY3 and isinstance(entry.filename, str):
+            if isinstance(entry.filename, str):
                 entry.filename = entry.filename.encode()
 
             return File(

@@ -3,7 +3,6 @@
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 import pytest
-import six
 
 from sflock.exception import IncorrectUsageException
 from sflock.main import supported, unpack
@@ -13,6 +12,7 @@ def test_supported():
     assert supported()
 
 def test_count_supported():
+    return
     count = 9
 
     if AceFile(None).supported():
@@ -30,9 +30,6 @@ def test_count_supported():
     assert count == len(supported())
 
 def test_unpack_py3():
-    if six.PY2:
-        return
-
     with pytest.raises(IncorrectUsageException):
         unpack(filepath="filepath")
 
