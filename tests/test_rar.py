@@ -60,7 +60,6 @@ class TestRarFile:
         assert not files[0].selected
 
     def test_rar_encrypted(self):
-        return
         assert "RAR archive" in f(b"sflock_encrypted.rar").magic
         z = RarFile(f(b"sflock_encrypted.rar"))
         assert z.handles() is True
@@ -96,7 +95,6 @@ class TestRarFile:
         assert t.filename == b"foo"
 
     def test_symlink(self):
-        return
         t = unpack(b"tests/files/symlink.rar")
         assert t.unpacker == "rarfile"
         assert t.error == "malicious_symlink"

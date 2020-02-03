@@ -6,14 +6,19 @@ import pytest
 
 from sflock.exception import IncorrectUsageException
 from sflock.main import supported, unpack
-from sflock.unpack import AceFile, CabFile, RarFile, Zip7File
+from sflock.unpack import AceFile, CabFile, RarFile, Zip7File, DaaFile, VHDFile
 
 def test_supported():
     assert supported()
 
 def test_count_supported():
-    return
     count = 9
+
+    if DaaFile(None).supported():
+        count += 1
+
+    if VHDFile(None).supported():
+        count += 2
 
     if AceFile(None).supported():
         count += 1
