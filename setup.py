@@ -25,10 +25,13 @@ setup(
     description="Sample staging and detonation utility",
     include_package_data=True,
     install_requires=[
-        "click==6.6",
-        "cryptography>=2.1",
-        "olefile==0.43",
-        "peepdf>=0.4.1",
-        "python-magic==0.4.12",
+        "click==7.0",
+        "cryptography>=2.1,<3",
+        "olefile>=0.43,<0.50",
+        "peepdf>=0.4.1,<0.5",
+        "python-magic>=0.4,<0.5",
     ],
+    extras_require={
+        'test': ['pytest', 'mock']
+    }
 )
