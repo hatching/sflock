@@ -24,6 +24,7 @@ setup(
     license="GPLv3",
     description="Sample staging and detonation utility",
     include_package_data=True,
+    python_requires='>3.6',
     install_requires=[
         "click==7.0",
         "cryptography>=2.1,<3",
