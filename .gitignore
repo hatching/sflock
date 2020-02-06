@@ -6,7 +6,10 @@
 *.pyc
 *.pyo
 
+.coverage
+.eggs/
 .idea/
 .pytest_cache/
 SFlock.egg-info/
 dist/
+venv/
