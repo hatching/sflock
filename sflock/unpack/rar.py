@@ -26,7 +26,7 @@ class RarFile(Unpacker):
             temporary = True
 
         ret = self.zipjail(
-            filepath, dirpath, "x", "-mt1", b"-p%s" % (password or b"-"),
+            filepath, dirpath, "x", "-mt1", "-p%s" % (password or "-"),
             filepath, dirpath
         )
         if not ret:

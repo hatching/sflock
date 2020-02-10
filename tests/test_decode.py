@@ -28,8 +28,8 @@ def test_passwords():
     z = unpack(f2("zip_encrypted2.zip"))
     assert not z.children[0].magic
 
-    z = unpack(f2("zip_encrypted2.zip"), password=b"sflock")
+    z = unpack(f2("zip_encrypted2.zip"), password="sflock")
     assert z.children[0].magic == "ASCII text"
 
-    z = unpack(f2("zip_encrypted2.zip"), password=[b"sflock"])
+    z = unpack(f2("zip_encrypted2.zip"), password=["sflock"])
     assert z.children[0].magic == "ASCII text"

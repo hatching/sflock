@@ -42,7 +42,7 @@ class TestZipfile(object):
         assert len(files) == 1
         assert files[0].relapath == "sflock.txt"
         assert files[0].contents == b"sflock_encrypted_zip\n"
-        assert files[0].password == b"infected"
+        assert files[0].password == "infected"
         assert files[0].magic == "ASCII text"
         assert files[0].parentdirs == []
         assert not files[0].selected
@@ -63,11 +63,11 @@ class TestZipfile(object):
         z = ZipFile(f("zip_encrypted2.zip"))
         assert z.handles() is True
         assert not z.f.selected
-        files = list(z.unpack(b"sflock"))
+        files = list(z.unpack("sflock"))
         assert len(files) == 1
         assert files[0].relapath == "sflock.txt"
         assert files[0].contents == b"sflock_encrypted_zip\n"
-        assert files[0].password == b"sflock"
+        assert files[0].password == "sflock"
         assert files[0].magic == "ASCII text"
         assert files[0].parentdirs == []
         assert not files[0].selected
@@ -75,11 +75,11 @@ class TestZipfile(object):
         z = ZipFile(f("zip_encrypted2.zip"))
         assert z.handles() is True
         assert not z.f.selected
-        files = list(z.unpack([b"sflock"]))
+        files = list(z.unpack(["sflock"]))
         assert len(files) == 1
         assert files[0].relapath == "sflock.txt"
         assert files[0].contents == b"sflock_encrypted_zip\n"
-        assert files[0].password == b"sflock"
+        assert files[0].password == "sflock"
         assert files[0].magic == "ASCII text"
         assert files[0].parentdirs == []
         assert not files[0].selected

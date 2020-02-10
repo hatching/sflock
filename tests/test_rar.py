@@ -64,11 +64,11 @@ class TestRarFile:
         z = RarFile(f("sflock_encrypted.rar"))
         assert z.handles() is True
         assert not z.f.selected
-        files = list(z.unpack(b"infected"))
+        files = list(z.unpack("infected"))
         assert len(files) == 1
         assert files[0].relapath == "sflock.txt"
         assert files[0].contents == b"sflock_encrypted_rar"
-        assert files[0].password == b"infected"
+        assert files[0].password == "infected"
         assert "ASCII text" in files[0].magic
         assert files[0].parentdirs == []
         assert not files[0].selected
@@ -89,7 +89,7 @@ class TestRarFile:
         t = unpack(
             "tests/files/sflock_encrypted.rar",
             filename="foo",
-            password=b"infected"
+            password="infected"
         )
         assert t.unpacker == "rarfile"
         assert t.filename == "foo"

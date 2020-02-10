@@ -28,7 +28,9 @@ class ZipFile(Unpacker):
 
     def decrypt(self, password, archive, entry):
         try:
-            archive.setpassword(password)
+            if password:
+                archive.setpassword(password.encode())
+
             return File(
                 relapath=entry.filename,
                 contents=archive.read(entry),

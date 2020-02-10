@@ -148,7 +148,7 @@ class Unpacker(object):
         return self.process(entries, duplicates)
 
     def bruteforce(self, passwords, *args, **kwargs):
-        if isinstance(passwords, (str, bytes)):
+        if isinstance(passwords, str):
             passwords = [passwords]
         elif not passwords:
             passwords = []

@@ -42,7 +42,7 @@ def test_unpack_py3():
         unpack(contents="contents")
 
     with pytest.raises(IncorrectUsageException):
-        unpack(password="password")
+        unpack(password=b"password")
 
     with pytest.raises(IncorrectUsageException):
         unpack(filename=b"filename")

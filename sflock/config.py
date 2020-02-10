@@ -10,5 +10,5 @@ MAX_TOTAL_SIZE = 1024 * 1024 * 1024
 def iter_passwords():
     import pkg_resources
     filepath = pkg_resources.resource_filename("sflock", "data/password.txt")
-    for line in open(filepath, "rb"):
+    for line in open(filepath, "r"):
         yield line.strip()

@@ -54,7 +54,7 @@ def unpack(filepath=None, contents=None, password=None, filename=None,
     if isinstance(filepath, bytes) or isinstance(contents, str):
         raise IncorrectUsageException
 
-    if isinstance(filename, bytes) or isinstance(password, str):
+    if isinstance(filename, bytes) or isinstance(password, bytes):
         raise IncorrectUsageException
 
     if contents:
