@@ -6,7 +6,7 @@ from sflock.abstracts import Unpacker, File
 
 class MsgFile(Unpacker):
     name = "msgfile"
-    exts = b".msg"
+    exts = ".msg"
 
     def supported(self):
         return True
@@ -32,9 +32,8 @@ class MsgFile(Unpacker):
         # If available, the unicode stream takes precedence.
         stream = self.get_stream(unicode_filename)
         if stream:
-            return stream.decode("utf16").encode()
-
-        return self.get_stream(ascii_filename)
+            return stream.decode("utf16")
+        return self.get_stream(ascii_filename).decode()
 
     def get_attachment(self, dirname):
         filename = (

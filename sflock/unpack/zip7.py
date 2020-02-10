@@ -13,7 +13,7 @@ from sflock.exception import UnpackException
 class Zip7File(Unpacker):
     name = "7zfile"
     exe = "/usr/bin/7z"
-    exts = b".7z", b".iso"
+    exts = ".7z", ".iso"
     # TODO Should we use "isoparser" (check PyPI) instead of 7z?
     magic = "7-zip archive", "ISO 9660"
 
@@ -48,7 +48,7 @@ class Zip7File(Unpacker):
 class GzipFile(Unpacker):
     name = "gzipfile"
     exe = "/usr/bin/7z"
-    exts = b".gzip"
+    exts = ".gzip"
     magic = "gzip compressed data, was"
 
     def unpack(self, password=None, duplicates=None):
@@ -75,7 +75,7 @@ class GzipFile(Unpacker):
 class LzhFile(Unpacker):
     name = "lzhfile"
     exe = "/usr/bin/7z"
-    exts = b".lzh", b".lha"
+    exts = ".lzh", ".lha"
     magic = "LHa ("
 
     def unpack(self, password=None, duplicates=None):
@@ -104,7 +104,7 @@ class LzhFile(Unpacker):
 class VHDFile(Unpacker):
     name = "vhdfile"
     exe = "/usr/bin/7z"
-    exts = b".vhd", b".vhdx"
+    exts = ".vhd", ".vhdx"
     magic = " Microsoft Disk Image"
 
     def unpack(self, password=None, duplicates=None):

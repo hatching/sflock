@@ -12,7 +12,7 @@ from sflock.abstracts import Unpacker
 class RarFile(Unpacker):
     name = "rarfile"
     exe = "/usr/bin/rar"
-    exts = b".rar"
+    exts = ".rar"
     magic = "RAR archive"
 
     def unpack(self, password=None, duplicates=None):

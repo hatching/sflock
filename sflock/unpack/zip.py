@@ -13,7 +13,7 @@ from sflock.exception import UnpackException
 
 class ZipFile(Unpacker):
     name = "zipfile"
-    exts = b".zip"
+    exts = ".zip"
     magic = "Zip archive data"
 
     def supported(self):
@@ -29,7 +29,6 @@ class ZipFile(Unpacker):
     def decrypt(self, password, archive, entry):
         try:
             archive.setpassword(password)
-
             return File(
                 relapath=entry.filename,
                 contents=archive.read(entry),
@@ -80,7 +79,6 @@ class ZipFile(Unpacker):
                 self.f.error = "files_too_large"
                 return []
 
-            entry.filename = entry.filename.encode()
             f = self.bruteforce(password, archive, entry)
             entries.append(f or File(
                 filename=entry.filename,

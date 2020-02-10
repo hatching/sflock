@@ -10,19 +10,19 @@ from sflock.abstracts import File
 from sflock.unpack import LzhFile
 
 def f(filename):
-    return File.from_path(os.path.join(b"tests", b"files", filename))
+    return File.from_path(os.path.join("tests", "files", filename))
 
 @pytest.mark.skipif("not LzhFile(None).supported()")
 class TestLzhFile(object):
     def test_lzh_plain(self):
-        assert "LHa (" in f(b"test.lzh").magic
-        t = LzhFile(f(b"test.lzh"))
+        assert "LHa (" in f("test.lzh").magic
+        t = LzhFile(f("test.lzh"))
         assert t.handles() is True
         assert not t.f.selected
         files = list(t.unpack())
         assert len(files) == 1
         assert not files[0].filepath
-        assert files[0].relapath == b"MICROTECH%20PRECISION%20ENGINEERING.exe"
+        assert files[0].relapath == "MICROTECH%20PRECISION%20ENGINEERING.exe"
         assert len(files[0].contents) == 652288
         assert "PE32 executable" in files[0].magic
         assert not files[0].parentdirs

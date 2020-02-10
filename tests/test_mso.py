@@ -8,10 +8,10 @@ from sflock.abstracts import File
 from sflock.unpack import MsoFile
 
 def f(filename):
-    return File.from_path(os.path.join(b"tests", b"files", filename))
+    return File.from_path(os.path.join("tests", "files", filename))
 
 def test_garbage():
-    m = MsoFile(f(b"garbage.bin"))
+    m = MsoFile(f("garbage.bin"))
     assert m.handles() is False
     assert not m.f.selected
     assert not m.unpack()

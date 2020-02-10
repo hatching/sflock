@@ -11,12 +11,12 @@ from sflock.misc import data_file
 
 class DaaFile(Unpacker):
     name = "daafile"
-    exts = b".daa"
+    exts = ".daa"
     magic = "PowerISO Direct-Access-Archive"
 
     def __init__(self, *args, **kwargs):
         super(DaaFile, self).__init__(*args, **kwargs)
-        self.exe = data_file(b"poweriso.elf")
+        self.exe = data_file("poweriso.elf")
 
     def unpack(self, password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()

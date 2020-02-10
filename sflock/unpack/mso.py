@@ -11,7 +11,7 @@ from sflock.exception import UnpackException
 
 class MsoFile(Unpacker):
     name = "msofile"
-    exts = b".mso"
+    exts = ".mso"
 
     def supported(self):
         return True
@@ -44,7 +44,7 @@ class MsoFile(Unpacker):
 
     def parse_ole10_native(self, ole, name):
         def parse_string(off):
-            ret = stream[off:stream.find(b"\x00", off)]
+            ret = stream[off:stream.find(b"\x00", off)].decode()
             return off + len(ret) + 1, ret
 
         stream = self.get_stream(ole, "\x01Ole10Native")

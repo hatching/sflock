@@ -10,7 +10,7 @@ from sflock.abstracts import Unpacker, File
 
 class PdfFile(Unpacker):
     name = "pdffile"
-    exts = b".pdf"
+    exts = ".pdf"
     package = "pdf"
 
     def supported(self):
@@ -62,7 +62,7 @@ class PdfFile(Unpacker):
 
                 obj = f.body[version].objects[ref.id]
                 contents = obj.object.decodedStream.encode("latin-1")
-                filename = filename.value.encode()
+                filename = filename.value
 
                 entries.append(File(
                     contents=contents,

@@ -32,7 +32,6 @@ def supported():
 def ident(f):
     """Identifies a file based on its contents."""
     package = identify(f)
-
     if package:
         f.preview = False
         f.package = package
@@ -52,10 +51,10 @@ def unpack(filepath=None, contents=None, password=None, filename=None,
     if duplicates is None:
         duplicates = []
 
-    if isinstance(filepath, str) or isinstance(contents, str):
+    if isinstance(filepath, bytes) or isinstance(contents, str):
         raise IncorrectUsageException
 
-    if isinstance(filename, str) or isinstance(password, str):
+    if isinstance(filename, bytes) or isinstance(password, str):
         raise IncorrectUsageException
 
     if contents:
@@ -75,10 +74,10 @@ def zipify(f):
 
     for child in f.children:
         # Avoid specific characters that aren't allowed under Windows NTFS.
-        if re.search('["*<>?]', child.relapath.decode()):
+        if re.search('["*<>?]', child.relapath):
             continue
         filepath = child.temp_path()
-        z.write(filepath, child.relapath.decode())
+        z.write(filepath, child.relapath)
         os.unlink(filepath)
 
     z.close()

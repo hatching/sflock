@@ -41,7 +41,7 @@ class Unpacker(object):
         return os.path.exists(self.exe)
 
     def zipjail(self, filepath, dirpath, *args):
-        zipjail = data_file(b"zipjail.elf")
+        zipjail = data_file("zipjail.elf")
 
         p = subprocess.Popen(
             (zipjail, filepath, dirpath, "--", self.exe) + args,
@@ -137,7 +137,7 @@ class Unpacker(object):
 
         for dirpath2, dirnames, filepaths in os.walk(dirpath):
             for filepath in filepaths:
-                filepath = os.path.join(dirpath2, filepath).encode()
+                filepath = os.path.join(dirpath2, filepath)
                 entries.append(File(
                     relapath=filepath[len(dirpath)+1:],
                     password=password,
@@ -201,12 +201,10 @@ class File(object):
         self.unpacker = None
         self.parent = None
         self.preview = True
-
         # Extract the filename from any of the available path components.
         self.filename = ntpath.basename(
-            filename or self.relapath or self.filepath or b""
-        ).rstrip(b"\x00") or None
-
+            filename or self.relapath or self.filepath or ""
+        ).rstrip("\x00") or None
         self._contents = contents
         self._package = None
         self._platform = platform
@@ -305,8 +303,8 @@ class File(object):
         if not self.relapath:
             return []
 
-        dirname = os.path.dirname(self.relapath.replace(b"\\", b"/"))
-        return dirname.split(b"/") if dirname else []
+        dirname = os.path.dirname(self.relapath.replace("\\", "/"))
+        return dirname.split("/") if dirname else []
 
     @property
     def filesize(self):
@@ -358,7 +356,7 @@ class File(object):
             return
         # TODO Strip absolute paths for Windows.
         # TODO Normalize relative paths.
-        return self.relapath.lstrip(b"\\/").rstrip(b"\x00")
+        return self.relapath.lstrip("\\/").rstrip("\x00")
 
     @property
     def ole(self):
@@ -488,7 +486,7 @@ class File(object):
 
     def get_child(self, relaname, regex=False):
         if not regex:
-            relaname = b"%s$" % re.escape(relaname)
+            relaname = "%s$" % re.escape(relaname)
 
         for child in self.children:
             if child.relaname and re.match(relaname, child.relaname):

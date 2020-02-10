@@ -16,7 +16,7 @@ from sflock.config import MAX_TOTAL_SIZE
 class TarFile(Unpacker):
     name = "tarfile"
     mode = "r:"
-    exts = b".tar"
+    exts = ".tar"
     magic = "POSIX tar archive"
 
     def supported(self):
@@ -43,10 +43,8 @@ class TarFile(Unpacker):
                 self.f.error = "files_too_large"
                 return []
 
-            relapath = entry.path.encode()
-
             entries.append(File(
-                relapath=relapath,
+                relapath=entry.path,
                 contents=archive.extractfile(entry).read()
             ))
 
@@ -55,7 +53,7 @@ class TarFile(Unpacker):
 class TargzFile(TarFile, Unpacker):
     name = "targzfile"
     mode = "r:gz"
-    exts = b".tar.gz"
+    exts = ".tar.gz"
 
     def handles(self):
         if self.f.filename and self.f.filename.lower().endswith(self.exts):
@@ -74,7 +72,7 @@ class TargzFile(TarFile, Unpacker):
 class Tarbz2File(TarFile, Unpacker):
     name = "tarbz2file"
     mode = "r:bz2"
-    exts = b".tar.bz2"
+    exts = ".tar.bz2"
 
     def handles(self):
         if self.f.filename and self.f.filename.lower().endswith(self.exts):

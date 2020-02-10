@@ -12,7 +12,7 @@ from sflock.abstracts import Unpacker
 class CabFile(Unpacker):
     name = "cabfile"
     exe = "/usr/bin/cabextract"
-    exts = b".cab"
+    exts = ".cab"
     magic = "Microsoft Cabinet archive"
 
     def unpack(self, password=None, duplicates=None):

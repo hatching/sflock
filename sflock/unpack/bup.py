@@ -10,7 +10,7 @@ from sflock.abstracts import Unpacker, File
 
 class BupFile(Unpacker):
     name = "bupfile"
-    exts = b".bup"
+    exts = ".bup"
 
     def supported(self):
         return True
@@ -53,7 +53,6 @@ class BupFile(Unpacker):
             relapath = ntpath.basename(
                 config.get(filename[0], "OriginalName")
             )
-            relapath = relapath.encode()
 
             entries.append(File(
                 relapath=relapath,

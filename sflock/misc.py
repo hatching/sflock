@@ -28,8 +28,8 @@ def import_plugins(dirpath, module_prefix, namespace, class_):
 
 def data_file(*path):
     """Return the path for the filepath of an embedded file."""
-    dirpath = sflock.__path__[0].encode()
-    return os.path.abspath(os.path.join(dirpath, b"data", *path))
+    dirpath = sflock.__path__[0]
+    return os.path.abspath(os.path.join(dirpath, "data", *path))
 
 def make_list(obj):
     if isinstance(obj, (tuple, list)):

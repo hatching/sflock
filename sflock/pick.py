@@ -3,31 +3,31 @@
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 doc_ext = (
-    b".rtf", b".doc", b".docx", b".docm", b".dot", b".dotx", b".docb",
-    b".mso",
+    ".rtf", ".doc", ".docx", ".docm", ".dot", ".dotx", ".docb",
+    ".mso",
 )
 doc_hdr = (
     b"\x7b\x5c\x72\x74",
 )
 xls_ext = (
-    b".xls", b".xlsx", b".xlm", b".xlt", b".xltx", b".xlsm", b".xltm",
-    b".xlsb", b".xla", b".xlam", b".xll", b".xlw", b".slk", b".iqy",
+    ".xls", ".xlsx", ".xlm", ".xlt", ".xltx", ".xlsm", ".xltm",
+    ".xlsb", ".xla", ".xlam", ".xll", ".xlw", ".slk", ".iqy",
 )
 ppt_ext = (
-    b".ppt", b".pptx", b".pps", b".ppsx", b".pptm", b".potm", b".potx",
-    b".ppsm", b".pot", b".ppam", b".sldx", b".sldm",
+    ".ppt", ".pptx", ".pps", ".ppsx", ".pptm", ".potm", ".potx",
+    ".ppsm", ".pot", ".ppam", ".sldx", ".sldm",
 )
 ie_ext = (
-    b".htm", b".html", b".hta", b".mht", b".mhtml", b".url",
+    ".htm", ".html", ".hta", ".mht", ".mhtml", ".url",
 )
 
 def package(f):
     """Guesses the package based on the filename and/or contents."""
-    filename = f.filename.lower() if f.filename else b""
+    filename = f.filename.lower() if f.filename else ""
     header = f.stream.read(0x1000)
 
     if "DLL" in f.magic:
-        if filename.endswith(b".cpl"):
+        if filename.endswith(".cpl"):
             return "cpl"
         # TODO Support PE exports to identify COM objects.
         return "dll"
@@ -35,7 +35,7 @@ def package(f):
     if "PE32" in f.magic or "MS-DOS" in f.magic:
         return "exe"
 
-    if "PDF" in f.magic or filename.endswith(b".pdf"):
+    if "PDF" in f.magic or filename.endswith(".pdf"):
         return "pdf"
 
     if filename.endswith(doc_ext):
@@ -47,7 +47,7 @@ def package(f):
     if filename.endswith(ppt_ext):
         return "ppt"
 
-    if filename.endswith(b".pub"):
+    if filename.endswith(".pub"):
         return "pub"
 
     # TODO Get rid of this logic and replace it by actually inspecting
@@ -67,37 +67,37 @@ def package(f):
     if "Microsoft PowerPoint" in f.magic:
         return "ppt"
 
-    if filename.endswith(b".jar"):
+    if filename.endswith(".jar"):
         return "jar"
 
-    if filename.endswith((b".py", b".pyc", b".pyo")):
+    if filename.endswith((".py", ".pyc", ".pyo")):
         return "python"
 
     if "Python script" in f.magic:
         return "python"
 
-    if filename.endswith(b".vbs"):
+    if filename.endswith(".vbs"):
         return "vbs"
 
-    if filename.endswith(b".js"):
+    if filename.endswith(".js"):
         return "js"
 
-    if filename.endswith(b".jse"):
+    if filename.endswith(".jse"):
         return "jse"
 
-    if filename.endswith(b".msi"):
+    if filename.endswith(".msi"):
         return "msi"
 
-    if filename.endswith((b".ps1", b".ps1xml", b".psc1", b".psm1")):
+    if filename.endswith((".ps1", ".ps1xml", ".psc1", ".psm1")):
         return "ps1"
 
-    if filename.endswith((b".wsf", b".wsc")):
+    if filename.endswith((".wsf", ".wsc")):
         return "wsf"
 
-    if filename.endswith(b".lnk") or "MS Windows shortcut" in f.magic:
+    if filename.endswith(".lnk") or "MS Windows shortcut" in f.magic:
         return "generic"
 
-    if filename.endswith((b".bat", b".cmd")):
+    if filename.endswith((".bat", ".cmd")):
         return "generic"
 
     if "HTML" in f.magic or filename.endswith(ie_ext):
@@ -107,7 +107,7 @@ def package(f):
         return "generic"
 
 def is_bash_script(f):
-    return f.filename and f.filename.endswith(b".sh")
+    return f.filename and f.filename.endswith(".sh")
 
 def is_elf_executable(f):
     return f.magic.startswith("ELF")

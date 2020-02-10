@@ -57,14 +57,14 @@ def office_activemime(f):
         return "doc"
 
 def office_zip(f):
-    if not f.get_child(b"[Content_Types].xml"):
+    if not f.get_child("[Content_Types].xml"):
         return
 
     # Shortcut for PowerPoint files.
-    if f.get_child(b"ppt/presentation.xml"):
+    if f.get_child("ppt/presentation.xml"):
         return "ppt"
 
-    if not f.get_child(b"docProps/app.xml"):
+    if not f.get_child("docProps/app.xml"):
         return
 
     packages = {
@@ -74,7 +74,7 @@ def office_zip(f):
 
     application = re.search(
         b"<application>(.*)</application>",
-        f.read(b"docProps/app.xml"), re.I
+        f.read("docProps/app.xml"), re.I
     )
     if not application:
         return
@@ -140,16 +140,16 @@ def visualbasic(f):
     return
 
 def java(f):
-    if not f.get_child(b"META-INF/MANIFEST.MF"):
+    if not f.get_child("META-INF/MANIFEST.MF"):
         return
-    if f.get_child(b"AndroidManifest.xml"):
+    if f.get_child("AndroidManifest.xml"):
         return
     return "jar"
 
 def android(f):
-    if not f.get_child(b"AndroidManifest.xml"):
+    if not f.get_child("AndroidManifest.xml"):
         return
-    if not f.get_child(b"classes.dex"):
+    if not f.get_child("classes.dex"):
         return
     return "apk"
 

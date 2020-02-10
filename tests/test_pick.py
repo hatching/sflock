@@ -9,9 +9,9 @@ from sflock.main import unpack
 from sflock.pick import package, platform
 
 def test_malformed_rtf():
-    assert package(File(b"tests/files/maldoc/0882c8")) == "doc"
-    assert package(File(b"tests/files/maldoc/118368")) == "doc"
-    assert platform(File(b"tests/files/maldoc/0882c8")) == "windows"
+    assert package(File("tests/files/maldoc/0882c8")) == "doc"
+    assert package(File("tests/files/maldoc/118368")) == "doc"
+    assert platform(File("tests/files/maldoc/0882c8")) == "windows"
 
 def test_lnk():
     f = File(contents=open("tests/files/lnk_1.lnk", "rb").read())

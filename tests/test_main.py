@@ -36,7 +36,7 @@ def test_count_supported():
 
 def test_unpack_py3():
     with pytest.raises(IncorrectUsageException):
-        unpack(filepath="filepath")
+        unpack(filepath=b"filepath")
 
     with pytest.raises(IncorrectUsageException):
         unpack(contents="contents")
@@ -45,7 +45,7 @@ def test_unpack_py3():
         unpack(password="password")
 
     with pytest.raises(IncorrectUsageException):
-        unpack(filename="filename")
+        unpack(filename=b"filename")
 
     # It works, but no children are extracted from this Python file.
-    assert not unpack(__file__.encode()).children
+    assert not unpack(__file__).children

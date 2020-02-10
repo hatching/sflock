@@ -10,7 +10,7 @@ from sflock.abstracts import Unpacker, File
 
 class EmlFile(Unpacker):
     name = "emlfile"
-    exts = b".eml"
+    exts = ".eml"
 
     whitelisted_content_type = [
         "text/plain", "text/html",
@@ -56,10 +56,10 @@ class EmlFile(Unpacker):
                 filename = email.header.make_header(
                     email.header.decode_header(filename)
                 )
-                filename = str(filename).encode()
+                filename = str(filename)
 
             entries.append(File(
-                relapath=filename or b"att1", contents=payload
+                relapath=filename or "att1", contents=payload
             ))
 
         return entries

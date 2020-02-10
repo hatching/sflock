@@ -12,7 +12,7 @@ from sflock.abstracts import Unpacker
 class AceFile(Unpacker):
     name = "acefile"
     exe = "/usr/bin/unace"
-    exts = b".ace"
+    exts = ".ace"
     magic = "ACE archive"
 
     def unpack(self, password=None, duplicates=None):

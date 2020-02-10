@@ -11,11 +11,11 @@ from sflock.abstracts import File
 from sflock.unpack import PdfFile, ZipFile
 
 def f(filename):
-    return File.from_path(os.path.join(b"tests", b"files", filename))
+    return File.from_path(os.path.join("tests", "files", filename))
 
 def test_pdf_embedded():
-    assert f(b"pdf_docm.pdf").magic.startswith("PDF document")
-    m = PdfFile(f(b"pdf_docm.pdf"))
+    assert f("pdf_docm.pdf").magic.startswith("PDF document")
+    m = PdfFile(f("pdf_docm.pdf"))
     assert m.handles() is True
     assert m.f.selected
     files = list(m.unpack())
@@ -24,14 +24,14 @@ def test_pdf_embedded():
 
     assert len(files) == 1
     assert not files[0].filepath
-    assert files[0].filename == b"Q6TCWXPS.docm"
+    assert files[0].filename == "Q6TCWXPS.docm"
     assert files[0].filesize == 55494
     assert files[0].package == "doc"
     assert not files[0].selected
     assert len(files[0].children) == 18
 
 def test_pdf_magic():
-    m = PdfFile(File(contents=f(b"pdf_docm.pdf").contents))
+    m = PdfFile(File(contents=f("pdf_docm.pdf").contents))
     assert m.handles() is True
 
 def test_pdf_is_embedded():
@@ -47,15 +47,15 @@ def test_pdf_is_embedded():
     assert files[0].children[0].package == "doc"
 
 def test_bypass_minimized():
-    m = PdfFile(f(b"bypass_minimized.pdf"))
+    m = PdfFile(f("bypass_minimized.pdf"))
     files = list(m.unpack())
     assert len(files) == 1
-    assert files[0].filename == b"test.txt"
+    assert files[0].filename == "test.txt"
     # TODO Fix actually reading the contents of this file correctly (which is
     # a peepdf issue, AFAICT).
 
 def test_garbage():
-    m = PdfFile(f(b"garbage.bin"))
+    m = PdfFile(f("garbage.bin"))
     assert m.handles() is False
     assert not m.f.selected
     assert not m.unpack()
