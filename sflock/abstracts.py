@@ -372,7 +372,13 @@ class File(object):
         if self.ole is None:
             raise UnpackException(message)
 
-    def to_dict(self):
+    def to_dict(self, selected_files=None):
+        children = []
+        for child in self.children:
+            children.append(child.to_dict(selected_files))
+            if selected_files and child.selected:
+                selected_files.append(child)
+
         return {
             "filename": self.filename,
             "relapath": self.relapath,
@@ -382,7 +388,7 @@ class File(object):
             "parentdirs": self.parentdirs,
             "duplicate": self.duplicate,
             "size": self.filesize,
-            "children": [child.to_dict() for child in self.children],
+            "children": children,
             "type": "container" if self.children else "file",
             "finger": {
                 "magic": self.magic,
@@ -399,7 +405,7 @@ class File(object):
             "error": self.error,
         }
 
-    def astree(self, finger=True, sanitize=False):
+    def astree(self, finger=True, sanitize=False, selected_files=None):
         ret = {
             "duplicate": self.duplicate,
             "password": self.password,
@@ -445,7 +451,9 @@ class File(object):
             entry = ret["children"]
             for part in child.parentdirs:
                 entry = findentry(entry, part)["children"]
-            entry.append(child.astree(finger=finger, sanitize=sanitize))
+            if selected_files and child.selected:
+                selected_files.append(child)
+            entry.append(child.astree(finger=finger, sanitize=sanitize, selected_files=selected_files))
 
         return ret
 
