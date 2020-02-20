@@ -15,9 +15,11 @@ import tempfile
 
 from sflock.compat import magic
 from sflock.config import iter_passwords
-from sflock.exception import UnpackException
+from sflock.exception import UnpackException, MaxNestedException
 from sflock.misc import data_file, make_list
 from sflock.pick import package, platform
+
+MAX_NESTED = 3
 
 class Unpacker(object):
     """Abstract class for Unpacker engines."""
@@ -88,10 +90,10 @@ class Unpacker(object):
             if plugin(f).handles():
                 yield plugin.name
 
-    def unpack(self, password=None, duplicates=None):
+    def unpack(self, depth=0, password=None, duplicates=None):
         raise NotImplementedError
 
-    def process(self, entries, duplicates, password=None):
+    def process(self, entries, duplicates, depth, password=None):
         """Recursively unpacks embedded archives if found."""
         if duplicates is None:
             duplicates = []
@@ -101,7 +103,17 @@ class Unpacker(object):
             for unpacker in Unpacker.guess(f):
                 plugin = self.plugins[unpacker](f)
                 if plugin.supported():
-                    f.children = plugin.unpack(password, duplicates)
+                    depth += 1
+                    if depth > MAX_NESTED:
+                        raise MaxNestedException(
+                            "The submitted file exceeded the maximum of %s "
+                            "nested zip files" % MAX_NESTED
+                        )
+
+                    f.children = plugin.unpack(depth, password, duplicates)
+
+                    depth -= 1
+
                     # TODO Improve this. The following is simply a guesstimate
                     # towards which unpacker is actually used. If there are
                     # multiple unpackers eligible for the current file, but
@@ -122,9 +134,10 @@ class Unpacker(object):
 
     @staticmethod
     def single(f, password, duplicates):
-        return Unpacker(None).process([f], duplicates, password)
+        depth = 0
+        return Unpacker(None).process([f], duplicates, depth, password)
 
-    def process_directory(self, dirpath, duplicates, password=None):
+    def process_directory(self, dirpath, duplicates, depth, password=None):
         """Enumerates a directory, removes the directory, and returns data
         after calling the process function."""
         entries = []
@@ -145,7 +158,7 @@ class Unpacker(object):
                 ))
 
         shutil.rmtree(dirpath)
-        return self.process(entries, duplicates)
+        return self.process(entries, duplicates, depth)
 
     def bruteforce(self, passwords, *args, **kwargs):
         if isinstance(passwords, str):

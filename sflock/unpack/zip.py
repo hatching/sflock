@@ -56,7 +56,7 @@ class ZipFile(Unpacker):
 
             raise UnpackException("Unknown zipfile error: %s" % e)
 
-    def unpack(self, password=None, duplicates=None):
+    def unpack(self, depth=0, password=None, duplicates=None):
         try:
             archive = zipfile.ZipFile(self.f.stream)
         except (zipfile.BadZipfile, IOError) as e:
@@ -101,4 +101,4 @@ class ZipFile(Unpacker):
             if entry.relaname in directories:
                 entries.pop(idx)
 
-        return self.process(entries, duplicates)
+        return self.process(entries, duplicates, depth)

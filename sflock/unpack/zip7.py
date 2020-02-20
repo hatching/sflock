@@ -17,7 +17,7 @@ class Zip7File(Unpacker):
     # TODO Should we use "isoparser" (check PyPI) instead of 7z?
     magic = "7-zip archive", "ISO 9660"
 
-    def unpack(self, password=None, duplicates=None):
+    def unpack(self, depth=0, password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()
 
         if password:
@@ -43,7 +43,7 @@ class Zip7File(Unpacker):
         if temporary:
             os.unlink(filepath)
 
-        return self.process_directory(dirpath, duplicates)
+        return self.process_directory(dirpath, duplicates, depth)
 
 class GzipFile(Unpacker):
     name = "gzipfile"
@@ -51,7 +51,7 @@ class GzipFile(Unpacker):
     exts = ".gzip"
     magic = "gzip compressed data, was"
 
-    def unpack(self, password=None, duplicates=None):
+    def unpack(self, depth=0, password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()
 
         if self.f.filepath:
@@ -70,7 +70,7 @@ class GzipFile(Unpacker):
         if temporary:
             os.unlink(filepath)
 
-        return self.process_directory(dirpath, duplicates)
+        return self.process_directory(dirpath, duplicates, depth)
 
 class LzhFile(Unpacker):
     name = "lzhfile"
@@ -78,7 +78,7 @@ class LzhFile(Unpacker):
     exts = ".lzh", ".lha"
     magic = "LHa ("
 
-    def unpack(self, password=None, duplicates=None):
+    def unpack(self, depth=0, password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()
 
         if self.f.filepath:
@@ -97,7 +97,7 @@ class LzhFile(Unpacker):
         if temporary:
             os.unlink(filepath)
 
-        return self.process_directory(dirpath, duplicates)
+        return self.process_directory(dirpath, duplicates, depth)
 
 
 
@@ -107,7 +107,7 @@ class VHDFile(Unpacker):
     exts = ".vhd", ".vhdx"
     magic = " Microsoft Disk Image"
 
-    def unpack(self, password=None, duplicates=None):
+    def unpack(self, depth=0, password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()
 
         if self.f.filepath:
@@ -127,4 +127,4 @@ class VHDFile(Unpacker):
         if temporary:
             os.unlink(filepath)
 
-        return self.process_directory(dirpath, duplicates)
+        return self.process_directory(dirpath, duplicates, depth)

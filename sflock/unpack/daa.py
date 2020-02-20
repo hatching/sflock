@@ -18,7 +18,7 @@ class DaaFile(Unpacker):
         super(DaaFile, self).__init__(*args, **kwargs)
         self.exe = data_file("poweriso.elf")
 
-    def unpack(self, password=None, duplicates=None):
+    def unpack(self, depth=0,  password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()
 
         if self.f.filepath:
@@ -37,4 +37,4 @@ class DaaFile(Unpacker):
 
         if not ret:
             return []
-        return self.process_directory(dirpath, duplicates)
+        return self.process_directory(dirpath, duplicates, depth)

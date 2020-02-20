@@ -44,7 +44,7 @@ class MsgFile(Unpacker):
         contents = self.get_stream(dirname, "__substg1.0_37010102")
         return filename, contents
 
-    def unpack(self, password=None, duplicates=None):
+    def unpack(self, depth=0, password=None, duplicates=None):
         seen, entries = [], []
 
         if not self.f.ole:
@@ -60,4 +60,4 @@ class MsgFile(Unpacker):
                 ))
                 seen.append(dirname[0])
 
-        return self.process(entries, duplicates)
+        return self.process(entries, duplicates, depth)

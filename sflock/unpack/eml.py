@@ -64,7 +64,7 @@ class EmlFile(Unpacker):
 
         return entries
 
-    def unpack(self, password=None, duplicates=None):
+    def unpack(self, depth=0, password=None, duplicates=None):
         re_compile_orig = re.compile
 
         try:
@@ -72,4 +72,4 @@ class EmlFile(Unpacker):
         finally:
             re.compile = re_compile_orig
 
-        return self.process(entries, duplicates)
+        return self.process(entries, duplicates, depth)

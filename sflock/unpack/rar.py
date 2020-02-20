@@ -15,7 +15,7 @@ class RarFile(Unpacker):
     exts = ".rar"
     magic = "RAR archive"
 
-    def unpack(self, password=None, duplicates=None):
+    def unpack(self, depth=0, password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()
 
         if self.f.filepath:
@@ -35,4 +35,4 @@ class RarFile(Unpacker):
         if temporary:
             os.unlink(filepath)
 
-        return self.process_directory(dirpath, duplicates, password)
+        return self.process_directory(dirpath, duplicates, depth, password)

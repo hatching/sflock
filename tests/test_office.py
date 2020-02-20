@@ -37,7 +37,7 @@ class TestOfficeFile(object):
     def test_office_pw_success(self):
         z = OfficeFile(f("encrypted1.docx"))
         assert z.handles() is True
-        d, = z.unpack("Password1234_")
+        d, = z.unpack(password="Password1234_")
         assert z.f.selected is False
         assert z.f.preview is True
         assert d.magic.startswith(("Microsoft Word 2007+", "Zip archive data"))

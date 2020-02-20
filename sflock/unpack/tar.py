@@ -22,7 +22,7 @@ class TarFile(Unpacker):
     def supported(self):
         return True
 
-    def unpack(self, password=None, duplicates=None):
+    def unpack(self, depth=0, password=None, duplicates=None):
         try:
             archive = tarfile.open(mode=self.mode, fileobj=self.f.stream)
         except tarfile.ReadError as e:
@@ -48,7 +48,7 @@ class TarFile(Unpacker):
                 contents=archive.extractfile(entry).read()
             ))
 
-        return self.process(entries, duplicates)
+        return self.process(entries, duplicates, depth)
 
 class TargzFile(TarFile, Unpacker):
     name = "targzfile"
@@ -98,7 +98,7 @@ class Tarbz2File(TarFile, Unpacker):
         os.unlink(filepath)
         return ret
 
-    def unpack(self, password=None, duplicates=None):
+    def unpack(self, depth=0, password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()
 
         if not self.f.filepath:
@@ -131,4 +131,4 @@ class Tarbz2File(TarFile, Unpacker):
             self.f.error = "files_too_large"
             return []
 
-        return self.process_directory(dirpath, duplicates)
+        return self.process_directory(dirpath, duplicates, depth)

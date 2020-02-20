@@ -15,7 +15,7 @@ class CabFile(Unpacker):
     exts = ".cab"
     magic = "Microsoft Cabinet archive"
 
-    def unpack(self, password=None, duplicates=None):
+    def unpack(self, depth=0,  password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()
 
         if self.f.filepath:
@@ -34,4 +34,4 @@ class CabFile(Unpacker):
         if temporary:
             os.unlink(filepath)
 
-        return self.process_directory(dirpath, duplicates)
+        return self.process_directory(dirpath, duplicates, depth)

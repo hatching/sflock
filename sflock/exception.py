@@ -13,3 +13,6 @@ class UnpackException(SflockException):
 
 class DecoderException(SflockException):
     pass
+
+class MaxNestedException(SflockException):
+    pass

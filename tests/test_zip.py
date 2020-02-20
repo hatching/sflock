@@ -63,7 +63,7 @@ class TestZipfile(object):
         z = ZipFile(f("zip_encrypted2.zip"))
         assert z.handles() is True
         assert not z.f.selected
-        files = list(z.unpack("sflock"))
+        files = list(z.unpack(password="sflock"))
         assert len(files) == 1
         assert files[0].relapath == "sflock.txt"
         assert files[0].contents == b"sflock_encrypted_zip\n"
@@ -75,7 +75,7 @@ class TestZipfile(object):
         z = ZipFile(f("zip_encrypted2.zip"))
         assert z.handles() is True
         assert not z.f.selected
-        files = list(z.unpack(["sflock"]))
+        files = list(z.unpack(password=["sflock"]))
         assert len(files) == 1
         assert files[0].relapath == "sflock.txt"
         assert files[0].contents == b"sflock_encrypted_zip\n"

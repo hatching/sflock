@@ -66,7 +66,7 @@ class MsoFile(Unpacker):
 
             self.walk_stream(ole, dirname[0])
 
-    def unpack(self, password=None, duplicates=None):
+    def unpack(self, depth=0, password=None, duplicates=None):
         self.entries = []
 
         try:
@@ -75,4 +75,4 @@ class MsoFile(Unpacker):
             self.f.mode = "failed"
             self.f.error = e
 
-        return self.process(self.entries, duplicates)
+        return self.process(self.entries, duplicates, depth)

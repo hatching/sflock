@@ -16,7 +16,7 @@ class PdfFile(Unpacker):
     def supported(self):
         return True
 
-    def unpack(self, password=None, duplicates=None):
+    def unpack(self, depth=0, password=None, duplicates=None):
         entries = []
 
         if self.f.filepath:
@@ -74,4 +74,4 @@ class PdfFile(Unpacker):
             os.unlink(filepath)
         if entries:
             self.f.preview = False
-        return self.process(entries, duplicates)
+        return self.process(entries, duplicates, depth)

@@ -64,7 +64,7 @@ class TestRarFile:
         z = RarFile(f("sflock_encrypted.rar"))
         assert z.handles() is True
         assert not z.f.selected
-        files = list(z.unpack("infected"))
+        files = list(z.unpack(password="infected"))
         assert len(files) == 1
         assert files[0].relapath == "sflock.txt"
         assert files[0].contents == b"sflock_encrypted_rar"

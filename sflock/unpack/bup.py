@@ -26,7 +26,7 @@ class BupFile(Unpacker):
     def decrypt(self, content):
         return b"".join(b"%c" % (ch ^ 0x6a) for ch in content)
 
-    def unpack(self, password=None, duplicates=None):
+    def unpack(self, depth=0,  password=None, duplicates=None):
         entries = []
 
         if not self.f.ole:
@@ -61,4 +61,4 @@ class BupFile(Unpacker):
                 )
             ))
 
-        return self.process(entries, duplicates)
+        return self.process(entries, duplicates, depth)
