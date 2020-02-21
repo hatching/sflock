@@ -4,6 +4,7 @@
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 import os
+import shutil
 import subprocess
 import tempfile
 
@@ -25,9 +26,20 @@ class AceFile(Unpacker):
             filepath = self.f.temp_path(".ace")
             temporary = True
 
+        symlink = None
+        if not filepath.endswith(".ace"):
+            symlink = tempfile.mkdtemp()
+            new_filepath = os.path.join(symlink, "temp.ace")
+            os.symlink(filepath, new_filepath)
+            filepath = new_filepath
+
         ret = self.zipjail(
             filepath, dirpath, "x", filepath, dirpath + os.sep
         )
+
+        if symlink:
+            shutil.rmtree(symlink)
+
         if not ret:
             return []
 
