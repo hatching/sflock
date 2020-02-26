@@ -21,6 +21,27 @@ from sflock.pick import package, platform
 
 MAX_NESTED = 3
 
+class Identifier:
+    name = None
+    ext = []
+    platform = []
+
+    plugins = {}
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def identify(f):
+        raise NotImplementedError()
+
+    @staticmethod
+    def to_json(object):
+        return {
+            "name": object.name,
+            "platform": object.platform
+        }
+
 class Unpacker(object):
     """Abstract class for Unpacker engines."""
     name = None
@@ -210,6 +231,7 @@ class File(object):
         self.description = description
         self.password = password
         self.children = []
+        self.identifier = None
         self.duplicate = False
         self.unpacker = None
         self.parent = None
@@ -410,6 +432,8 @@ class File(object):
                 "magic_human": self.magic_human,
             },
             "password": self.password,
+            "identifier": self.identifier.to_json(
+                self.identifier) if self.identifier else None,
             "sha256": self.sha256,
             "platform": self.platform,
             "package": self.package,
@@ -422,6 +446,8 @@ class File(object):
         ret = {
             "duplicate": self.duplicate,
             "password": self.password,
+            "identifier": self.identifier.to_json(
+                self.identifier) if self.identifier else None,
             "filename": self.filename,
             "relapath": self.relapath,
             "relaname": self.relaname,
@@ -466,7 +492,13 @@ class File(object):
                 entry = findentry(entry, part)["children"]
             if selected_files and child.selected:
                 selected_files.append(child)
-            entry.append(child.astree(finger=finger, sanitize=sanitize, selected_files=selected_files))
+            entry.append(
+                child.astree(
+                    finger=finger,
+                    sanitize=sanitize,
+                    selected_files=selected_files
+                )
+            )
 
         return ret
 
