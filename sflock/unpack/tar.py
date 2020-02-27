@@ -23,6 +23,7 @@ class TarFile(Unpacker):
         return True
 
     def unpack(self, depth=0, password=None, duplicates=None):
+        self.f.archive = True
         try:
             archive = tarfile.open(mode=self.mode, fileobj=self.f.stream)
         except tarfile.ReadError as e:

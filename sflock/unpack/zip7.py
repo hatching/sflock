@@ -18,6 +18,7 @@ class Zip7File(Unpacker):
     magic = "7-zip archive", "ISO 9660"
 
     def unpack(self, depth=0, password=None, duplicates=None):
+        self.f.archive = True
         dirpath = tempfile.mkdtemp()
 
         if password:

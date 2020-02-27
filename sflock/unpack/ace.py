@@ -19,6 +19,7 @@ class AceFile(Unpacker):
     def unpack(self, depth=0, password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()
 
+        self.f.archive = True
         if self.f.filepath:
             filepath = os.path.abspath(self.f.filepath)
             temporary = False
