@@ -244,6 +244,8 @@ class File(object):
         self._package = None
         self._platform = platform
         self._selected = selected
+        self._md5 = None
+        self._sha1 = None
         self._sha256 = None
         self._mime = None
         self._magic = None
@@ -282,15 +284,36 @@ class File(object):
         self._stream.seek(0)
         return self._stream
 
+    def __hashes(self):
+        sha256, s, buf = hashlib.sha256(), self.stream, True
+        sha1 = hashlib.sha1()
+        md5 = hashlib.md5()
+        while buf:
+            buf = s.read(0x10000)
+            sha256.update(buf)
+            md5.update(buf)
+            sha1.update(buf)
+
+        self._sha256 = sha256.hexdigest()
+        self._sha1 = sha1.hexdigest()
+        self._md5 = md5.hexdigest()
+
+    @property
+    def md5(self):
+        if not self._md5:
+            self.__hashes()
+        return self._md5
+
+    @property
+    def sha1(self):
+        if not self._sha1:
+            self.__hashes()
+        return self._sha1
+
     @property
     def sha256(self):
         if not self._sha256:
-            h, s, buf = hashlib.sha256(), self.stream, True
-            while buf:
-                buf = s.read(0x10000)
-                h.update(buf)
-
-            self._sha256 = h.hexdigest()
+            self.__hashes()
         return self._sha256
 
     @property
@@ -435,6 +458,8 @@ class File(object):
             "identifier": self.identifier.to_json(
                 self.identifier) if self.identifier else None,
             "sha256": self.sha256,
+            "md5": self.md5,
+            "sha1": self.sha1,
             "platform": self.platform,
             "package": self.package,
             "selected": self.selected,
