@@ -33,8 +33,12 @@ def supported():
 def ident(f):
     """Identifies a file based on its contents."""
     for k, v in ident_plugins.items():
-        if v.identify(f):
-            f.identifier = v
+        data = v.identify(f)
+        if data:
+            f.human_type = data[0]
+            f.extension = data[1]
+            f.ident_platform = data[2]
+            break
 
     package = identify(f)
     if package:

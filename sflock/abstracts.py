@@ -231,7 +231,9 @@ class File(object):
         self.description = description
         self.password = password
         self.children = []
-        self.identifier = None
+        self.human_type = None
+        self.extension = None
+        self.ident_platform = None
         self.duplicate = False
         self.unpacker = None
         self.parent = None
@@ -455,8 +457,9 @@ class File(object):
                 "magic_human": self.magic_human,
             },
             "password": self.password,
-            "identifier": self.identifier.to_json(
-                self.identifier) if self.identifier else None,
+            "human_type": self.human_type,
+            "ident_platform": self.ident_platform,
+            "extension": self.extension,
             "sha256": self.sha256,
             "md5": self.md5,
             "sha1": self.sha1,
@@ -471,8 +474,9 @@ class File(object):
         ret = {
             "duplicate": self.duplicate,
             "password": self.password,
-            "identifier": self.identifier.to_json(
-                self.identifier) if self.identifier else None,
+            "human_type": self.human_type,
+            "ident_platform": self.ident_platform,
+            "extension": self.extension,
             "filename": self.filename,
             "relapath": self.relapath,
             "relaname": self.relaname,

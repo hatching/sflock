@@ -18,4 +18,4 @@ class Javascript(Identifier):
                 found += 1
 
         if found > 5:
-            return True
+            return Javascript.name, Javascript.ext, Javascript.platform

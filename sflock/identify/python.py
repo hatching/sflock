@@ -8,4 +8,4 @@ class Python(Identifier):
     @staticmethod
     def identify(f):
         if "Python script" in f.magic:
-            return True
+            return Python.name, Python.ext, Python.platform
