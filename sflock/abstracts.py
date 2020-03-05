@@ -15,11 +15,11 @@ import tempfile
 
 from sflock.compat import magic
 from sflock.config import iter_passwords
-from sflock.exception import UnpackException, MaxNestedException
+from sflock.exception import UnpackException, MaxNestedError
 from sflock.misc import data_file, make_list
 from sflock.pick import package, platform
 
-MAX_NESTED = 3
+MAX_NESTED = 10
 
 class Identifier:
     name = None
@@ -126,7 +126,7 @@ class Unpacker(object):
                 if plugin.supported():
                     depth += 1
                     if depth > MAX_NESTED:
-                        raise MaxNestedException(
+                        raise MaxNestedError(
                             "The submitted file exceeded the maximum of %s "
                             "nested zip files" % MAX_NESTED
                         )

@@ -14,5 +14,5 @@ class UnpackException(SflockException):
 class DecoderException(SflockException):
     pass
 
-class MaxNestedException(SflockException):
+class MaxNestedError(SflockException):
     pass
