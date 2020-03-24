@@ -92,7 +92,7 @@ class Tarbz2File(TarFile, Unpacker):
             ret = False
             if d.read(0x1000):
                 ret = True
-        except IOError:
+        except (IOError, EOFError):
             pass
 
         d.close()
@@ -115,7 +115,7 @@ class Tarbz2File(TarFile, Unpacker):
         while f.tell() < MAX_TOTAL_SIZE:
             try:
                 buf = d.read(0x10000)
-            except IOError:
+            except (IOError, EOFError):
                 break
             if not buf:
                 break
