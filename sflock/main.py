@@ -14,7 +14,7 @@ import zipfile
 
 from sflock.abstracts import File, Unpacker
 from sflock.exception import IncorrectUsageException
-from sflock.ident import identify
+#from sflock.ident import identify
 from sflock.identify import identify
 from sflock.misc import make_list
 from sflock.unpack import plugins
@@ -39,15 +39,16 @@ def ident(f):
         f.extension = data[2]
         f.ident_platform = data[3]
 
-    package = identify(f)
-    if package:
-        f.preview = False
-        f.package = package
+    # I think this is for handling archives
+    #package = identify(f)
+    #if package:
+    #    f.preview = False
+    #    f.package = package
 
         # Deselect the direct children.
-        for child in f.children:
-            child.selected = False
-        return
+    #    for child in f.children:
+    #        child.selected = False
+    #    return
 
     # Recursively enumerate further.
     for child in f.children:
