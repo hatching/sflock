@@ -322,14 +322,14 @@ class File(object):
     @property
     def magic(self):
         if not self._magic and self.filesize:
-            self._magic = magic.from_buffer(self.stream.read(1024*1024))
+            self._magic = magic.from_buffer(self.contents)
         return self._magic or ""
 
     @property
     def mime(self):
         if not self._mime and self.filesize:
             self._mime = magic.from_buffer(
-                self.stream.read(1024*1024), mime=True
+                self.contents, mime=True
             )
         return self._mime or ""
 
@@ -515,7 +515,6 @@ class File(object):
                 "preview": True,
             })
             return entry[-1]
-
         for child in self.children:
             entry = ret["children"]
             for part in child.parentdirs:
