@@ -78,7 +78,7 @@ matches = [
      (WINDOWS,)),
     (False, False, "PNG", "png", "png", "Portable Network Graphic",
      (WINDOWS,)),
-    (False, True, "Python script", "x-python", "py", "Python Script",
+    (False, True, "Python script,", "x-python", "py", "Python Script",
      (WINDOWS, MACOS, LINUX)),
     (False, False, "zlib", "zlib", "dmg", "Apple Disk Image", (MACOS,)),
     (False, True, "Composite Document File V2", "msword", "doc",
@@ -93,7 +93,7 @@ matches = [
      "Windows Cabinet File", (WINDOWS,)),
     (False, True, "Composite Document File V2 Document", "msi", "msi",
      "Windows Installer Package", (WINDOWS,)),
-    (False, True, "MPEG", "mpeg", "mp3", "MP3 Audio File", (WINDOWS,)), # todo
+    (False, True, "contains:MPEG", "mpeg", "mp3", "MP3 Audio File", (WINDOWS,)), # todo
     (False, True, "RIFF", "msvideo", "avi", "Audio Video Interleave File",
      (WINDOWS,)),
     (False, False, "JPEG", "jpeg", "jpg", "JPEG Image", (WINDOWS,)), # todo
@@ -165,8 +165,6 @@ matches = [
     # @todo what should this be?
     (False, False, "MS Compress", "octet-stream", "mscompress",
      "Microsoft (de)compressor", (WINDOWS,)),
-    (False, False, "Python script", "x-python", "py", "Python script",
-     (WINDOWS, LINUX)),
     (False, False, "Bourne-Again shell", "x-shellscript", "sh", "Shell script",
      (LINUX,)),
     (False, False, "GIMP XCF image", "x-xcf", "xcf", "GIMP XFC file",
@@ -251,13 +249,11 @@ matches = [
     # (False, False, "data","octet-stream","ttf","TrueType Font",("windows")),
     (False, False, "ARC", "x-arc", "arc", "Compressed file",
      (WINDOWS, MACOS)),
+    # https://fileinfo.com/extension/dzip
     (False, False, "Dzip", "octet-stream", "dzip", "Witcher 2 game file",
      (WINDOWS,)),
     (False, False, "7-zip", "x-7z-compressed", "7zip", "Compressed archive",
      (WINDOWS,)),
-    (
-    False, False, "Python script", "x-python", "java", "Java Source Code File",
-    (WINDOWS,)),
     # (False, False, "text","plain","pascal","-",("windows")),
     (False, False, "JNG", "x-jng", "jng", "Image file related to PNG",
      (WINDOWS,)),
@@ -267,10 +263,10 @@ matches = [
      (MACOS,)),
     (False, True, "Microsoft", "octet", "doc", "Microsoft Document", (WINDOWS,)),
     (True, True, "Zip", "zip", ZIP),
-    (True, True, "JAR", "java-archive", JAR),
+    (True, True, "(JAR)", "java-archive", JAR),
     (True, False, "data", "octet", OCTET),
     (True, False, "XML", "xml", XML),
-    (False, True, "HTML document", "html", "html", "Hypertext Markup Language File",
+    (False, True, "HTML document,", "html", "html", "Hypertext Markup Language File",
      (WINDOWS,)),  # todo
     (True, False, "text", "text", Text),
     (True, False, "text", "plain", Text),
@@ -283,7 +279,8 @@ def identify(f):
     for match in matches:
         function, selected, magic, mime = match[:4]
         # Check if it matches
-        if magic in f.magic and mime in f.mime:
+        tokens = all(elem in f.magic.split(" ") for elem in magic.split(" "))
+        if tokens and mime in f.mime:
             # If the match is a function
             # Check if there is already a match found (on a non function match)
             # The non function matches are narrower
