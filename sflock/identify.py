@@ -4,11 +4,11 @@ ttf_hdr = (
     b'\x00\x01\x00\x00\x00\xff\xff\xff\xff\x01\x00\x00\x00\x00\x00\x00'
 )
 
-WINDOWS = "Windows"
-MACOS = "Darwin"
-LINUX = "Linux"
-ANDROID = "Android"
-IOS = "Ios"
+WINDOWS = "windows"
+MACOS = "darwin"
+LINUX = "linux"
+ANDROID = "android"
+IOS = "ios"
 
 def XML(f):
     if b"application/vnd.openxmlformats-officedocument" in f.contents:
