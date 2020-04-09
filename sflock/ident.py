@@ -117,8 +117,11 @@ def javascript(f):
         return "js"
 
 def wsf(f):
+    # @todo
+    # handle this <script id="OIddGOjUGdfolHCdIGVfgOojC" language="VBScript">
+    # currently doing it by .{0,256}, kind hacky
     match = re.search(
-        b"<script\\s+language=\"(J|VB|Perl)Script\"", f.contents, re.I
+        b"<script.{0,256}\\s+language=[\"\'](J|VB|Perl)Script", f.contents, re.I
     )
     if match:
         return "wsf"

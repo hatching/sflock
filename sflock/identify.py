@@ -10,9 +10,16 @@ LINUX = "linux"
 ANDROID = "android"
 IOS = "ios"
 
+def HTML(f):
+    if wsf(f):
+        return "Windows script file", "wsf", (WINDOWS,)
+    return "Hypertext Markup Language File", "html", (WINDOWS,)
+
 def XML(f):
     if b"application/vnd.openxmlformats-officedocument" in f.contents:
         return "Office file", "doc", (WINDOWS,)
+    if wsf(f):
+        return "Windows script file", "wsf", (WINDOWS,)
     return "XML file", "xml", (WINDOWS,)
 
 def SAT(f):
@@ -49,6 +56,8 @@ def JAR(f):
     return "Java Archive File", "jar", (WINDOWS,)
 
 def OCTET(f):
+    if wsf(f):
+        return "Windows script file", "wsf", (WINDOWS,)
     if f.contents.startswith(ttf_hdr):
         return "TrueType Font", "ttf", (WINDOWS,)
     return "N64 Game ROM File", "rom", (WINDOWS,)
@@ -77,7 +86,7 @@ matches = [
      (WINDOWS,)),
     (False, False, "PNG", "png", "png", "Portable Network Graphic",
      (WINDOWS,)),
-    (False, True, "Python script,", "x-python", "py", "Python Script",
+    (False, True, "Python script", "x-python", "py", "Python Script",
      (WINDOWS, MACOS, LINUX)),
     (False, False, "zlib", "zlib", "dmg", "Apple Disk Image", (MACOS,)),
     (False, True, "Composite Document File V2", "msword", "doc",
@@ -158,6 +167,8 @@ matches = [
     (False, True, "compiled Java class", "x-java-applet", "class",
      "Java class file", (WINDOWS,)),  # todo
     # (False, False, "data","octet-stream","ace","-",("widows")),
+    (False, False, "(DLL)", "x-dosexec", "dll", "Dynamic linked library",
+     (WINDOWS,)),
     (False, True, "PE32", "x-dosexec", "exe", "Portable executable",
      (WINDOWS,)),
     # (False, False, "data","octet-stream","mscompress","-",("windows")),
@@ -237,8 +248,6 @@ matches = [
     (False, False, "Apple binary property", "octet-stream", "appleplist",
      "Apple binary", (MACOS,)),
     (False, False, "MS-DOS", "x-dosexec", "exe", "Executable", (WINDOWS,)),
-    (False, False, "PE32", "x-dosexec", "dll", "Dynamic linked library",
-     (WINDOWS,)),
     (False, False, "FLAC", "x-flac", "flac", "Free lossless audio codec",
      (WINDOWS)),
     # todo
@@ -265,8 +274,7 @@ matches = [
     (True, True, "(JAR)", "java-archive", JAR),
     (True, False, "data", "octet", OCTET),
     (True, False, "XML", "xml", XML),
-    (False, True, "HTML document,", "html", "html", "Hypertext Markup Language File",
-     (WINDOWS,)),  # todo
+    (True, True,  "HTML document", "html", HTML),
     (True, False, "text", "text", Text),
     (True, False, "text", "plain", Text),
 
@@ -275,10 +283,13 @@ matches = [
 def identify(f):
     # return: selected, name, extension, platform
     # Loop through every potential match
+    fmagic = [i.replace(",", "") for i in f.magic.split(" ")]
+
     for match in matches:
         function, selected, magic, mime = match[:4]
         # Check if it matches
-        tokens = all(elem in f.magic.split(" ") for elem in magic.split(" "))
+        mag = [i.replace(",", "") for i in magic.split(" ")]
+        tokens = all(elem in fmagic for elem in mag)
         if tokens and mime in f.mime:
             # If the match is a function
             # Check if there is already a match found (on a non function match)

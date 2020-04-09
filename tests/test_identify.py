@@ -7,20 +7,22 @@ def _help(extension):
     for sample in os.listdir(os.path.join(path, extension)):
         if sample.startswith("."):
             continue
+        print(sample)
         f = unpack(
-            contents=open(
-                os.path.join(
+            filepath=os.path.join(
                     path, extension, sample
-                ), "rb").read()
+                )
         )
         try:
             assert f.extension == extension
-        except AssertionError:
+        except AssertionError as e:
+            print(f.magic)
+            print(f.mime)
             raise AssertionError(
                 "Sample: %s. Expected: %s, Received: %s" % (
                     sample, extension, f.extension
                 )
-            )
+            ) from e
 
 def test_doc():
     _help("doc")
@@ -84,4 +86,10 @@ def test_xls():
 
 def test_xlsx():
     _help("xlsx")
+
+def test_wsf():
+    _help("wsf")
+
+def test_dll():
+    _help("dll")
 
