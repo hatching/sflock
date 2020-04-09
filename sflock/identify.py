@@ -13,12 +13,11 @@ IOS = "ios"
 def XML(f):
     if b"application/vnd.openxmlformats-officedocument" in f.contents:
         return "Office file", "doc", (WINDOWS,)
-    return None, None, None
+    return "XML file", "xml", (WINDOWS,)
 
 def SAT(f):
     if f.get_child("ppt/presentation.xml"):
         return "Powerpoint", "ppt", (WINDOWS,)
-
     return None, None, None
 
 def SECTION(f):
@@ -33,7 +32,7 @@ def Text(f):
         return "Windows script file", "wsf", (WINDOWS,)
     if visualbasic(f):
         return "Visual basic file", "vb", (WINDOWS,)
-    return None, None, None
+    return "Text", "txt", (WINDOWS,)
 
 def ZIP(f):
     for i in f.children:
@@ -41,7 +40,7 @@ def ZIP(f):
             return "Excel document", "xlsx", (WINDOWS,)
         if i.filename.lower() == "worddocument.xml":
             return "Word document", "docx", (WINDOWS,)
-    return None, None, None
+    return "ZIP file", "zip", (WINDOWS,)
 
 def JAR(f):
     if f.get_child("AndroidManifest.xml"):
