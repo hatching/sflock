@@ -7,7 +7,6 @@ def _help(extension):
     for sample in os.listdir(os.path.join(path, extension)):
         if sample.startswith("."):
             continue
-        print(sample)
         f = unpack(
             filepath=os.path.join(
                     path, extension, sample
@@ -16,8 +15,6 @@ def _help(extension):
         try:
             assert f.extension == extension
         except AssertionError as e:
-            print(f.magic)
-            print(f.mime)
             raise AssertionError(
                 "Sample: %s. Expected: %s, Received: %s" % (
                     sample, extension, f.extension

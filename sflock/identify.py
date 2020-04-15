@@ -9,18 +9,19 @@ MACOS = "darwin"
 LINUX = "linux"
 ANDROID = "android"
 IOS = "ios"
+ANY = (WINDOWS, MACOS, LINUX)
 
 def HTML(f):
     if wsf(f):
         return "Windows script file", "wsf", (WINDOWS,)
-    return "Hypertext Markup Language File", "html", (WINDOWS,)
+    return "Hypertext Markup Language File", "html", ANY
 
 def XML(f):
     if b"application/vnd.openxmlformats-officedocument" in f.contents:
         return "Office file", "doc", (WINDOWS,)
     if wsf(f):
         return "Windows script file", "wsf", (WINDOWS,)
-    return "XML file", "xml", (WINDOWS,)
+    return "XML file", "xml", ANY
 
 def SAT(f):
     if f.get_child("ppt/presentation.xml"):
@@ -39,7 +40,7 @@ def Text(f):
         return "Windows script file", "wsf", (WINDOWS,)
     if visualbasic(f):
         return "Visual basic file", "vb", (WINDOWS,)
-    return "Text", "txt", (WINDOWS,)
+    return "Text", "txt", ANY
 
 def ZIP(f):
     for i in f.children:
@@ -60,7 +61,7 @@ def OCTET(f):
         return "Windows script file", "wsf", (WINDOWS,)
     if f.contents.startswith(ttf_hdr):
         return "TrueType Font", "ttf", (WINDOWS,)
-    return "N64 Game ROM File", "rom", (WINDOWS,)
+    return "octet", "", (WINDOWS,)
 
 matches = [
     # todo platform, add platform independent tag? for xml for example
@@ -70,6 +71,7 @@ matches = [
      (LINUX,)),
     (False, False, "TIFF", "tiff", "tiff", "Tagged Image File Format",
      (WINDOWS, LINUX)), # @todo, add android, ios, mac?
+    (False, False, "PCH ROM", "octet", "rom", "N64 Game ROM File", (WINDOWS,)),
     (False, True, "Composite Document File V2 Document", "ms-excel", "xls",
      "Excel Spreadsheet", (WINDOWS,)), # @todo, add android, ios, mac?
     (False, False, "RIFF", "x-wav", "wav", "WAVE Audio File", (WINDOWS,)),
@@ -81,7 +83,7 @@ matches = [
     (False, False, "Debian binary package", "vnd.debian.binary-package", "deb",
      "Debian Software Package", (LINUX,)),
     (False, False, "RealMedia file", "vnd.rn-realmedia", "rm",
-     "RealMedia File", (WINDOWS, LINUX, MACOS)),
+     "RealMedia File", ANY),
     (False, False, "COM executable", "application", "com", "DOS Command File",
      (WINDOWS,)),
     (False, False, "PNG", "png", "png", "Portable Network Graphic",
