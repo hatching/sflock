@@ -30,7 +30,7 @@ def SAT(f):
     return None, None, None
 
 def SECTION(f):
-    return None, None, None
+    return 'CDF file', 'cdf', (WINDOWS,)
 
 def Text(f):
     if javascript(f):
@@ -41,6 +41,10 @@ def Text(f):
         return "Windows script file", "wsf", (WINDOWS,)
     if visualbasic(f):
         return "Visual basic file", "vb", (WINDOWS,)
+    if f.contents.startswith(b"WEB"):
+        return "IQY file", "iqy", (WINDOWS,)
+    if f.contents.startswith(b"ID;"):
+        return "SYLK file", "slk", (WINDOWS,)
     return "Text", "txt", ANY
 
 def ZIP(f):
@@ -84,9 +88,18 @@ matches = [
      (WINDOWS, LINUX)),  # @todo, add android, ios, mac?
     (False, False, ['PCH', 'ROM'], "octet", "rom", "N64 Game ROM File",
      (WINDOWS,)),
+    (False, True, ['CDFV2', 'Microsoft', 'Excel'], "ms-excel", "xlsx",
+     "Excel Spreadsheet", (WINDOWS,)),  # @todo, add android, ios, mac?
     (False, True, ['Composite', 'Document', 'File', 'V2', 'Document'],
      "ms-excel", "xls",
      "Excel Spreadsheet", (WINDOWS,)),  # @todo, add android, ios, mac?
+    (False, True, ['Composite', 'Document', 'File', 'V2', 'Document'],
+     "ms-office", "cdf",
+     "CDF file", (WINDOWS,)),  # @todo, add android, ios, mac?
+    (False, False, ['CDFV2', 'Encrypted'], 'encrypted', "cdf", "CDF file",
+     (WINDOWS,)),
+    (False, False, ['CDFV2', 'Microsoft', 'Outlook'],
+     'ms-outlook', "cdf", "CDF file", (WINDOWS,)),
     (False, False, ['RIFF'], "x-wav", "wav", "WAVE Audio File", (WINDOWS,)),
     (False, False, ['icon'], "image/x-icon", "ico", "Icon File", (WINDOWS,)),
     (False, False, ['Apple', 'HFS'], "octet-stream", "ico", "Icon File",
@@ -186,9 +199,9 @@ matches = [
      "Java class file", (WINDOWS,)),  # todo
     (False, True, ['ACE', 'archive'], "octet-stream", "ace", "ACE archive",
      (WINDOWS,)),
-    (False, True, ['Outlook', 'Message'], "ms-outlook", "outlook",
-     "Outlook message",
-     (WINDOWS,)),
+    #(False, True, ['Outlook', 'Message'], "ms-outlook", "outlook",
+    # "Outlook message",
+    # (WINDOWS,)),
     # @todo what should this be?
     (False, False, ['MS', 'Compress'], "octet-stream", "mscompress",
      "Microsoft (de)compressor", (WINDOWS,)),
