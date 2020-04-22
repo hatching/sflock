@@ -1,5 +1,5 @@
 import re
-from sflock.ident import javascript, powershell, wsf, visualbasic
+from sflock.ident import javascript, powershell, wsf, visualbasic, java
 
 ttf_hdr = (
     b'\x00\x01\x00\x00\x00\xff\xff\xff\xff\x01\x00\x00\x00\x00\x00\x00'
@@ -54,6 +54,8 @@ def ZIP(f):
             return "Excel document", "xlsx", (WINDOWS,)
         if i.filename.lower() == "worddocument.xml":
             return "Word document", "docx", (WINDOWS,)
+    if java(f):
+        return "JAR file", "jar", (WINDOWS,)
     return "ZIP file", "zip", (WINDOWS,)
 
 def JAR(f):
