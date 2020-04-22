@@ -37,7 +37,7 @@ class ZipFile(Unpacker):
                 password=password
             )
         except (RuntimeError, zipfile.BadZipfile, OverflowError,
-                zlib.error) as e:
+                zlib.error, UnicodeDecodeError) as e:
             msg = getattr(e, "message", None) or e.args[0]
             if "Bad password" in msg:
                 return

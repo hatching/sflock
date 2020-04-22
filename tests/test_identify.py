@@ -1,5 +1,7 @@
 from sflock.main import unpack
 import os
+import pytest
+from sflock import exception
 
 path = os.path.join("tests", "files", "extension")
 
@@ -90,3 +92,10 @@ def test_wsf():
 def test_dll():
     _help("dll")
 
+def test_jar_exception():
+    with pytest.raises(exception.UnpackException):
+        unpack(
+            filepath=os.path.join(
+                path, "edge", "jarunicode"
+            )
+        )
