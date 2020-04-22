@@ -9,6 +9,7 @@
 .coverage
 .eggs/
 .idea/
+.vscode/
 .pytest_cache/
 SFlock.egg-info/
 dist/
