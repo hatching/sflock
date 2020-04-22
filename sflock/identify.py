@@ -10,7 +10,8 @@ MACOS = "darwin"
 LINUX = "linux"
 ANDROID = "android"
 IOS = "ios"
-ANY = (WINDOWS, MACOS, LINUX)
+ANY_DESKTOP = (WINDOWS, MACOS, LINUX)
+ANY = (WINDOWS, MACOS, LINUX, ANDROID, IOS)
 
 def HTML(f):
     if wsf(f):
@@ -68,6 +69,8 @@ def OCTET(f):
         return "TrueType Font", "ttf", (WINDOWS,)
     return "octet", "", (WINDOWS,)
 
+# This function is used to distinct DLL and EXE. This was unable to work on
+# magic and mime. Because DLL files are matching positive on EXE mime/magic
 def PE32(f):
     if "DLL" in f.magic:
         return "DLL file", "dll", (WINDOWS,)
@@ -78,10 +81,29 @@ def FLASH(f):
         return "SWF file", "swf", (WINDOWS,)
     return "FLV file", "flv", (WINDOWS,)
 
-matches = [
-    # todo platform, add platform independent tag? for xml for example
 
-    # Function, selected, magic, mime, extension, name, platform
+# The magic and mime of a file will be used to match it to an extension or
+# a function.
+#   An extension will be used if the magic and mime are enough to distinct
+#       different file types.
+#   A function will be used to distinct file types on content.
+#
+# The default matches are designed to be order independent.
+# This means the matches are made very specific for an extension.
+# At first the string matches are used for identification,
+# if the file does not match, the function matches are used.
+matches = [
+    # A string match tuple contains 7 elements.
+    #   boolean: set True if string match
+    #   boolean: set True if extension should be analysed
+    #   list[] of strings:
+    #       This list will be matched against the file magic
+    #         The magic of the file is tokenized by splitting it on spaces.
+    #         ex.: "PE32 (DLL) EXE" --> ["PE32", "(DLL)", "EXE"]
+    #   string: Checks if mime contains this string.
+    #   string: The extension for the match.
+    #   string: A human friendly name of the match.
+    #   string tuple: The platforms that support the extension.
     (False, False, ['RPM'], "rpm", "rpm", "Red Hat Package Manager File",
      (LINUX,)),
     (False, False, ['TIFF'], "tiff", "tiff", "Tagged Image File Format",
@@ -155,7 +177,7 @@ matches = [
     (False, False, ['MS', 'Windows', 'shortcut'], "octet-stream", "lnk",
      "Windows Shortcut", (WINDOWS,)),
     (False, True, ['OpenDocument', 'Text'], "oasis.opendocument.text", "odt",
-     "OpenDocument Text Document", (WINDOWS,)),  # todo
+     "OpenDocument Text Document", ANY),  # todo
     (False, True, ['OpenOffice'], "octet-stream", "odt",
      "OpenDocument Text Document", (WINDOWS,)),  # todo
     (False, False, ['Adobe', 'Photoshop', 'Image'], "adobe.photoshop", "psd",
@@ -198,10 +220,7 @@ matches = [
     (False, True, ['compiled', 'Java', 'class'], "x-java-applet", "class",
      "Java class file", (WINDOWS,)),  # todo
     (False, True, ['ACE', 'archive'], "octet-stream", "ace", "ACE archive",
-     (WINDOWS,)),
-    #(False, True, ['Outlook', 'Message'], "ms-outlook", "outlook",
-    # "Outlook message",
-    # (WINDOWS,)),
+     (WINDOWS,)),v
     # @todo what should this be?
     (False, False, ['MS', 'Compress'], "octet-stream", "mscompress",
      "Microsoft (de)compressor", (WINDOWS,)),
