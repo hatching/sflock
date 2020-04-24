@@ -18,8 +18,8 @@ def _help(extension):
             assert f.extension == extension
         except AssertionError as e:
             raise AssertionError(
-                "Sample: %s. Expected: %s, Received: %s" % (
-                    sample, extension, f.extension
+                "Sample: %s. Expected: %s, Received: %s, Magic: %s, Mime: %s" % (
+                    sample, extension, f.extension, f.magic, f.mime
                 )
             ) from e
 
@@ -91,11 +91,3 @@ def test_wsf():
 
 def test_dll():
     _help("dll")
-
-def test_jar_exception():
-    with pytest.raises(exception.UnpackException):
-        unpack(
-            filepath=os.path.join(
-                path, "edge", "jarunicode"
-            )
-        )

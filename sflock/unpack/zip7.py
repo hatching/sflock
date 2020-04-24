@@ -13,9 +13,17 @@ from sflock.exception import UnpackException
 class Zip7File(Unpacker):
     name = "7zfile"
     exe = "/usr/bin/7z"
-    exts = ".7z", ".iso"
+    exts = ".7z", ".iso", ".zip"
     # TODO Should we use "isoparser" (check PyPI) instead of 7z?
     magic = "7-zip archive", "ISO 9660"
+    priority = 1
+
+    def handles(self):
+        if super(Zip7File, self).handles():
+            return True
+        if self.f.stream.read(2) == b"PK":
+            return True
+        return False
 
     def unpack(self, depth=0, password=None, duplicates=None):
         self.f.archive = True

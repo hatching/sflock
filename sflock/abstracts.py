@@ -49,6 +49,7 @@ class Unpacker(object):
     exts = ()
     package = None
     magic = None
+    priority = 0
 
     # Initiated at runtime - contains each Unpacker subclass.
     plugins = {}
@@ -107,7 +108,9 @@ class Unpacker(object):
     @staticmethod
     def guess(f):
         """Guesses the unpacker based on the filename and/or contents."""
-        for plugin in Unpacker.plugins.values():
+        plugins = list(Unpacker.plugins.values())
+        plugins.sort(key=lambda x: x.priority, reverse=True)
+        for plugin in plugins:
             if plugin(f).handles():
                 yield plugin.name
 
