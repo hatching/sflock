@@ -228,7 +228,7 @@ matches = [
     (False, True, ['RIFF'], "msvideo", "avi", "Audio Video Interleave File",
      (WINDOWS,)),
     (False, True, ['Macromedia', 'Flash', 'Video'], "x-flv", "flv",
-     (LINUX,)),
+     "Flash Video File", (WINDOWS,)),  
     (False, False, ['ISO'], "quicktime", "qt", "QuickTime file", (MACOS,)), # todo, make magic more specific
     (False, False, ['MPEG', 'sequence'], "", "mpeg",
      "Compression for video and audio",
@@ -245,11 +245,11 @@ matches = [
 
     
 
-     "Flash Video File", (WINDOWS,)),  
-       (False, False, ['3GPP', 'MPEG', 'v4'], "octet-stream", "3gp",
+    
+    (False, False, ['3GPP', 'MPEG', 'v4'], "octet-stream", "3gp",
      "3GPP Multimedia File", (WINDOWS,)), 
     
-    (False, False, ['RPM'], "rpm", "rpm", "Red Hat Package Manager File",
+    (False, False, ['RPM'], "rpm", "rpm", "Red Hat Package Manager File", (LINUX,)),
     (False, False, ['Debian', 'binary', 'package'],
      "vnd.debian.binary-package", "deb", "Debian Software Package", (LINUX,)),
     (False, False, ['RealMedia', 'file'], "vnd.rn-realmedia", "rm",
