@@ -131,7 +131,7 @@ class Unpacker(object):
                     if depth > MAX_NESTED:
                         raise MaxNestedError(
                             "The submitted file exceeded the maximum of %s "
-                            "nested zip files" % MAX_NESTED
+                            "nested archive files" % MAX_NESTED
                         )
 
                     f.children = plugin.unpack(depth, password, duplicates)
