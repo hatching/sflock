@@ -228,12 +228,8 @@ matches = [
     (False, True, ['RIFF'], "msvideo", "avi", "Audio Video Interleave File",
      (WINDOWS,)),
     (False, True, ['Macromedia', 'Flash', 'Video'], "x-flv", "flv",
-     "Flash Video File", (WINDOWS,)),  
-       (False, False, ['3GPP', 'MPEG', 'v4'], "octet-stream", "3gp",
-     "3GPP Multimedia File", (WINDOWS,)), 
-    (False, False, ['RPM'], "rpm", "rpm", "Red Hat Package Manager File",
      (LINUX,)),
-    (False, False, ['ISO'], "quicktime", "qt", "QuickTime file", (MACOS,)),
+    (False, False, ['ISO'], "quicktime", "qt", "QuickTime file", (MACOS,)), # todo, make magic more specific
     (False, False, ['MPEG', 'sequence'], "", "mpeg",
      "Compression for video and audio",
      (WINDOWS,)),
@@ -247,7 +243,13 @@ matches = [
     (False, True, ['contains:MPEG'], "mpeg", "mp3", "MP3 Audio File",
      (WINDOWS,)),  
 
+    
 
+     "Flash Video File", (WINDOWS,)),  
+       (False, False, ['3GPP', 'MPEG', 'v4'], "octet-stream", "3gp",
+     "3GPP Multimedia File", (WINDOWS,)), 
+    
+    (False, False, ['RPM'], "rpm", "rpm", "Red Hat Package Manager File",
     (False, False, ['Debian', 'binary', 'package'],
      "vnd.debian.binary-package", "deb", "Debian Software Package", (LINUX,)),
     (False, False, ['RealMedia', 'file'], "vnd.rn-realmedia", "rm",
@@ -321,9 +323,9 @@ matches = [
     (False, False, ['FLC'], "x-flc", "flc", "Animation file", (MACOS,)),
     (False, False, ['TrueType', 'Font'], "font-sfnt", "ttf", "TrueType Font",
      (WINDOWS)),
-    (False, False, ['capture'], "tcpdump.pcap", "cap", "Network traffic data",
+    (False, False, ['capture'], "tcpdump.pcap", "pcap", "Network traffic data",
      (WINDOWS,)),
-    (False, False, ['capture'], "octet-stream", "cap", "Network traffic data",
+    (False, False, ['capture'], "octet-stream", "pcap", "Network traffic data",
      (WINDOWS,)),
     (
     False, False, ['Netscape', 'cookie'], "plain", "iecookie", "Cookie for ie",
