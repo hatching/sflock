@@ -116,7 +116,7 @@ string_matches = [
     (True, ['Composite', 'Document', 'File', 'V2', 'Document'],
      "ms-powerpoint", "ppt", "PowerPoint Presentation", (WINDOWS,)),
     (True, ['Composite', 'Document', 'File', 'V2'], "msword", "doc",
-     "Microsoft Word Document", (WINDOWS,)),  # todo
+     "Microsoft Word Document", (WINDOWS,)),  
     (True, ['Microsoft', 'Excel'],
      "openxmlformats-officedocument.spreadsheetml.sheet", "xlsx",
      "Microsoft Excel Open XML Spreadsheet", (WINDOWS,)),
@@ -139,26 +139,24 @@ string_matches = [
     (True, ['CDFV2', 'Microsoft', 'Excel'], "ms-excel", "xlsx",
      "Excel Spreadsheet", (WINDOWS,)),
     (True, ['Composite', 'Document', 'File', 'V2', 'Document'],
-     "ms-office", "cdf", "CDF file", (WINDOWS,)),
+     "ms-office", "cdf", "CDF file", (WINDOWS,)), # TODO, look at these cdf files and the right extension
     (False, ['CDFV2', 'Encrypted'], 'encrypted', "cdf", "CDF file",
-     (WINDOWS,)),
+     (WINDOWS,)), # TODO, look at these cdf files and the right extension
     (False, ['CDFV2', 'Microsoft', 'Outlook'],
-     'ms-outlook', "cdf", "CDF file", (WINDOWS,)),
+     'ms-outlook', "cdf", "CDF file", (WINDOWS,)),  # TODO, look at these cdf files and the right extension
     (True, ['Microsoft'], "octet", "doc", "Microsoft Document", 
     (WINDOWS,)),
 
     #
     # Archive/compression related
     #
-    (False, ['Dzip'], "octet-stream", "dzip", "Witcher 2 game file",
-     (WINDOWS,)),
     (False, ['7-zip'], "x-7z-compressed", "7zip", "Compressed archive",
      (WINDOWS,)),
     (False, ['bzip2'], "x-bzip2", "bzip", "Compressed file", (LINUX,)),
     (False, ['gzip'], "gzip", "gz", "Compression file", (WINDOWS,)),
     (True, ['ACE', 'archive'], "octet-stream", "ace", "ACE archive",
      (WINDOWS,)),
-    (False, ['MS', 'Compress'], "octet-stream", "mscompress",
+    (False, ['MS', 'Compress'], "octet-stream", "zip",
      "Microsoft (de)compressor", (WINDOWS,)),
     (False, ['Microsoft', 'Cabinet', 'archive', 'data'], "vnd.ms-cab",
      "cab", "Windows Cabinet File", (WINDOWS,)),
@@ -182,19 +180,19 @@ string_matches = [
     (False, ['Apple', 'HFS'], "octet-stream", "ico", "Icon File",
      (MACOS,)),
     (False, ['zlib'], "zlib", "dmg", "Apple Disk Image", (MACOS,)),
-    (False, ['AppleSingle'], "octet-stream", "applesingle",
+    (False, ['AppleSingle'], "octet-stream", "as",
      "Mac File format", (MACOS,)),
-    (False, ['AppleDouble'], "octet-stream", "appledouble",
+    (False, ['AppleDouble'], "octet-stream", "adf",
      "iOS application archive file", (MACOS,)),
     (False, ['Apple', 'binary', 'property'], "octet-stream",
-     "appleplist", "Apple binary", (MACOS,)),
+     "plist", "Apple binary", (MACOS,)),
     (False, ['iOS', 'App'], "x-ios-app", "ipa",
      "iOS application archive file", (IOS,)),
-    (False, ['Macintosh', 'HFS'], "octet-stream", "machfs",
+    (False, ['Macintosh', 'HFS'], "octet-stream", "hfs",
      "Macintosh HFS", (MACOS,)),
-    (False, ['Symbian'], "x-sisx-app", "sis",
+    (False, ['Symbian'], "x-sisx-app", "sisx",
      "Software Installation Script", (MACOS,)),
-    (False, ['Mach-O'], "x-mach-binary", "mac", "Bitmap graphic",
+    (False, ['Mach-O'], "x-mach-binary", "o", "Bitmap graphic",
      (MACOS,)),
 
     #
@@ -245,7 +243,7 @@ string_matches = [
     (False, ['3GPP', 'MPEG', 'v4'], "octet-stream", "3gp",
      "3GPP Multimedia File", (WINDOWS,)), 
     (False, ['FLAC'], "x-flac", "flac", "Free lossless audio codec",
-     (WINDOWS)),
+     (WINDOWS)),    
     (False, ['FLC'], "x-flc", "flc", "Animation file", (MACOS,)),
     (False, ['RealMedia', 'file'], "vnd.rn-realmedia", "rm", "RealMedia file", (WINDOWS,)), 
     
@@ -283,8 +281,9 @@ string_matches = [
      (WINDOWS,)), 
     (True, ['Composite', 'Document', 'File', 'V2', 'Document'], "msi",
      "msi", "Windows Installer Package", (WINDOWS,)),
-    
-    
+
+    (False, ['Dzip'], "octet-stream", "dzip", "Witcher 2 game file",
+     (WINDOWS,)),
     (False, ['RPM'], "rpm", "rpm", "Red Hat Package Manager File", (LINUX,)),   
     (True, ['PDF'], "pdf", "pdf", "Portable Document Format File",
      (WINDOWS,)),  
