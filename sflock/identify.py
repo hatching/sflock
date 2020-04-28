@@ -46,6 +46,8 @@ def Text(f):
         return "IQY file", "iqy", (WINDOWS,)
     if f.contents.startswith(b"ID;"):
         return "SYLK file", "slk", (WINDOWS,)
+    if "ruby" in f.magic:
+        return "Ruby file", "rb", (WINDOWS,)
     return "Text", "txt", ANY
 
 def ZIP(f):
@@ -261,8 +263,6 @@ string_matches = [
     (False, ['Bourne-Again', 'shell'], "x-shellscript", "sh",
      "Shell script", (LINUX,)),
     (False, ['Ruby', 'script'], "x-ruby", "ruby",
-     "Ruby interpreted file", (WINDOWS,)),
-    (False, ['/opt/vagrant/embedded/bin/ruby'], "plain", "ruby",
      "Ruby interpreted file", (WINDOWS,)),
 
     #
