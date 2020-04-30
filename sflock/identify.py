@@ -1,5 +1,5 @@
 import re
-from sflock.ident import javascript, powershell, wsf, visualbasic, java
+from sflock.ident import javascript, powershell, wsf, visualbasic, java, ruby
 
 ttf_hdr = (
     b'\x00\x01\x00\x00\x00\xff\xff\xff\xff\x01\x00\x00\x00\x00\x00\x00'
@@ -42,12 +42,13 @@ def Text(f):
         return "Windows script file", "wsf", (WINDOWS,)
     if visualbasic(f):
         return "Visual basic file", "vb", (WINDOWS,)
+    if ruby(f):
+        return "Ruby file", "rb", (WINDOWS,)
     if f.contents.startswith(b"WEB"):
         return "IQY file", "iqy", (WINDOWS,)
     if f.contents.startswith(b"ID;"):
         return "SYLK file", "slk", (WINDOWS,)
-    if "ruby" in f.magic:
-        return "Ruby file", "rb", (WINDOWS,)
+   
     return "Text", "txt", ANY
 
 def ZIP(f):
@@ -262,7 +263,7 @@ string_matches = [
      (WINDOWS, LINUX)),
     (False, ['Bourne-Again', 'shell'], "x-shellscript", "sh",
      "Shell script", (LINUX,)),
-    (False, ['Ruby', 'script'], "x-ruby", "ruby",
+    (False, ['Ruby', 'script'], "x-ruby", "rb",
      "Ruby interpreted file", (WINDOWS,)),
 
     #

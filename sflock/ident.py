@@ -102,6 +102,20 @@ def powershell(f):
     if found > 1:
         return "ps1"
 
+def ruby(f):
+    RB_STRS = [
+        b"puts", b"END", b"START", b"require", b"ruby",
+        b"end", b"load"
+    ]
+
+    found = 0
+    for s in RB_STRS:
+        if s in f.contents:
+            found += 1
+
+    if found > 3:
+        return "rb"
+
 def javascript(f):
     JS_STRS = [
         b"var ", b"function ", b"eval", b" true",
