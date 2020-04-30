@@ -10,9 +10,11 @@ import shutil
 import six
 import tarfile
 import tempfile
+import subprocess
 
 from sflock.abstracts import Unpacker, File
 from sflock.config import MAX_TOTAL_SIZE
+
 
 class TarFile(Unpacker):
     name = "tarfile"
@@ -55,6 +57,7 @@ class TarFile(Unpacker):
 
         return self.process(entries, duplicates)
 
+
 class TargzFile(TarFile, Unpacker):
     name = "targzfile"
     mode = "r:gz"
@@ -67,12 +70,38 @@ class TargzFile(TarFile, Unpacker):
         if not self.f.filesize:
             return False
 
-        try:
-            f = File(contents=gzip.GzipFile(fileobj=self.f.stream).read())
-        except IOError:
-            return False
+        return True
 
-        return self.magic in f.magic
+    def unpack(self, password=None, duplicates=None):
+        dirpath = tempfile.mkdtemp()
+
+        if not self.f.filepath:
+            filepath = self.f.temp_path(".gz")
+            temporary = True
+        else:
+            filepath = self.f.filepath
+            temporary = False
+
+        outfile = open(os.path.join(dirpath, "output"), 'wb')
+        try:
+            with gzip.open(filepath) as infile:
+                try:
+                    while True:
+                        chunk = infile.read(0x10000)
+                        if not chunk:
+                            break
+                        outfile.write(chunk)
+                except gzip.zlib.error:
+                    pass
+        except Exception as e:
+            print(e)
+
+        outfile.close()
+
+        if temporary:
+            os.unlink(filepath)
+        return self.process_directory(dirpath, duplicates)
+
 
 class Tarbz2File(TarFile, Unpacker):
     name = "tarbz2file"
@@ -137,3 +166,4 @@ class Tarbz2File(TarFile, Unpacker):
             return []
 
         return self.process_directory(dirpath, duplicates)
+
