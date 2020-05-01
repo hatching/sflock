@@ -13,11 +13,11 @@ import shutil
 import subprocess
 import tempfile
 
+from sflock.identify import identify
 from sflock.compat import magic
 from sflock.config import iter_passwords
 from sflock.exception import UnpackException, MaxNestedError
 from sflock.misc import data_file, make_list
-from sflock.pick import package, platform
 
 MAX_NESTED = 10
 
@@ -92,9 +92,6 @@ class Unpacker(object):
 
     def handles(self):
         if self.f.filename and self.f.filename.lower().endswith(self.exts):
-            return True
-
-        if self.f.package and self.f.package in make_list(self.package or []):
             return True
 
         for magic in make_list(self.magic or []):
@@ -225,7 +222,7 @@ class File(object):
 
     def __init__(self, filepath=None, contents=None, relapath=None,
                  filename=None, mode=None, password=None, description=None,
-                 selected=None, stream=None, platform=None):
+                 selected=None, stream=None, platforms=None):
 
         self.filepath = filepath
         self.relapath = relapath
@@ -236,7 +233,6 @@ class File(object):
         self.children = []
         self.human_type = None
         self.extension = None
-        self.ident_platform = None
         self.duplicate = False
         self.unpacker = None
         self.parent = None
@@ -247,9 +243,10 @@ class File(object):
             filename or self.relapath or self.filepath or ""
         ).rstrip("\x00") or None
         self._contents = contents
-        self._package = None
-        self._platform = platform
+        self._platforms = platforms
         self._selected = selected
+        self._human_type = None
+        self._extension = None
         self._md5 = None
         self._sha1 = None
         self._sha256 = None
@@ -376,30 +373,49 @@ class File(object):
         s.seek(0, os.SEEK_END)
         return s.tell()
 
+    def __identify(self):
+        # @TODO will be called multiple times if data is null
+         data = identify(self)
+         if data:
+            self.selected = data[0]
+            self.human_type = data[1]
+            self.extension = data[2]
+            self.platforms = data[3]
+    
     @property
-    def package(self):
-        if self._package is None:
-            self._package = package(self)
-        return self._package
+    def extension(self):
+        if self._extension is None:
+            self.__identify()
+        return self._extension
 
-    @package.setter
-    def package(self, value):
-        self._package = value
+    @extension.setter
+    def extension(self, value):
+        self._extension = value
 
     @property
-    def platform(self):
-        if self._platform is None:
-            self._platform = platform(self)
-        return self._platform
+    def human_type(self):
+        if self._human_type is None:
+            self.__identify()
+        return self._human_type
 
-    @platform.setter
-    def platform(self, value):
-        self._platform = value
+    @human_type.setter
+    def human_type(self, value):
+        self._human_type = value
+
+    @property
+    def platforms(self):
+        if self._platforms is None:
+            self.__identify()
+        return self._platforms
+
+    @platforms.setter
+    def platforms(self, value):
+        self._platforms = value
 
     @property
     def selected(self):
         if self._selected is None:
-            self._selected = bool(self.package)
+            self.__identify()
         return self._selected
 
     @selected.setter
@@ -462,13 +478,11 @@ class File(object):
             },
             "password": self.password,
             "human_type": self.human_type,
-            "ident_platform": self.ident_platform,
             "extension": self.extension,
             "sha256": self.sha256,
             "md5": self.md5,
             "sha1": self.sha1,
-            "platform": self.platform,
-            "package": self.package,
+            "platforms": self.platforms,
             "selected": self.selected,
             "preview": self.preview,
             "error": self.error,
@@ -479,15 +493,13 @@ class File(object):
             "duplicate": self.duplicate,
             "password": self.password,
             "human_type": self.human_type,
-            "ident_platform": self.ident_platform,
             "extension": self.extension,
             "filename": self.filename,
             "relapath": self.relapath,
             "relaname": self.relaname,
             "extrpath": self.extrpath,
             "size": self.filesize,
-            "platform": self.platform,
-            "package": self.package,
+            "platforms": self.platforms,
             "selected": self.selected,
             "type": "container" if self.children else "file",
             "children": [],

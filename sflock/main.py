@@ -32,13 +32,6 @@ def supported():
 
 def ident(f):
     """Identifies a file based on its contents."""
-    data = identify(f)
-    if data:
-        f.selected = data[0]
-        f.human_type = data[1]
-        f.extension = data[2]
-        f.ident_platform = data[3]
-
     # I think this is for handling archives
     #package = identify(f)
     #if package:
