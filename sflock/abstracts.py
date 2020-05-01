@@ -68,7 +68,7 @@ class Unpacker(object):
         zipjail = data_file("zipjail.elf")
 
         p = subprocess.Popen(
-            (zipjail, filepath, dirpath, "--", self.exe) + args,
+            (zipjail, filepath, dirpath, "--clone=1", "--", self.exe) + args,
             stdin=subprocess.PIPE, stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
         )
@@ -86,6 +86,10 @@ class Unpacker(object):
 
         if b"Blocked system call" in err and b"syscall=symlink" in err:
             self.f.error = "malicious_symlink"
+            return False
+
+        if b"Wrong password" in err:
+            self.f.error = "Bad password"
             return False
 
         return not return_code

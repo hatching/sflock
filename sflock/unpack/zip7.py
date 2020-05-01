@@ -25,16 +25,18 @@ class Zip7File(Unpacker):
             return True
         return False
 
+    def decrypt(self, password, archive, entry):
+        args = [""]
+        if password:
+            args = ["-p%s" % password]
+
+        return self.zipjail(
+            archive, entry, "x", "-mmt=off", "-o%s" % entry, archive, *args
+        )
+
     def unpack(self, depth=0, password=None, duplicates=None):
         self.f.archive = True
         dirpath = tempfile.mkdtemp()
-
-        if password:
-            raise UnpackException(
-                "Currently password-protected .7z files are not supported "
-                "due to a ZipJail-related monitoring issue (namely, due to "
-                "7z calling clone(2) when a password has been provided)."
-            )
 
         if self.f.filepath:
             filepath = self.f.filepath
@@ -43,9 +45,7 @@ class Zip7File(Unpacker):
             filepath = self.f.temp_path(b".7z")
             temporary = True
 
-        ret = self.zipjail(
-            filepath, dirpath, "x", "-mmt=off", "-o%s" % dirpath, filepath
-        )
+        ret = self.bruteforce(password, filepath, dirpath)
         if not ret:
             return []
 
