@@ -10,7 +10,6 @@ import shutil
 import six
 import tarfile
 import tempfile
-import subprocess
 
 from sflock.abstracts import Unpacker, File
 from sflock.config import MAX_TOTAL_SIZE
