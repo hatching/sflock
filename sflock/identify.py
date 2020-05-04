@@ -21,8 +21,11 @@ def HTML(f):
 def XML(f):
     if b"application/vnd.openxmlformats-officedocument.presentationml" in f.contents:
         return "Office file", "xml", (WINDOWS,)
+    if b"application/vnd.openxmlformats-officedocument.wordprocessingml" in f.contents:
+        return "Office file", "xml", (WINDOWS,)
     if b"application/vnd.openxmlformats-officedocument" in f.contents:
         return "Office file", "doc", (WINDOWS,)
+
     if wsf(f):
         return "Windows script file", "wsf", (WINDOWS,)
     return "XML file", "xml", ANY
@@ -108,6 +111,16 @@ def POWERPOINT(f):
         return "PowerPoint Open XML Presentation", "pptm", (WINDOWS,) 
     return "PowerPoint Open XML Presentation", "pptx", (WINDOWS,)
 
+def WORD(f):
+    content = f.get_child("[Content_Types].xml")
+    if b"ContentType=\"application/vnd.ms-word.document.macroEnabled" in content.contents:
+        return "Microsoft Open XML Presentation", "docm", (WINDOWS,)
+    if b"ContentType=\"application/vnd.ms-word.template.macroEnabledTemplate" in content.contents:
+        return "Microsoft Open XML Presentation", "dotm", (WINDOWS,)
+    if b"ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.template" in content.contents:
+        return "Microsoft Open XML Presentation", "dotx", (WINDOWS,)
+    return "Microsoft Word Open XML Document", "docx", (WINDOWS,)
+
 def MICROSOFT(f):
     if f.get_child("[Content_Types].xml"):
         return "Excel theme", "thmx", (WINDOWS,)
@@ -152,9 +165,6 @@ string_matches = [
      "OpenDocument Text Document", (WINDOWS,)),
     (True, ['Hangul', '(Korean)', 'Word', 'Processor'], "hwp", "hwp",
      "Hangul (Korean) Word Processor", (WINDOWS,)),
-    (True, ['Microsoft', 'Word'],
-     "openxmlformats-officedocument.wordprocessingml.document", "docx",
-     "Microsoft Word Open XML Document", (WINDOWS,)),
     (True, ['OpenDocument', 'Spreadsheet'], "opendocument.spreadsheet",
      "ods", "OpenDocument Spreadsheet", (WINDOWS,)),
     (True, ['OpenDocument'], "opendocument.presentation", "odp",
@@ -373,8 +383,10 @@ func_matches = [
     (False, ['Macromedia', 'Flash', 'data'], "x-shockwave-flash", FLASH),
     (True, ['Microsoft', 'Excel'],
      "openxmlformats-officedocument.spreadsheetml.sheet", EXCEL),
-    (True, ['Microsoft', 'PowerPoint'],
+    (True, ['Microsoft', 'PowerPoint'], 
      "openxmlformats-officedocument.presentationml.presentation", POWERPOINT),
+    (True, ['Microsoft', 'Word'],
+     "openxmlformats-officedocument.wordprocessingml.document", WORD),
     (True, ['Microsoft'], "octet", MICROSOFT)
 ]
 
