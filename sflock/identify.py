@@ -19,6 +19,8 @@ def HTML(f):
     return "Hypertext Markup Language File", "html", ANY
 
 def XML(f):
+    if b"application/vnd.openxmlformats-officedocument.presentationml" in f.contents:
+        return "Office file", "xml", (WINDOWS,)
     if b"application/vnd.openxmlformats-officedocument" in f.contents:
         return "Office file", "doc", (WINDOWS,)
     if wsf(f):
@@ -48,7 +50,7 @@ def Text(f):
         return "IQY file", "iqy", (WINDOWS,)
     if f.contents.startswith(b"ID;"):
         return "SYLK file", "slk", (WINDOWS,)
-    if b"X-Document-Type: Workbook" in f.contents:
+    if b"Content-Type: text/html;" in f.contents:
         return "Mht file", "mht", (WINDOWS,)
    
     return "Text", "txt", ANY
@@ -96,6 +98,21 @@ def EXCEL(f):
         return "Microsoft Excel Open XML Spreadsheet", "xlsb", (WINDOWS,)
     return "Microsoft Excel Open XML Spreadsheet", "xlsx", (WINDOWS,)
 
+def POWERPOINT(f):
+    content = f.get_child("[Content_Types].xml")
+    if b"ContentType=\"application/vnd.ms-powerpoint.slideshow.macroEnabled" in content.contents:
+        return "PowerPoint Open XML Presentation", "ppsm", (WINDOWS,)
+    if b"ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.slideshow" in content.contents:
+        return "PowerPoint Open XML Presentation", "ppsx", (WINDOWS,)
+    if b"ContentType=\"application/vnd.ms-powerpoint.presentation.macroEnabled" in content.contents:
+        return "PowerPoint Open XML Presentation", "pptm", (WINDOWS,) 
+    return "PowerPoint Open XML Presentation", "pptx", (WINDOWS,)
+
+def MICROSOFT(f):
+    if f.get_child("[Content_Types].xml"):
+        return "Excel theme", "thmx", (WINDOWS,)
+    return "Microsoft Document", "doc", (WINDOWS,)
+
 # The magic and mime of a file will be used to match it to an extension or
 # a function.
 #   An extension will be used if the magic and mime are enough to distinct
@@ -129,9 +146,6 @@ string_matches = [
      "ms-powerpoint", "ppt", "PowerPoint Presentation", (WINDOWS,)),
     (True, ['Composite', 'Document', 'File', 'V2'], "msword", "doc",
      "Microsoft Word Document", (WINDOWS,)),  
-    (True, ['Microsoft', 'PowerPoint'],
-     "openxmlformats-officedocument.presentationml.presentation", "pptx",
-     "PowerPoint Open XML Presentation", (WINDOWS,)),
     (True, ['OpenDocument', 'Text'], "oasis.opendocument.text", "odt",
      "OpenDocument Text Document", ANY),
     (True, ['OpenOffice'], "octet-stream", "odt",
@@ -153,8 +167,6 @@ string_matches = [
      (WINDOWS,)), # TODO, look at these cdf files and the right extension
     (False, ['CDFV2', 'Microsoft', 'Outlook'],
      'ms-outlook', "cdf", "CDF file", (WINDOWS,)),  # TODO, look at these cdf files and the right extension
-    (True, ['Microsoft'], "octet", "doc", "Microsoft Document", 
-    (WINDOWS,)),
 
     #
     # Archive/compression related
@@ -361,6 +373,9 @@ func_matches = [
     (False, ['Macromedia', 'Flash', 'data'], "x-shockwave-flash", FLASH),
     (True, ['Microsoft', 'Excel'],
      "openxmlformats-officedocument.spreadsheetml.sheet", EXCEL),
+    (True, ['Microsoft', 'PowerPoint'],
+     "openxmlformats-officedocument.presentationml.presentation", POWERPOINT),
+    (True, ['Microsoft'], "octet", MICROSOFT)
 ]
 
 def identify(f):
