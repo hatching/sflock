@@ -12,6 +12,7 @@ class PdfFile(Unpacker):
     name = "pdffile"
     exts = ".pdf"
     package = "pdf"
+    magic = "PDF document"
 
     def supported(self):
         return True
