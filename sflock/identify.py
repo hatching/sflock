@@ -48,6 +48,8 @@ def Text(f):
         return "IQY file", "iqy", (WINDOWS,)
     if f.contents.startswith(b"ID;"):
         return "SYLK file", "slk", (WINDOWS,)
+    if b"X-Document-Type: Workbook" in f.contents:
+        return "Mht file", "mht", (WINDOWS,)
    
     return "Text", "txt", ANY
 
@@ -86,6 +88,13 @@ def FLASH(f):
         return "SWF file", "swf", (WINDOWS,)
     return "FLV file", "flv", (WINDOWS,)
 
+def EXCEL(f):
+    content = f.get_child("[Content_Types].xml")
+    if b"ContentType=\"application/vnd.ms-excel.sheet.macroEnabled" in content.contents:
+        return "Microsoft Excel Open XML Spreadsheet", "xlsm", (WINDOWS,)
+    if b"ContentType=\"application/vnd.ms-excel.sheet.binary.macroEnabled.main" in content.contents:
+        return "Microsoft Excel Open XML Spreadsheet", "xlsb", (WINDOWS,)
+    return "Microsoft Excel Open XML Spreadsheet", "xlsx", (WINDOWS,)
 
 # The magic and mime of a file will be used to match it to an extension or
 # a function.
@@ -120,9 +129,6 @@ string_matches = [
      "ms-powerpoint", "ppt", "PowerPoint Presentation", (WINDOWS,)),
     (True, ['Composite', 'Document', 'File', 'V2'], "msword", "doc",
      "Microsoft Word Document", (WINDOWS,)),  
-    (True, ['Microsoft', 'Excel'],
-     "openxmlformats-officedocument.spreadsheetml.sheet", "xlsx",
-     "Microsoft Excel Open XML Spreadsheet", (WINDOWS,)),
     (True, ['Microsoft', 'PowerPoint'],
      "openxmlformats-officedocument.presentationml.presentation", "pptx",
      "PowerPoint Open XML Presentation", (WINDOWS,)),
@@ -352,7 +358,9 @@ func_matches = [
     (False, ['text'], "text", Text),
     (False, ['text'], "plain", Text),
     (True, ['PE32'], "x-dosexec", PE32),
-    (False, ['Macromedia', 'Flash', 'data'], "x-shockwave-flash", FLASH)
+    (False, ['Macromedia', 'Flash', 'data'], "x-shockwave-flash", FLASH),
+    (True, ['Microsoft', 'Excel'],
+     "openxmlformats-officedocument.spreadsheetml.sheet", EXCEL),
 ]
 
 def identify(f):
