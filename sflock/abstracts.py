@@ -289,6 +289,14 @@ class File(object):
         self._stream.seek(0)
         return self._stream
 
+    def __identify(self):
+        data = identify(self)
+        if data:
+            self._selected = data[0]
+            self._human_type = data[1]
+            self._extension = data[2]
+            self._platforms = data[3]
+
     def __hashes(self):
         sha256, s, buf = hashlib.sha256(), self.stream, True
         sha1 = hashlib.sha1()
@@ -374,15 +382,6 @@ class File(object):
         s = self.stream
         s.seek(0, os.SEEK_END)
         return s.tell()
-
-    def __identify(self):
-        # @TODO will be called multiple times if data is null
-         data = identify(self)
-         if data:
-            self._selected = data[0]
-            self._human_type = data[1]
-            self._extension = data[2]
-            self._platforms = data[3]
     
     @property
     def extension(self):
