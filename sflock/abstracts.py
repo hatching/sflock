@@ -66,9 +66,10 @@ class Unpacker(object):
 
     def zipjail(self, filepath, dirpath, *args):
         zipjail = data_file("zipjail.elf")
+        arg = "--clone=1" if self.name == "7zfile" else "--clone=0"
 
         p = subprocess.Popen(
-            (zipjail, filepath, dirpath, "--clone=1", "--", self.exe) + args,
+            (zipjail, filepath, dirpath, arg, "--", self.exe) + args,
             stdin=subprocess.PIPE, stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
         )
