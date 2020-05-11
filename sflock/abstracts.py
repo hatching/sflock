@@ -235,8 +235,6 @@ class File(object):
         self.description = description
         self.password = password
         self.children = []
-        self.human_type = None
-        self.extension = None
         self.duplicate = False
         self.unpacker = None
         self.parent = None
@@ -381,10 +379,10 @@ class File(object):
         # @TODO will be called multiple times if data is null
          data = identify(self)
          if data:
-            self.selected = data[0]
-            self.human_type = data[1]
-            self.extension = data[2]
-            self.platforms = data[3]
+            self._selected = data[0]
+            self._human_type = data[1]
+            self._extension = data[2]
+            self._platforms = data[3]
     
     @property
     def extension(self):
@@ -392,19 +390,11 @@ class File(object):
             self.__identify()
         return self._extension
 
-    @extension.setter
-    def extension(self, value):
-        self._extension = value
-
     @property
     def human_type(self):
         if self._human_type is None:
             self.__identify()
         return self._human_type
-
-    @human_type.setter
-    def human_type(self, value):
-        self._human_type = value
 
     @property
     def platforms(self):
@@ -412,19 +402,11 @@ class File(object):
             self.__identify()
         return self._platforms
 
-    @platforms.setter
-    def platforms(self, value):
-        self._platforms = value
-
     @property
     def selected(self):
         if self._selected is None:
             self.__identify()
         return self._selected
-
-    @selected.setter
-    def selected(self, value):
-        self._selected = value
 
     @property
     def extrpath(self):
