@@ -56,20 +56,39 @@ class TarFile(Unpacker):
 
         return self.process(entries, duplicates)
 
-
 class TargzFile(TarFile, Unpacker):
     name = "targzfile"
     mode = "r:gz"
     exts = b".tar.gz"
 
+    def supported(self):
+        return True
+
     def handles(self):
-        if self.f.filename and self.f.filename.lower().endswith(self.exts):
+        ret = False
+        if self.f.filename and self.f.filename.lower().endswith(b".tar.gz"):
             return True
 
         if not self.f.filesize:
-            return False
+            return ret
 
-        return True
+        fd, filepath = tempfile.mkstemp()
+        os.write(fd, self.f.stream.read(0x1000))
+        os.close(fd)
+
+        d = gzip.open(filepath)
+
+        try:
+            ret = False
+            if d.read(0x1000):
+                ret = True
+        except IOError:
+            pass
+
+        d.close()
+        os.unlink(filepath)
+        return ret
+
 
     def unpack(self, password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()
