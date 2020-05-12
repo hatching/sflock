@@ -101,18 +101,15 @@ class TargzFile(TarFile, Unpacker):
             temporary = False
 
         outfile = open(os.path.join(dirpath, "output"), 'wb')
-        try:
-            with gzip.open(filepath) as infile:
-                try:
-                    while True:
-                        chunk = infile.read(0x10000)
-                        if not chunk:
-                            break
-                        outfile.write(chunk)
-                except gzip.zlib.error:
-                    pass
-        except Exception as e:
-            print(e)
+        with gzip.open(filepath) as infile:
+            try:
+                while True:
+                    chunk = infile.read(0x10000)
+                    if not chunk:
+                        break
+                    outfile.write(chunk)
+            except gzip.zlib.error:
+                pass
 
         outfile.close()
 
