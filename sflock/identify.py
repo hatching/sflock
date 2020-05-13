@@ -5,126 +5,137 @@ ttf_hdr = (
     b'\x00\x01\x00\x00\x00\xff\xff\xff\xff\x01\x00\x00\x00\x00\x00\x00'
 )
 
-WINDOWS = "windows"
-MACOS = "darwin"
-LINUX = "linux"
-ANDROID = "android"
-IOS = "ios"
-ANY_DESKTOP = (WINDOWS, MACOS, LINUX)
-ANY = (WINDOWS, MACOS, LINUX, ANDROID, IOS)
+class Deps:
+    PYTHON = "python", ""
+    WORD = "word", ""
+    POWERPOINT = "powerpoint", ""
+    RUBY = "ruby", ""
+    EXCEL = "excel", ""
+    JAVA = "java", ""
+    ADOBE = "adobe", ""
+    PERL = "perl", ""
+
+class Platform:
+    WINDOWS = "windows"
+    MACOS = "darwin"
+    LINUX = "linux"
+    ANDROID = "android"
+    IOS = "ios"
+    ANY_DESKTOP = (WINDOWS, MACOS, LINUX)
+    ANY = (WINDOWS, MACOS, LINUX, ANDROID, IOS)
 
 def HTML(f):
     if wsf(f):
-        return "Windows script file", "wsf", (WINDOWS,)
-    return "Hypertext Markup Language File", "html", ANY
+        return "Windows script file", "wsf", (Platform.WINDOWS,)
+    return "Hypertext Markup Language File", "html", Platform.ANY
 
 def XML(f):
     if b"application/vnd.openxmlformats-officedocument.presentationml" in f.contents:
-        return "Office file", "xml", (WINDOWS,)
+        return "Office file", "xml", (Platform.WINDOWS,), Deps.WORD
     if b"application/vnd.openxmlformats-officedocument.wordprocessingml" in f.contents:
-        return "Office file", "xml", (WINDOWS,)
+        return "Office file", "xml", (Platform.WINDOWS,), Deps.WORD
     if b"application/vnd.openxmlformats-officedocument" in f.contents:
-        return "Office file", "doc", (WINDOWS,)
+        return "Office file", "doc", (Platform.WINDOWS,), Deps.WORD
 
     if wsf(f):
-        return "Windows script file", "wsf", (WINDOWS,)
-    return "XML file", "xml", ANY
+        return "Windows script file", "wsf", (Platform.WINDOWS,)
+    return "XML file", "xml", Platform.ANY
 
 def SAT(f):
     if f.get_child("ppt/presentation.xml"):
-        return "Powerpoint", "ppt", (WINDOWS,)
+        return "Powerpoint", "ppt", (Platform.WINDOWS,), Deps.POWERPOINT
     return None, None, None
 
 def SECTION(f):
-    return 'CDF file', 'cdf', (WINDOWS,)
+    return 'CDF file', 'cdf', (Platform.WINDOWS,)
 
 def Text(f):
     if javascript(f):
-        return "Javascript file", "js", (WINDOWS,)
+        return "Javascript file", "js", (Platform.WINDOWS,)
     if powershell(f):
-        return "Powershell script", "ps1", (WINDOWS,)
+        return "Powershell script", "ps1", (Platform.WINDOWS,)
     if wsf(f):
-        return "Windows script file", "wsf", (WINDOWS,)
+        return "Windows script file", "wsf", (Platform.WINDOWS,)
     if visualbasic(f):
-        return "Visual basic file", "vb", (WINDOWS,)
+        return "Visual basic file", "vb", (Platform.WINDOWS,)
     if ruby(f):
-        return "Ruby file", "rb", (WINDOWS,)
+        return "Ruby file", "rb", (Platform.WINDOWS,), Deps.RUBY
     if f.contents.startswith(b"WEB"):
-        return "IQY file", "iqy", (WINDOWS,)
+        return "IQY file", "iqy", (Platform.WINDOWS,)
     if f.contents.startswith(b"ID;"):
-        return "SYLK file", "slk", (WINDOWS,)
+        return "SYLK file", "slk", (Platform.WINDOWS,), Deps.EXCEL
     if b"Content-Type: text/html;" in f.contents:
-        return "Mht file", "mht", (WINDOWS,)
+        return "Mht file", "mht", (Platform.WINDOWS,)
    
-    return "Text", "txt", ANY
+    return "Text", "txt", Platform.ANY
 
 def ZIP(f):
     for i in f.children:
         if i.filename.lower() == "workbook.xml":
-            return "Excel document", "xlsx", (WINDOWS,)
+            return "Excel document", "xlsx", (Platform.WINDOWS,), Deps.EXCEL
         if i.filename.lower() == "worddocument.xml":
-            return "Word document", "docx", (WINDOWS,)
+            return "Word document", "docx", (Platform.WINDOWS,), Deps.WORD
     if java(f):
-        return "JAR file", "jar", (WINDOWS,)
-    return "ZIP file", "zip", (WINDOWS,)
+        return "JAR file", "jar", (Platform.WINDOWS,), Deps.JAVA
+    return "ZIP file", "zip", (Platform.WINDOWS,)
 
 def JAR(f):
     if f.get_child("AndroidManifest.xml"):
-        return "Android Package File", "apk", (ANDROID,)
+        return "Android Package File", "apk", (Platform.ANDROID,)
 
-    return "Java Archive File", "jar", (WINDOWS,)
+    return "Java Archive File", "jar", (Platform.WINDOWS,), Deps.JAVA
 
 def OCTET(f):
     if wsf(f):
-        return "Windows script file", "wsf", (WINDOWS,)
+        return "Windows script file", "wsf", (Platform.WINDOWS,)
     if f.contents.startswith(ttf_hdr):
-        return "TrueType Font", "ttf", (WINDOWS,)
-    return "octet", "", (WINDOWS,)
+        return "TrueType Font", "ttf", (Platform.WINDOWS,)
+    return "octet", "", (Platform.WINDOWS,)
 
 # This function is used to distinct DLL and EXE. This was unable to work on
 # magic and mime. Because DLL files are matching positive on EXE mime/magic
 def PE32(f):
     if "DLL" in f.magic:
-        return "DLL file", "dll", (WINDOWS,)
-    return "Exe file", "exe", (WINDOWS,)
+        return "DLL file", "dll", (Platform.WINDOWS,)
+    return "Exe file", "exe", (Platform.WINDOWS,)
 
 def FLASH(f):
     if "(compressed)" in f.magic:
-        return "SWF file", "swf", (WINDOWS,)
-    return "FLV file", "flv", (WINDOWS,)
+        return "SWF file", "swf", (Platform.WINDOWS,)
+    return "FLV file", "flv", (Platform.WINDOWS,)
 
 def EXCEL(f):
     content = f.get_child("[Content_Types].xml")
     if b"ContentType=\"application/vnd.ms-excel.sheet.macroEnabled" in content.contents:
-        return "Microsoft Excel Open XML Spreadsheet", "xlsm", (WINDOWS,)
+        return "Microsoft Excel Open XML Spreadsheet", "xlsm", (Platform.WINDOWS,), Deps.EXCEL
     if b"ContentType=\"application/vnd.ms-excel.sheet.binary.macroEnabled.main" in content.contents:
-        return "Microsoft Excel Open XML Spreadsheet", "xlsb", (WINDOWS,)
-    return "Microsoft Excel Open XML Spreadsheet", "xlsx", (WINDOWS,)
+        return "Microsoft Excel Open XML Spreadsheet", "xlsb", (Platform.WINDOWS,), Deps.EXCEL
+    return "Microsoft Excel Open XML Spreadsheet", "xlsx", (Platform.WINDOWS,), Deps.EXCEL
 
 def POWERPOINT(f):
-    content = f.get_child("[Content_Types].xml")
+    content = f.get_child("[Content_Types].xml")                   
     if b"ContentType=\"application/vnd.ms-powerpoint.slideshow.macroEnabled" in content.contents:
-        return "PowerPoint Open XML Presentation", "ppsm", (WINDOWS,)
+        return "PowerPoint Open XML Presentation", "ppsm", (Platform.WINDOWS,), Deps.POWERPOINT
     if b"ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.slideshow" in content.contents:
-        return "PowerPoint Open XML Presentation", "ppsx", (WINDOWS,)
+        return "PowerPoint Open XML Presentation", "ppsx", (Platform.WINDOWS,), Deps.POWERPOINT
     if b"ContentType=\"application/vnd.ms-powerpoint.presentation.macroEnabled" in content.contents:
-        return "PowerPoint Open XML Presentation", "pptm", (WINDOWS,) 
-    return "PowerPoint Open XML Presentation", "pptx", (WINDOWS,)
+        return "PowerPoint Open XML Presentation", "pptm", (Platform.WINDOWS,), Deps.POWERPOINT
+    return "PowerPoint Open XML Presentation", "pptx", (Platform.WINDOWS,), Deps.POWERPOINT
 
 def WORD(f):
     content = f.get_child("[Content_Types].xml")
     if b"ContentType=\"application/vnd.ms-word.document.macroEnabled" in content.contents:
-        return "Microsoft Open XML Presentation", "docm", (WINDOWS,)
+        return "Microsoft Open XML Presentation", "docm", (Platform.WINDOWS,), Deps.WORD
     if b"ContentType=\"application/vnd.ms-word.template.macroEnabledTemplate" in content.contents:
-        return "Microsoft Open XML Presentation", "dotm", (WINDOWS,)
+        return "Microsoft Open XML Presentation", "dotm", (Platform.WINDOWS,), Deps.WORD
     if b"ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.template" in content.contents:
-        return "Microsoft Open XML Presentation", "dotx", (WINDOWS,)
-    return "Microsoft Word Open XML Document", "docx", (WINDOWS,)
+        return "Microsoft Open XML Presentation", "dotx", (Platform.WINDOWS,), Deps.WORD
+    return "Microsoft Word Open XML Document", "docx", (Platform.WINDOWS,), Deps.WORD
 
 def MICROSOFT(f):
     if f.get_child("[Content_Types].xml"):
-        return "Excel theme", "thmx", (WINDOWS,)
-    return "Microsoft Document", "doc", (WINDOWS,)
+        return "Excel theme", "thmx", (Platform.WINDOWS,), Deps.EXCEL
+    return "Microsoft Document", "doc", (Platform.WINDOWS,), Deps.WORD
 
 # The magic and mime of a file will be used to match it to an extension or
 # a function.
@@ -154,213 +165,212 @@ string_matches = [
     #
     (True, ['Composite', 'Document', 'File', 'V2', 'Document'],
      "ms-excel", "xls",
-     "Excel Spreadsheet", (WINDOWS,)),
+     "Excel Spreadsheet", (Platform.WINDOWS,), Deps.EXCEL),
     (True, ['Composite', 'Document', 'File', 'V2', 'Document'],
-     "ms-powerpoint", "ppt", "PowerPoint Presentation", (WINDOWS,)),
+     "ms-powerpoint", "ppt", "PowerPoint Presentation", (Platform.WINDOWS,), Deps.POWERPOINT),
     (True, ['Composite', 'Document', 'File', 'V2'], "msword", "doc",
-     "Microsoft Word Document", (WINDOWS,)),  
+     "Microsoft Word Document", (Platform.WINDOWS,), Deps.WORD),  
     (True, ['OpenDocument', 'Text'], "oasis.opendocument.text", "odt",
-     "OpenDocument Text Document", ANY),
+     "OpenDocument Text Document", Platform.ANY, Deps.WORD),
     (True, ['OpenOffice'], "octet-stream", "odt",
-     "OpenDocument Text Document", (WINDOWS,)),
+     "OpenDocument Text Document", (Platform.WINDOWS,), Deps.WORD),
     (True, ['Hangul', '(Korean)', 'Word', 'Processor'], "hwp", "hwp",
-     "Hangul (Korean) Word Processor", (WINDOWS,)),
+     "Hangul (Korean) Word Processor", (Platform.WINDOWS,), Deps.WORD),
     (True, ['OpenDocument', 'Spreadsheet'], "opendocument.spreadsheet",
-     "ods", "OpenDocument Spreadsheet", (WINDOWS,)),
+     "ods", "OpenDocument Spreadsheet", (Platform.WINDOWS,), Deps.EXCEL),
     (True, ['OpenDocument'], "opendocument.presentation", "odp",
-     "OpenDocument Presentation", (WINDOWS,)),
+     "OpenDocument Presentation", (Platform.WINDOWS,), Deps.POWERPOINT),
     (True, ['CDFV2', 'Microsoft', 'Excel'], "ms-excel", "xlsx",
-     "Excel Spreadsheet", (WINDOWS,)),
+     "Excel Spreadsheet", (Platform.WINDOWS,), Deps.EXCEL),
     (True, ['Composite', 'Document', 'File', 'V2', 'Document'],
-     "ms-office", "cdf", "CDF file", (WINDOWS,)), # TODO, look at these cdf files and the right extension
+     "ms-office", "cdf", "CDF file", (Platform.WINDOWS,), Deps.WORD), # TODO, look at these cdf files and the right extension
     (False, ['CDFV2', 'Encrypted'], 'encrypted', "cdf", "CDF file",
-     (WINDOWS,)), # TODO, look at these cdf files and the right extension
+     (Platform.WINDOWS,), Deps.WORD), # TODO, look at these cdf files and the right extension
     (False, ['CDFV2', 'Microsoft', 'Outlook'],
-     'ms-outlook', "cdf", "CDF file", (WINDOWS,)),  # TODO, look at these cdf files and the right extension
+     'ms-outlook', "cdf", "CDF file", (Platform.WINDOWS,), Deps.WORD),  # TODO, look at these cdf files and the right extension
 
     #
     # Archive/compression related
     #
     (False, ['7-zip'], "x-7z-compressed", "7zip", "Compressed archive",
-     (WINDOWS,)),
-    (False, ['bzip2'], "x-bzip2", "bzip", "Compressed file", (LINUX,)),
-    (False, ['gzip'], "gzip", "gz", "Compression file", (WINDOWS,)),
+     (Platform.WINDOWS,)),
+    (False, ['bzip2'], "x-bzip2", "bzip", "Compressed file", (Platform.LINUX,)),
+    (False, ['gzip'], "gzip", "gz", "Compression file", (Platform.WINDOWS,)),
     (True, ['ACE', 'archive'], "octet-stream", "ace", "ACE archive",
-     (WINDOWS,)),
+     (Platform.WINDOWS,)),
     (False, ['MS', 'Compress'], "octet-stream", "zip",
-     "Microsoft (de)compressor", (WINDOWS,)),
+     "Microsoft (de)compressor", (Platform.WINDOWS,)),
     (False, ['Microsoft', 'Cabinet', 'archive', 'data'], "vnd.ms-cab",
-     "cab", "Windows Cabinet File", (WINDOWS,)),
+     "cab", "Windows Cabinet File", (Platform.WINDOWS,)),
     (True, ['POSIX', 'tar'], "tar", "tar",
-     "Consolidated Unix File Archive", (LINUX,)),
+     "Consolidated Unix File Archive", (Platform.LINUX,)),
     (True, ['RAR'], "rar", "rar", "WinRAR Compressed Archive",
-     (WINDOWS,)),
+     (Platform.WINDOWS,)),
     (False, ['KGB'], "octet-stream", "kgb",
      "Discontinued file archiver ",
-     (WINDOWS, LINUX)),
+     (Platform.WINDOWS, Platform.LINUX)),
     (False, ['ASD', 'archive'], "octet-stream", "asd",
-     "ASD archive", (WINDOWS,)),
+     "ASD archive", (Platform.WINDOWS,)),
     (False, ['ARJ'], "x-arj", "arj", "Compressed file archive",
-     (WINDOWS, MACOS)),
+     (Platform.WINDOWS, Platform.MACOS)),
     (False, ['ARC'], "x-arc", "arc", "Compressed file",
-     (WINDOWS, MACOS)),
+     (Platform.WINDOWS, Platform.MACOS)),
     
     #
     # Apple related
     #
     (False, ['Apple', 'HFS'], "octet-stream", "ico", "Icon File",
-     (MACOS,)),
-    (False, ['zlib'], "zlib", "dmg", "Apple Disk Image", (MACOS,)),
+     (Platform.MACOS,)),
+    (False, ['zlib'], "zlib", "dmg", "Apple Disk Image", (Platform.MACOS,)),
     (False, ['AppleSingle'], "octet-stream", "as",
-     "Mac File format", (MACOS,)),
+     "Mac File format", (Platform.MACOS,)),
     (False, ['AppleDouble'], "octet-stream", "adf",
-     "iOS application archive file", (MACOS,)),
+     "iOS application archive file", (Platform.MACOS,)),
     (False, ['Apple', 'binary', 'property'], "octet-stream",
-     "plist", "Apple binary", (MACOS,)),
+     "plist", "Apple binary", (Platform.MACOS,)),
     (False, ['iOS', 'App'], "x-ios-app", "ipa",
-     "iOS application archive file", (IOS,)),
+     "iOS application archive file", (Platform.IOS,)),
     (False, ['Macintosh', 'HFS'], "octet-stream", "hfs",
-     "Macintosh HFS", (MACOS,)),
+     "Macintosh HFS", (Platform.MACOS,)),
     (False, ['Symbian'], "x-sisx-app", "sisx",
-     "Software Installation Script", (MACOS,)),
+     "Software Installation Script", (Platform.MACOS,)),
     (False, ['Mach-O'], "x-mach-binary", "o", "Bitmap graphic",
-     (MACOS,)),
+     (Platform.MACOS,)),
 
     #
     # Visual images
     #
     (False, ['PNG'], "png", "png", "Portable Network Graphic",
-     (WINDOWS,)),
-    (False, ['JPEG'], "jpeg", "jpg", "JPEG Image", (WINDOWS,)), 
+     (Platform.WINDOWS,)),
+    (False, ['JPEG'], "jpeg", "jpg", "JPEG Image", (Platform.WINDOWS,)), 
     (False, ['SVG'], "svg+xml", "svg", "Scalable vector graphics",
-     (WINDOWS,)),  
+     (Platform.WINDOWS,)),  
     (True, ['PC', 'bitmap'], "x-ms-bmp", "bmp", "Bitmap Image File",
-     (WINDOWS,)),
+     (Platform.WINDOWS,)),
     (False, ['Targa'], "x-tga", "tga",
-     "Truevision Graphics Adapter image file", (WINDOWS, MACOS)), 
+     "Truevision Graphics Adapter image file", (Platform.WINDOWS, Platform.MACOS)), 
     (False, ['GIF', 'image', 'data'], "gif", "gif",
-     "Graphical Interchange Format File", (WINDOWS,)),
+     "Graphical Interchange Format File", (Platform.WINDOWS,)),
     (False, ['JNG'], "x-jng", "jng", "Image file related to PNG",
-     (WINDOWS,)),
+     (Platform.WINDOWS,)),
     (False, ['GIMP', 'XCF', 'image'], "x-xcf", "xcf", "GIMP XFC file",
-     (WINDOWS, LINUX, MACOS)),
+     (Platform.WINDOWS, Platform.LINUX, Platform.MACOS)),
     (False, ['TIFF'], "tiff", "tiff", "Tagged Image File Format",
-     (WINDOWS, LINUX)),  # @todo, add android, ios, mac?
-    (False, ['icon'], "image/x-icon", "ico", "Icon File", (WINDOWS,)),
+     (Platform.WINDOWS, Platform.LINUX)),  # @todo, add android, ios, mac?
+    (False, ['icon'], "image/x-icon", "ico", "Icon File", (Platform.WINDOWS,)),
 
     #
     # Audio / video 
     #
-    (False, ['RIFF'], "x-wav", "wav", "WAVE Audio File", (WINDOWS,)),
+    (False, ['RIFF'], "x-wav", "wav", "WAVE Audio File", (Platform.WINDOWS,)),
     (True, ['Macromedia', 'Flash', 'data', '(compressed)'],
-     "x-shockwave-flash", "swf", "Shockwave Flash Movie", (WINDOWS,)),  # todo
+     "x-shockwave-flash", "swf", "Shockwave Flash Movie", (Platform.WINDOWS,)),  # todo
     (True, ['RIFF'], "msvideo", "avi", "Audio Video Interleave File",
-     (WINDOWS,)),
+     (Platform.WINDOWS,)),
     (True, ['Macromedia', 'Flash', 'Video'], "x-flv", "flv",
-     "Flash Video File", (WINDOWS,)),  
-    (False, ['ISO'], "quicktime", "qt", "QuickTime file", (MACOS,)), # todo, make magic more specific
+     "Flash Video File", (Platform.WINDOWS,)),  
+    (False, ['ISO'], "quicktime", "qt", "QuickTime file", (Platform.MACOS,)), # todo, make magic more specific
     (False, ['MPEG', 'sequence'], "", "mpeg",
      "Compression for video and audio",
-     (WINDOWS,)),
+     (Platform.WINDOWS,)),
     (False, ['MPEG', 'transport'], "", "mpeg",
      "Compression for video and audio",
-     (WINDOWS,)),
+     (Platform.WINDOWS,)),
     (False, ['PCH', 'ROM'], "octet", "rom", "N64 Game ROM File",
-     (WINDOWS,)),
+     (Platform.WINDOWS,)),
     (False, ['ISO', 'Media'], "video/mp4", "mp4", "MPEG-4 Video File",
-     (WINDOWS, MACOS)),
+     (Platform.WINDOWS, Platform.MACOS)),
     (True, ['contains:MPEG'], "mpeg", "mp3", "MP3 Audio File",
-     (WINDOWS,)),  
+     (Platform.WINDOWS,)),  
     (False, ['3GPP', 'MPEG', 'v4'], "octet-stream", "3gp",
-     "3GPP Multimedia File", (WINDOWS,)), 
+     "3GPP Multimedia File", (Platform.WINDOWS,)), 
     (False, ['FLAC'], "x-flac", "flac", "Free lossless audio codec",
-     (WINDOWS)),    
-    (False, ['FLC'], "x-flc", "flc", "Animation file", (MACOS,)),
-    (False, ['RealMedia', 'file'], "vnd.rn-realmedia", "rm", "RealMedia file", (WINDOWS,)), 
+     (Platform.WINDOWS)),    
+    (False, ['FLC'], "x-flc", "flc", "Animation file", (Platform.MACOS,)),
+    (False, ['RealMedia', 'file'], "vnd.rn-realmedia", "rm", "RealMedia file", (Platform.WINDOWS,)), 
     
     #
     #  Scripts
     #
     (True, ['Python', 'script'], "x-python", "py", "Python Script",
-     (WINDOWS, MACOS, LINUX)),    
+     (Platform.WINDOWS, Platform.MACOS, Platform.LINUX), Deps.PYTHON),    
     (False, ['PostScript', 'document'], "postscript", "ps",
-     "Encapsulated PostScript File", (WINDOWS,)),  
+     "Encapsulated PostScript File", (Platform.WINDOWS,), Deps.ADOBE),  
     (False, ['PHP'], "x-php", "php", "PHP Source Code File",
-     (WINDOWS,)),
+     (Platform.WINDOWS,)),
     (False, ['Perl', 'script'], "x-perl", "perl", "Perl script",
-     (WINDOWS, LINUX)),
+     (Platform.WINDOWS, Platform.LINUX), Deps.PERL),
     (False, ['Bourne-Again', 'shell'], "x-shellscript", "sh",
-     "Shell script", (LINUX,)),
+     "Shell script", (Platform.LINUX,)),
     (False, ['Ruby', 'script'], "x-ruby", "rb",
-     "Ruby interpreted file", (WINDOWS,)),
+     "Ruby interpreted file", (Platform.WINDOWS,), Deps.RUBY),
 
     #
     # Binaries
     #
     (False, ['COM', 'executable'], "application", "com",
-     "DOS Command File", (WINDOWS,)),    
+     "DOS Command File", (Platform.WINDOWS,)),    
     (False, ['Debian', 'binary', 'package'],
-     "vnd.debian.binary-package", "deb", "Debian Software Package", (LINUX,)),
+     "vnd.debian.binary-package", "deb", "Debian Software Package", (Platform.LINUX,)),
     (True, ['(DLL)'], "x-dosexec", "dll", "Dynamic linked library",
-     (WINDOWS,)), 
-    (False, ['MS-DOS'], "x-dosexec", "exe", "Executable", (WINDOWS,)),
+     (Platform.WINDOWS,)), 
+    (False, ['MS-DOS'], "x-dosexec", "exe", "Executable", (Platform.WINDOWS,)),
     (False, ['ELF'], "application", "elf", "Linux Executable",
-     (LINUX,)),
+     (Platform.LINUX,)),
     (False, ['MS-DOS'], "x-dosexec", "exe", "DOS MZ executable ",
-     (WINDOWS,)), 
+     (Platform.WINDOWS,)), 
     (True, ['Composite', 'Document', 'File', 'V2', 'Document'], "msi",
-     "msi", "Windows Installer Package", (WINDOWS,)),
-
+     "msi", "Windows Installer Package", (Platform.WINDOWS,)),
     (False, ['Dzip'], "octet-stream", "dzip", "Witcher 2 game file",
-     (WINDOWS,)),
-    (False, ['RPM'], "rpm", "rpm", "Red Hat Package Manager File", (LINUX,)),   
+     (Platform.WINDOWS,)),
+    (False, ['RPM'], "rpm", "rpm", "Red Hat Package Manager File", (Platform.LINUX,)),   
     (True, ['PDF'], "pdf", "pdf", "Portable Document Format File",
-     (WINDOWS,)),  
+     (Platform.WINDOWS,), Deps.ADOBE),  
     (True, ['Rich', 'Text'], "rtf", "rtf", "Rich Text Format File",
-     (WINDOWS,)),
+     (Platform.WINDOWS,)),
     (False, ['MS', 'Windows', 'shortcut'], "octet-stream", "lnk",
-     "Windows Shortcut", (WINDOWS,)),
+     "Windows Shortcut", (Platform.WINDOWS,)),
     (False, ['Adobe', 'Photoshop', 'Image'], "adobe.photoshop", "psd",
-     "Adobe Photoshop Document", (WINDOWS, MACOS)),
+     "Adobe Photoshop Document", (Platform.WINDOWS, Platform.MACOS)),
     (False, ['Microsoft', 'ASF'], "ms-asf", "asf",
-     "Advanced Systems Format File", (WINDOWS,)),
+     "Advanced Systems Format File", (Platform.WINDOWS,)),
     (False, ['Google', 'Chrome', 'extension'], "x-chrome-extension",
-     "crx", "Chrome Extension", (WINDOWS, LINUX, MACOS)),
+     "crx", "Chrome Extension", (Platform.WINDOWS, Platform.LINUX, Platform.MACOS)),
     (False, ['compiled', 'Java', 'class'], "java-applet", "class",
-     "Java Class File", (WINDOWS, MACOS)),
+     "Java Class File", (Platform.WINDOWS, Platform.MACOS)),
     (False, ['Intel', 'serial', 'flash'], "octet", "rom",
      "N64 Game ROM File",
-     (WINDOWS,)),  # todo
+     (Platform.WINDOWS,)),  # todo
     (False, ['BitTorrent'], "x-bittorrent", "bittorrent",
-     "Bittorent link", (WINDOWS, MACOS)),
+     "Bittorent link", (Platform.WINDOWS,Platform.MACOS)),
     (True, ['compiled', 'Java', 'class'], "x-java-applet", "class",
-     "Java class file", (WINDOWS,)),  # todo
+     "Java class file", (Platform.WINDOWS,)),  # todo
     (False, ['MIDI'], "midi", "midi",
-     "Musical Instrument Digital Interface", (WINDOWS,)),
+     "Musical Instrument Digital Interface", (Platform.WINDOWS,)),
     (False, ['Ogg'], "ogg", "ogg", "Free open container format ",
-     (WINDOWS, MACOS)),
+     (Platform.WINDOWS, Platform.MACOS)),
     (False, ['ISO', '9660'], "x-iso9660-image", "iso", "ISO Image",
-     (WINDOWS,)),
+     (Platform.WINDOWS,)),
     (False, ['TeX', 'font'], "x-tex-tfm", "latex", "LaTeX file format",
-     (WINDOWS, LINUX)),  # todo
+     (Platform.WINDOWS, Platform.LINUX)),  # todo
     (False, ['awk'], "x-awk", "awk", "Script for text processing",
-     (LINUX,)),
+     (Platform.LINUX,)),
     (False, ['Adobe', 'InDesign'], "octet-stream", "indd",
-     "InDesign project file", (WINDOWS,)),  # todo
+     "InDesign project file", (Platform.WINDOWS,)),  # todo
     (False, ['Windows', 'Enhanced', 'Metafile'], "octet-stream", "emf",
-     "Windows enhanced metafile", (WINDOWS,)),
+     "Windows enhanced metafile", (Platform.WINDOWS,)),
     (False, ['E-book'], "octet-stream", "ebook", "Ebook file",
-     (WINDOWS,)),
-    (False, ['SMTP'], "rfc822", "email", "Email file", (WINDOWS,)),
+     (Platform.WINDOWS,)),
+    (False, ['SMTP'], "rfc822", "email", "Email file", (Platform.WINDOWS,)),
     (False, ['TrueType', 'Font'], "font-sfnt", "ttf", "TrueType Font",
-     (WINDOWS)),
+     (Platform.WINDOWS)),
     (False, ['capture'], "tcpdump.pcap", "pcap", "Network traffic data",
-     (WINDOWS,)),
+     (Platform.WINDOWS,)),
     (False, ['capture'], "octet-stream", "pcap", "Network traffic data",
-     (WINDOWS,)),
+     (Platform.WINDOWS,)),
     (
     False, ['Netscape', 'cookie'], "plain", "iecookie", "Cookie for ie",
-    (WINDOWS)),
+    (Platform.WINDOWS)),
 ]
 
 # Add function variables
@@ -403,8 +413,11 @@ def identify(f):
             # If the match is a function
             # Check if there is already a match found (on a non function match)
             # The non function matches are narrower
-            return selected, match[4], match[3], match[5]
-    
+            if len(match) == 7:
+                return selected, match[4], match[3], match[5], match[6]
+
+            return selected, match[4], match[3], match[5], ('', '')
+
     for match in func_matches:
         selected, magic, mime = match[:3]
         # Check if it matches
@@ -413,5 +426,8 @@ def identify(f):
             # If the match is a function
             # Check if there is already a match found (on a non function match)
             # The non function matches are narrower
-            return (selected, *match[3](f))
-           
+            data = match[3](f)
+            if len(data) == 3:
+                return (selected, *data, ("", ""))
+
+            return (selected, *data)

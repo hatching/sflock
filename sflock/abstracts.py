@@ -250,6 +250,8 @@ class File(object):
         self._selected = selected
         self._human_type = None
         self._extension = None
+        self._dependency_version = None
+        self._dependency = None
         self._md5 = None
         self._sha1 = None
         self._sha256 = None
@@ -297,6 +299,8 @@ class File(object):
             self._human_type = data[1]
             self._extension = data[2]
             self._platforms = data[3]
+            self._dependency = data[4][0]
+            self._dependency_version = data[4][1]
 
     def __hashes(self):
         sha256, s, buf = hashlib.sha256(), self.stream, True
@@ -385,6 +389,18 @@ class File(object):
         return s.tell()
     
     @property
+    def dependency(self):
+        if self._dependency is None:
+            self.__identify()
+        return self._dependency
+
+    @property
+    def dependency_version(self):
+        if self._dependency_version is None:
+            self.__identify()
+        return self._dependency_version
+
+    @property
     def extension(self):
         if self._extension is None:
             self.__identify()
@@ -470,6 +486,8 @@ class File(object):
             "sha1": self.sha1,
             "platforms": self.platforms,
             "selected": self.selected,
+            "dependency": self._dependency,
+            "dependency_version": self._dependency_version,
             "preview": self.preview,
             "error": self.error,
         }
@@ -480,6 +498,8 @@ class File(object):
             "password": self.password,
             "human_type": self.human_type,
             "extension": self.extension,
+            "dependency": self._dependency,
+            "dependency_version": self._dependency_version,
             "filename": self.filename,
             "relapath": self.relapath,
             "relaname": self.relaname,
