@@ -14,6 +14,7 @@ class Deps:
     JAVA = "java", ""
     ADOBE = "adobe", ""
     PERL = "perl", ""
+    DOTNET = "dotnet", ""
 
 class Platform:
     WINDOWS = "windows"
@@ -97,6 +98,8 @@ def OCTET(f):
 def PE32(f):
     if "DLL" in f.magic:
         return "DLL file", "dll", (Platform.WINDOWS,)
+    if ".Net" in f.magic:
+        return "Exe file", "exe", (Platform.WINDOWS,), Deps.DOTNET
     return "Exe file", "exe", (Platform.WINDOWS,)
 
 def FLASH(f):
