@@ -211,6 +211,10 @@ def android(f):
         return
     return "apk"
 
+def dmg(f):
+    if any([child.magic == 'AppleDouble encoded Macintosh file' for child in f.children or []]):
+        return "dmg"
+
 def vbe_jse(f):
     if b"#@~^" in f.contents[:100]:
         data = DecodeVBEJSE(f.contents, "")
@@ -237,7 +241,7 @@ def identify(f):
                 return magics[magic_types]
 
 identifiers = [
-    office_zip, office_ole, office_webarchive, office_activemime,
+    dmg, office_zip, office_ole, office_webarchive, office_activemime,
     hta, powershell, javascript, visualbasic, android, java, wsf,
     xxe, pub, vbe_jse
 ]
