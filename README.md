@@ -26,7 +26,8 @@ following packages alongside sflock. It is currently not possible to run the
 unpackers that require native tooling support on non-Linux platforms.
 
 ```bash
-$ sudo apt-get install p7zip-full rar unace-nonfree cabextract
+$ sudo apt-get install p7zip-full rar unace-nonfree cabextract libjpeg8-dev zlib1g-dev
+
 ```
 
 Installation of sflock itself may be done as follows.
