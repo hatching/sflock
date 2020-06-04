@@ -8,20 +8,20 @@ ttf_hdr = (
 # Empty string is a placeholder for the required version
 # In the future this most likely be placed somewhere else in the code
 class Deps:
-    PYTHON = "python", ""
-    WORD = "word", ""
-    POWERPOINT = "powerpoint", ""
-    RUBY = "ruby", ""
-    EXCEL = "excel", ""
-    JAVA = "java", ""
-    ADOBE = "adobe", ""
-    PERL = "perl", ""
-    DOTNET = "dotnet", ""
-    BROWSER = "browser", ""
-    MULTIMEDIA = "multimedia", ""
-    FLASH = "flash", ""
-    POWERSHELL = "powershell", ""
-    UNRAR = "unrar", ""
+    PYTHON = "python"
+    WORD = "word"
+    POWERPOINT = "powerpoint"
+    RUBY = "ruby"
+    EXCEL = "excel"
+    JAVA = "java"
+    ADOBE = "adobe"
+    PERL = "perl"
+    DOTNET = "dotnet"
+    BROWSER = "browser"
+    MULTIMEDIA = "multimedia"
+    FLASH = "flash"
+    POWERSHELL = "powershell"
+    UNRAR = "unrar"
 
 class Platform:
     WINDOWS = "windows"
@@ -426,8 +426,8 @@ def identify(f):
             if len(match) == 7:
                 return selected, match[4], match[3], match[5], match[6]
 
-            return selected, match[4], match[3], match[5], ('', '')
-
+            return selected, match[4], match[3], match[5], ''
+ 
     for match in func_matches:
         selected, magic, mime = match[:3]
         # Check if it matches
@@ -438,6 +438,6 @@ def identify(f):
             # The non function matches are narrower
             data = match[3](f)
             if len(data) == 3:
-                return (selected, *data, ("", ""))
+                return (selected, *data, "")
 
             return (selected, *data)

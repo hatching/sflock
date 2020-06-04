@@ -299,8 +299,8 @@ class File(object):
             self._human_type = data[1]
             self._extension = data[2]
             self._platforms = data[3]
-            self._dependency = data[4][0]
-            self._dependency_version = data[4][1]
+            self._dependency = data[4]
+            self._dependency_version = ""
 
     def __hashes(self):
         sha256, s, buf = hashlib.sha256(), self.stream, True
