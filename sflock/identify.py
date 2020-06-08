@@ -9,19 +9,19 @@ ttf_hdr = (
 # In the future this most likely be placed somewhere else in the code
 class Deps:
     PYTHON = "python"
-    WORD = "word"
-    POWERPOINT = "powerpoint"
+    WORD = "microsoft_word"
+    POWERPOINT = "microsoft_powerpoint"
     RUBY = "ruby"
-    EXCEL = "excel"
-    JAVA = "java"
-    ADOBE = "adobe"
+    EXCEL = "microsoft_excel"
+    JAVA = "oracle_java"
+    PDF = "acrobat_reader"
     PERL = "perl"
-    DOTNET = "dotnet"
-    BROWSER = "browser"
+    DOTNET = "microsoft_dotnet"
     MULTIMEDIA = "multimedia"
     FLASH = "flash"
     POWERSHELL = "powershell"
     UNRAR = "unrar"
+    QUICKTIME = "quicktime"
 
 class Platform:
     WINDOWS = "windows"
@@ -35,7 +35,7 @@ class Platform:
 def HTML(f):
     if wsf(f):
         return "Windows script file", "wsf", (Platform.WINDOWS,)
-    return "Hypertext Markup Language File", "html", Platform.ANY, Deps.BROWSER
+    return "Hypertext Markup Language File", "html", Platform.ANY
 
 def XML(f):
     if b"application/vnd.openxmlformats-officedocument.presentationml" in f.contents:
@@ -73,7 +73,7 @@ def Text(f):
     if f.contents.startswith(b"ID;"):
         return "SYLK file", "slk", Platform.ANY, Deps.EXCEL
     if b"Content-Type: text/html;" in f.contents:
-        return "Mht file", "mht", Platform.ANY, Deps.BROWSER
+        return "Mht file", "mht", Platform.ANY
    
     return "Text", "txt", Platform.ANY
 
@@ -215,7 +215,7 @@ string_matches = [
     (True, ['POSIX', 'tar'], "tar", "tar",
      "Consolidated Unix File Archive", (Platform.LINUX,)),
     (True, ['RAR'], "rar", "rar", "WinRAR Compressed Archive",
-     (Platform.WINDOWS,), Deps.UNRAR),
+     Platform.ANY_DESKTOP, Deps.UNRAR),
     (False, ['KGB'], "octet-stream", "kgb",
      "Discontinued file archiver ",
      (Platform.WINDOWS, Platform.LINUX)),
@@ -250,24 +250,21 @@ string_matches = [
     #
     # Visual images
     #
-    (False, ['PNG'], "png", "png", "Portable Network Graphic",
-     (Platform.WINDOWS,)),
-    (False, ['JPEG'], "jpeg", "jpg", "JPEG Image", (Platform.WINDOWS,)), 
-    (False, ['SVG'], "svg+xml", "svg", "Scalable vector graphics",
-     (Platform.WINDOWS,)),  
-    (True, ['PC', 'bitmap'], "x-ms-bmp", "bmp", "Bitmap Image File",
-     (Platform.WINDOWS,)),
+    (False, ['PNG'], "png", "png", "Portable Network Graphic", Platform.ANY),
+    (False, ['JPEG'], "jpeg", "jpg", "JPEG Image", Platform.ANY), 
+    (False, ['SVG'], "svg+xml", "svg", "Scalable vector graphics", Platform.ANY),  
+    (True, ['PC', 'bitmap'], "x-ms-bmp", "bmp", "Bitmap Image File", Platform.ANY),
     (False, ['Targa'], "x-tga", "tga",
      "Truevision Graphics Adapter image file", (Platform.WINDOWS, Platform.MACOS)), 
     (False, ['GIF', 'image', 'data'], "gif", "gif",
-     "Graphical Interchange Format File", (Platform.WINDOWS,)),
+     "Graphical Interchange Format File", Platform.ANY),
     (False, ['JNG'], "x-jng", "jng", "Image file related to PNG",
-     (Platform.WINDOWS,)),
+     Platform.ANY),
     (False, ['GIMP', 'XCF', 'image'], "x-xcf", "xcf", "GIMP XFC file",
-     (Platform.ANY_DESKTOP)),
+     Platform.ANY),
     (False, ['TIFF'], "tiff", "tiff", "Tagged Image File Format",
      (Platform.WINDOWS, Platform.LINUX)),  # @todo, add android, ios, mac?
-    (False, ['icon'], "image/x-icon", "ico", "Icon File", (Platform.WINDOWS,)),
+    (False, ['icon'], "image/x-icon", "ico", "Icon File", Platform.ANY),
 
     #
     # Audio / video 
@@ -279,7 +276,7 @@ string_matches = [
      (Platform.WINDOWS,), Deps.MULTIMEDIA),
     (True, ['Macromedia', 'Flash', 'Video'], "x-flv", "flv",
      "Flash Video File", (Platform.WINDOWS,), Deps.FLASH),  
-    (False, ['ISO'], "quicktime", "qt", "QuickTime file", (Platform.MACOS,), Deps.MULTIMEDIA), # todo, make magic more specific
+    (False, ['ISO'], "quicktime", "qt", "QuickTime file", (Platform.MACOS,), Deps.QUICKTIME), # todo, make magic more specific
     (False, ['MPEG', 'sequence'], "", "mpeg",
      "Compression for video and audio",
      (Platform.WINDOWS,), Deps.MULTIMEDIA),
@@ -305,7 +302,7 @@ string_matches = [
     (True, ['Python', 'script'], "x-python", "py", "Python Script",
      Platform.ANY_DESKTOP, Deps.PYTHON),    
     (False, ['PostScript', 'document'], "postscript", "ps",
-     "Encapsulated PostScript File", (Platform.WINDOWS,), Deps.ADOBE),  
+     "Encapsulated PostScript File", (Platform.WINDOWS,), Deps.PDF),  
     (False, ['PHP'], "x-php", "php", "PHP Source Code File",
      (Platform.WINDOWS,)),
     (False, ['Perl', 'script'], "x-perl", "perl", "Perl script",
@@ -335,7 +332,7 @@ string_matches = [
      (Platform.WINDOWS,)),
     (False, ['RPM'], "rpm", "rpm", "Red Hat Package Manager File", (Platform.LINUX,)),   
     (True, ['PDF'], "pdf", "pdf", "Portable Document Format File",
-     (Platform.WINDOWS,), Deps.ADOBE),  
+     (Platform.WINDOWS,), Deps.PDF),  
     (True, ['Rich', 'Text'], "rtf", "rtf", "Rich Text Format File",
      (Platform.WINDOWS,)),
     (False, ['MS', 'Windows', 'shortcut'], "octet-stream", "lnk",
