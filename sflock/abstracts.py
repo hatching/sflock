@@ -68,6 +68,9 @@ class Unpacker(object):
         zipjail = data_file("zipjail.elf")
         arg = "--clone=1" if self.name == "7zfile" else "--clone=0"
 
+        if os.path.exists(dirpath):
+            shutil.rmtree(dirpath)
+
         p = subprocess.Popen(
             (zipjail, filepath, dirpath, arg, "--", self.exe) + args,
             stdin=subprocess.PIPE, stdout=subprocess.PIPE,

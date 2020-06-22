@@ -180,7 +180,7 @@ class TestTarFile(object):
     def test_garbage(self):
         t = TarFile(f("garbage.bin"))
         assert t.handles() is False
-        assert not t.f.selected
+        assert t.f.selected
         assert not t.unpack()
         assert t.f.mode == "failed"
 

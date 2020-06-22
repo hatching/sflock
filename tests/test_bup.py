@@ -24,21 +24,21 @@ def test_bup_plain():
     assert files[0].relapath == "efax_9057733019_pdf.zip"
     assert "Zip archive" in files[0].magic
     assert files[0].parentdirs == []
-    assert files[0].package is None
-    assert files[0].platform is None
+    assert files[0].extension == "zip"
+    assert files[0].platforms == ('windows', 'darwin', 'linux', 'android', 'ios')
     assert not files[0].selected
 
     assert len(files[0].children) == 1
     assert not files[0].children[0].filepath
     assert files[0].children[0].relapath == "efax_9057733019_pdf.scr"
     assert files[0].children[0].filesize == 377856
-    assert files[0].children[0].package == "exe"
-    assert files[0].children[0].platform == "windows"
+    assert files[0].children[0].extension == "exe"
+    assert files[0].children[0].platforms == ("windows",)
     assert files[0].children[0].selected is True
 
 def test_garbage():
     t = BupFile(f("garbage.bin"))
     assert t.handles() is False
-    assert not t.f.selected
+    assert t.f.selected
     assert not t.unpack()
     assert t.f.mode == "failed"

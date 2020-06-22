@@ -48,7 +48,7 @@ class TestCabFile(object):
     def test_garbage(self):
         t = CabFile(f("garbage.bin"))
         assert t.handles() is False
-        assert not t.f.selected
+        assert t.f.selected
         assert not t.unpack()
         assert t.f.mode == "failed"
 

@@ -23,7 +23,6 @@ class TestOfficeFile(object):
     def test_office_plain2(self):
         f = unpack("tests/files/maldoc.xls")
         assert f.selected is True
-        assert f.preview is False
 
     @pytest.mark.xfail
     def test_office_pw_failure(self):
@@ -32,15 +31,12 @@ class TestOfficeFile(object):
         assert not z.unpack()
         # TODO Failure to decrypt should also unselect the file.
         assert z.f.selected is False
-        assert z.f.preview is False
 
     def test_office_pw_success(self):
         z = OfficeFile(f("encrypted1.docx"))
         assert z.handles() is True
         d, = z.unpack(password="Password1234_")
         assert z.f.selected is False
-        assert z.f.preview is True
         assert d.magic.startswith(("Microsoft Word 2007+", "Zip archive data"))
-        assert d.package == "doc"
+        assert d.extension == "docx"
         assert d.selected is True
-        assert d.preview is False

@@ -36,118 +36,118 @@ class Platform:
 
 def HTML(f):
     if wsf(f):
-        return "Windows script file", "wsf", (Platform.WINDOWS,)
-    return "Hypertext Markup Language File", "html", Platform.ANY
+        return True, "Windows script file", "wsf", (Platform.WINDOWS,)
+    return True, "Hypertext Markup Language File", "html", Platform.ANY
 
 def XML(f):
     if b"application/vnd.openxmlformats-officedocument.presentationml" in f.contents:
-        return "Office file", "xml", Platform.ANY, Deps.WORD
+        return True, "Office file", "xml", Platform.ANY, Deps.WORD
     if b"application/vnd.openxmlformats-officedocument.wordprocessingml" in f.contents:
-        return "Office file", "xml",  Platform.ANY, Deps.WORD
+        return True, "Office file", "xml",  Platform.ANY, Deps.WORD
     if b"application/vnd.openxmlformats-officedocument" in f.contents:
-        return "Office file", "doc",  Platform.ANY, Deps.WORD
+        return True, "Office file", "doc",  Platform.ANY, Deps.WORD
 
     if wsf(f):
-        return "Windows script file", "wsf", (Platform.WINDOWS,)
-    return "XML file", "xml", Platform.ANY
+        return True, "Windows script file", "wsf", (Platform.WINDOWS,)
+    return False, "XML file", "xml", Platform.ANY
 
 def SAT(f):
     if f.get_child("ppt/presentation.xml"):
-        return "Powerpoint", "ppt",  Platform.ANY, Deps.POWERPOINT
-    return None, None, None
+        return True, "Powerpoint", "ppt",  Platform.ANY, Deps.POWERPOINT
+    return False, None, None, None
 
 def SECTION(f):
-    return 'CDF file', 'cdf', (Platform.WINDOWS,)
+    return False, 'CDF file', 'cdf', (Platform.WINDOWS,)
 
 def Text(f):
     if javascript(f):
-        return "Javascript file", "js", (Platform.WINDOWS,)
+        return True, "Javascript file", "js", (Platform.WINDOWS,)
     if powershell(f):
-        return "Powershell script", "ps1", (Platform.WINDOWS,), Deps.POWERSHELL
+        return True, "Powershell script", "ps1", (Platform.WINDOWS,), Deps.POWERSHELL
     if wsf(f):
-        return "Windows script file", "wsf", (Platform.WINDOWS,)
+        return True, "Windows script file", "wsf", (Platform.WINDOWS,)
     if visualbasic(f):
-        return "Visual basic file", "vb", (Platform.WINDOWS,)
+        return True, "Visual basic file", "vb", (Platform.WINDOWS,)
     if ruby(f):
-        return "Ruby file", "rb", Platform.ANY_DESKTOP, Deps.RUBY
+        return True, "Ruby file", "rb", Platform.ANY_DESKTOP, Deps.RUBY
     if f.contents.startswith(b"WEB"):
-        return "IQY file", "iqy", Platform.ANY, Deps.EXCEL
+        return True, "IQY file", "iqy", Platform.ANY, Deps.EXCEL
     if f.contents.startswith(b"ID;"):
-        return "SYLK file", "slk", Platform.ANY, Deps.EXCEL
+        return True, "SYLK file", "slk", Platform.ANY, Deps.EXCEL
     if b"Content-Type: text/html;" in f.contents:
-        return "Mht file", "mht", Platform.ANY
+        return True, "Mht file", "mht", Platform.ANY
    
-    return "Text", "txt", Platform.ANY
+    return False, "Text", "txt", Platform.ANY
 
 def ZIP(f):
     for i in f.children:
         if i.filename.lower() == "workbook.xml":
-            return "Excel document", "xlsx", Platform.ANY, Deps.EXCEL
+            return True, "Excel document", "xlsx", Platform.ANY, Deps.EXCEL
         if i.filename.lower() == "worddocument.xml":
-            return "Word document", "docx", Platform.ANY, Deps.WORD
+            return True, "Word document", "docx", Platform.ANY, Deps.WORD
     if java(f):
-        return "JAR file", "jar", (Platform.WINDOWS, Platform.MACOS, Platform.LINUX, Platform.ANDROID), Deps.JAVA
-    return "ZIP file", "zip", Platform.ANY, Deps.UNARCHIVE
+        return True, "JAR file", "jar", (Platform.WINDOWS, Platform.MACOS, Platform.LINUX, Platform.ANDROID), Deps.JAVA
+    return False, "ZIP file", "zip", Platform.ANY, Deps.UNARCHIVE
 
 def JAR(f):
     if f.get_child("AndroidManifest.xml"):
-        return "Android Package File", "apk", (Platform.ANDROID,)
+        return True, "Android Package File", "apk", (Platform.ANDROID,)
 
-    return "Java Archive File", "jar", (Platform.WINDOWS, Platform.MACOS, Platform.LINUX, Platform.ANDROID), Deps.JAVA
+    return True, "Java Archive File", "jar", (Platform.WINDOWS, Platform.MACOS, Platform.LINUX, Platform.ANDROID), Deps.JAVA
 
 def OCTET(f):
     if wsf(f):
-        return "Windows script file", "wsf", (Platform.WINDOWS,)
+        return True, "Windows script file", "wsf", (Platform.WINDOWS,)
     if f.contents.startswith(ttf_hdr):
-        return "TrueType Font", "ttf", (Platform.WINDOWS,)
-    return "octet", "", (Platform.WINDOWS,)
+        return False, "TrueType Font", "ttf", (Platform.WINDOWS,)
+    return True, "octet", "", (Platform.WINDOWS,)
 
 # This function is used to distinct DLL and EXE. This was unable to work on
 # magic and mime. Because DLL files are matching positive on EXE mime/magic
 def PE32(f):
     if "DLL" in f.magic:
-        return "DLL file", "dll", (Platform.WINDOWS,)
+        return True, "DLL file", "dll", (Platform.WINDOWS,)
     if ".Net" in f.magic:
-        return "Exe file", "exe", (Platform.WINDOWS,), Deps.DOTNET
-    return "Exe file", "exe", (Platform.WINDOWS,)
+        return True, "Exe file", "exe", (Platform.WINDOWS,), Deps.DOTNET
+    return True, "Exe file", "exe", (Platform.WINDOWS,)
 
 def FLASH(f):
     if "(compressed)" in f.magic:
-        return "SWF file", "swf", Platform.ANY_DESKTOP, Deps.FLASH
-    return "FLV file", "flv", Platform.ANY_DESKTOP, Deps.FLASH
+        return True, "SWF file", "swf", Platform.ANY_DESKTOP, Deps.FLASH
+    return True, "FLV file", "flv", Platform.ANY_DESKTOP, Deps.FLASH
 
 def EXCEL(f):
     content = f.get_child("[Content_Types].xml")
     if b"ContentType=\"application/vnd.ms-excel.sheet.macroEnabled" in content.contents:
-        return "Microsoft Excel Open XML Spreadsheet", "xlsm", Platform.ANY, Deps.EXCEL
+        return True, "Microsoft Excel Open XML Spreadsheet", "xlsm", Platform.ANY, Deps.EXCEL
     if b"ContentType=\"application/vnd.ms-excel.sheet.binary.macroEnabled.main" in content.contents:
-        return "Microsoft Excel Open XML Spreadsheet", "xlsb", Platform.ANY, Deps.EXCEL
-    return "Microsoft Excel Open XML Spreadsheet", "xlsx", Platform.ANY, Deps.EXCEL
+        return True, "Microsoft Excel Open XML Spreadsheet", "xlsb", Platform.ANY, Deps.EXCEL
+    return True, "Microsoft Excel Open XML Spreadsheet", "xlsx", Platform.ANY, Deps.EXCEL
 
 def POWERPOINT(f):
     content = f.get_child("[Content_Types].xml")                   
     if b"ContentType=\"application/vnd.ms-powerpoint.slideshow.macroEnabled" in content.contents:
-        return "PowerPoint Open XML Presentation", "ppsm", Platform.ANY, Deps.POWERPOINT
+        return True, "PowerPoint Open XML Presentation", "ppsm", Platform.ANY, Deps.POWERPOINT
     if b"ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.slideshow" in content.contents:
-        return "PowerPoint Open XML Presentation", "ppsx", Platform.ANY, Deps.POWERPOINT
+        return True, "PowerPoint Open XML Presentation", "ppsx", Platform.ANY, Deps.POWERPOINT
     if b"ContentType=\"application/vnd.ms-powerpoint.presentation.macroEnabled" in content.contents:
-        return "PowerPoint Open XML Presentation", "pptm", Platform.ANY, Deps.POWERPOINT
-    return "PowerPoint Open XML Presentation", "pptx", Platform.ANY, Deps.POWERPOINT
+        return True, "PowerPoint Open XML Presentation", "pptm", Platform.ANY, Deps.POWERPOINT
+    return True, "PowerPoint Open XML Presentation", "pptx", Platform.ANY, Deps.POWERPOINT
 
 def WORD(f):
     content = f.get_child("[Content_Types].xml")
     if b"ContentType=\"application/vnd.ms-word.document.macroEnabled" in content.contents:
-        return "Microsoft Open XML Presentation", "docm", Platform.ANY, Deps.WORD
+        return True, "Microsoft Open XML Presentation", "docm", Platform.ANY, Deps.WORD
     if b"ContentType=\"application/vnd.ms-word.template.macroEnabledTemplate" in content.contents:
-        return "Microsoft Open XML Presentation", "dotm", Platform.ANY, Deps.WORD
+        return True, "Microsoft Open XML Presentation", "dotm", Platform.ANY, Deps.WORD
     if b"ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.template" in content.contents:
-        return "Microsoft Open XML Presentation", "dotx", Platform.ANY, Deps.WORD
-    return "Microsoft Word Open XML Document", "docx", Platform.ANY, Deps.WORD
+        return True, "Microsoft Open XML Presentation", "dotx", Platform.ANY, Deps.WORD
+    return True, "Microsoft Word Open XML Document", "docx", Platform.ANY, Deps.WORD
 
 def MICROSOFT(f):
     if f.get_child("[Content_Types].xml"):
-        return "Excel theme", "thmx", Platform.ANY, Deps.EXCEL
-    return "Microsoft Document", "doc", Platform.ANY, Deps.WORD
+        return True, "Excel theme", "thmx", Platform.ANY, Deps.EXCEL
+    return True, "Microsoft Document", "doc", Platform.ANY, Deps.WORD
 
 # The magic and mime of a file will be used to match it to an extension or
 # a function.
@@ -208,13 +208,13 @@ string_matches = [
      Platform.ANY_DESKTOP, Deps.UNARCHIVE),
     (False, ['bzip2'], "x-bzip2", "bzip", "Compressed file", (Platform.LINUX,), Deps.UNARCHIVE),
     (False, ['gzip'], "gzip", "gz", "Compression file", (Platform.LINUX,), Deps.UNARCHIVE),
-    (True, ['ACE', 'archive'], "octet-stream", "ace", "ACE archive",
+    (False, ['ACE', 'archive'], "octet-stream", "ace", "ACE archive",
      Platform.ANY_DESKTOP, Deps.ACE),
     (False, ['MS', 'Compress'], "octet-stream", "zip",
      "Microsoft (de)compressor", (Platform.WINDOWS,)),
     (False, ['Microsoft', 'Cabinet', 'archive', 'data'], "vnd.ms-cab",
      "cab", "Windows Cabinet File", (Platform.WINDOWS,)),
-    (True, ['POSIX', 'tar'], "tar", "tar",
+    (False, ['POSIX', 'tar'], "tar", "tar",
      "Consolidated Unix File Archive", (Platform.LINUX,)),
     (True, ['RAR'], "rar", "rar", "WinRAR Compressed Archive",
      Platform.ANY_DESKTOP, Deps.UNARCHIVE),
@@ -384,29 +384,27 @@ string_matches = [
 
 # Add function variables
 func_matches = [
-    (False,
-     ['Composite', 'Document', 'File', 'V2', 'Document', "Can't", 'read',
+    (['Composite', 'Document', 'File', 'V2', 'Document', "Can't", 'read',
       'SAT'], "application/CDFV2", SAT),
-    (False,
-     ['Composite', 'Document', 'File', 'V2', 'Document', 'Cannot', 'read',
+    (['Composite', 'Document', 'File', 'V2', 'Document', 'Cannot', 'read',
       'section'],
      "application/CDFV2", SECTION),
-    (True, ['Zip'], "zip", ZIP),
-    (True, ['(JAR)'], "java-archive", JAR),
-    (False, ['data'], "octet", OCTET),
-    (False, ['XML'], "xml", XML),
-    (True, ['HTML', 'document'], "html", HTML),
-    (False, ['text'], "text", Text),
-    (False, ['text'], "plain", Text),
-    (True, ['PE32'], "x-dosexec", PE32),
-    (False, ['Macromedia', 'Flash', 'data'], "x-shockwave-flash", FLASH),
-    (True, ['Microsoft', 'Excel'],
+    (['Zip'], "zip", ZIP),
+    (['(JAR)'], "java-archive", JAR),
+    (['data'], "octet", OCTET),
+    (['XML'], "xml", XML),
+    (['HTML', 'document'], "html", HTML),
+    (['text'], "text", Text),
+    (['text'], "plain", Text),
+    (['PE32'], "x-dosexec", PE32),
+    (['Macromedia', 'Flash', 'data'], "x-shockwave-flash", FLASH),
+    (['Microsoft', 'Excel'],
      "openxmlformats-officedocument.spreadsheetml.sheet", EXCEL),
-    (True, ['Microsoft', 'PowerPoint'], 
+    (['Microsoft', 'PowerPoint'], 
      "openxmlformats-officedocument.presentationml.presentation", POWERPOINT),
-    (True, ['Microsoft', 'Word'],
+    (['Microsoft', 'Word'],
      "openxmlformats-officedocument.wordprocessingml.document", WORD),
-    (True, ['Microsoft'], "octet", MICROSOFT)
+    (['Microsoft'], "octet", MICROSOFT)
 ]
 
 def identify(f):
@@ -428,17 +426,17 @@ def identify(f):
             return selected, match[4], match[3], match[5], ''
  
     for match in func_matches:
-        selected, magic, mime = match[:3]
+        magic, mime = match[:2]
         # Check if it matches
         tokens = all(elem in fmagic for elem in magic)
         if tokens and mime in f.mime:
             # If the match is a function
             # Check if there is already a match found (on a non function match)
             # The non function matches are narrower
-            data = match[3](f)
-            if len(data) == 3:
-                return (selected, *data, "")
+            data = match[2](f)
+            if len(data) == 4:
+                return (*data, "")
 
-            return (selected, *data)
+            return (*data,)
 
-    return False, "", "", [], ""
+    return False, "", "", (), ""

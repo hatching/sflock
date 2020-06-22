@@ -12,7 +12,7 @@ def test_supported():
     assert supported()
 
 def test_count_supported():
-    count = 9
+    count = 10
 
     if DaaFile(None).supported():
         count += 1

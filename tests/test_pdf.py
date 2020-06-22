@@ -19,15 +19,14 @@ def test_pdf_embedded():
     assert m.handles() is True
     assert m.f.selected
     files = list(m.unpack())
-    assert not m.f.preview
-    assert m.f.package == "pdf"
+    assert m.f.extension == "pdf"
 
     assert len(files) == 1
     assert not files[0].filepath
     assert files[0].filename == "Q6TCWXPS.docm"
     assert files[0].filesize == 55494
-    assert files[0].package == "doc"
-    assert not files[0].selected
+    assert files[0].extension == "docm"
+    assert files[0].selected
     assert len(files[0].children) == 18
 
 def test_pdf_magic():
@@ -42,9 +41,9 @@ def test_pdf_is_embedded():
     m = ZipFile(File(contents=buf.getvalue()))
     files = list(m.unpack())
     assert len(files) == 1
-    assert files[0].package == "pdf"
+    assert files[0].extension == "pdf"
     assert len(files[0].children) == 1
-    assert files[0].children[0].package == "doc"
+    assert files[0].children[0].extension == "docm"
 
 def test_bypass_minimized():
     m = PdfFile(f("bypass_minimized.pdf"))
@@ -57,5 +56,5 @@ def test_bypass_minimized():
 def test_garbage():
     m = PdfFile(f("garbage.bin"))
     assert m.handles() is False
-    assert not m.f.selected
+    assert m.f.selected
     assert not m.unpack()

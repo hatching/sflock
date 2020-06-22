@@ -12,19 +12,19 @@ from sflock.main import unpack
 def test_empty():
     fd, filepath = tempfile.mkstemp()
     os.close(fd)
-    assert unpack(filepath).package is None
-    assert unpack(filepath).platform is None
+    assert unpack(filepath).extension == ""
+    assert unpack(filepath).platforms == ()
 
 def test_identify():
     f = unpack(contents=open("tests/files/sample.jar", "rb").read())
-    assert f.package == "jar"
+    assert f.extension == "jar"
     assert identify(File("tests/files/script.js")) == "js"
     assert identify(File("tests/files/script.wsf")) == "wsf"
     assert identify(File("tests/files/script.vbs")) == "vbs"
     assert identify(File("tests/files/script.ps1")) == "ps1"
 
     f = unpack(contents=open("tests/files/sample.apk", "rb").read())
-    assert f.package == "apk"
+    assert f.extension == "apk"
     assert identify(File("tests/files/maldoc_office.htm")) == "doc"
     assert identify(File("tests/files/maldoc.xls")) == "xls"
     assert identify(File("tests/files/test.hta_")) == "hta"
@@ -32,10 +32,9 @@ def test_identify():
 def test_ppt():
     f = unpack(contents=open("tests/files/ppt_1.pptx", "rb").read())
     assert f.duplicate is False
-    assert f.preview is False
-    assert f.selected is True
-    assert f.package == "ppt"
-    assert f.platform == "windows"
+    assert f.selected == False
+    assert f.extension == "zip" # based on magic/mime ..
+    assert f.platforms == ('windows', 'darwin', 'linux', 'android', 'ios')
     assert f.get_child("[Content_Types].xml") is not None
     assert len(f.children) == 37
 
@@ -43,44 +42,42 @@ def test_doc1():
     f = unpack("tests/files/doc_1.docx_")
     assert f.duplicate is False
     assert f.selected is True
-    assert f.preview is False
-    assert f.package == "doc"
-    assert f.platform == "windows"
+    assert f.extension == "thmx"
+    assert f.platforms == ('windows', 'darwin', 'linux', 'android', 'ios')
     assert f.get_child("[Content_Types].xml") is not None
     assert len(f.children) == 12
-    assert f.children[0].selected is False
-    assert f.children[4].selected is False
-    assert f.children[8].selected is False
-    assert f.children[11].selected is False
+    assert f.children[0].selected == True
+    assert f.children[4].selected == False
+    assert f.children[8].selected == False
+    assert f.children[11].selected == False
 
 def test_doc2():
     f = unpack("tests/files/doc_2.xlsx_")
     assert f.duplicate is False
     assert f.selected is True
-    assert f.preview is False
-    assert f.package == "xls"
-    assert f.platform == "windows"
+    assert f.extension == "xlsm"
+    assert f.platforms == ('windows', 'darwin', 'linux', 'android', 'ios')
     assert f.get_child("[Content_Types].xml") is not None
     assert len(f.children) == 12
-    assert f.children[0].selected is False
-    assert f.children[11].selected is False
+    assert f.children[0].selected == True
+    assert f.children[11].selected == False
 
 def test_oledoc1():
     f = unpack("tests/files/oledoc1.doc_")
-    assert f.package == "doc"
-    assert f.platform == "windows"
+    assert f.extension == "doc"
+    assert f.platforms == ('windows', 'darwin', 'linux', 'android', 'ios')
 
 def test_url():
     f = unpack("tests/files/1.url")
-    assert f.package == "ie"
-    assert f.platform == "windows"
+    assert f.extension == "txt"
+    assert f.platforms == ('windows', 'darwin', 'linux', 'android', 'ios')
 
 def test_slk():
     f = unpack("tests/files/1.slk")
-    assert f.package == "xls"
-    assert f.platform == "windows"
+    assert f.extension == "slk"
+    assert f.platforms == ('windows', 'darwin', 'linux', 'android', 'ios')
 
 def test_iqy():
     f = unpack("tests/files/1.iqy")
-    assert f.package == "xls"
-    assert f.platform == "windows"
+    assert f.extension == "iqy"
+    assert f.platforms == ('windows', 'darwin', 'linux', 'android', 'ios')

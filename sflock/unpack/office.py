@@ -8,6 +8,7 @@ from sflock.decode import plugins
 class OfficeFile(Unpacker):
     name = "office"
     package = "doc", "xls", "ppt"
+    magic = ["Composite Document File", "CDFV2 Encrypted"]
 
     def supported(self):
         return True
@@ -27,7 +28,6 @@ class OfficeFile(Unpacker):
         f = self.bruteforce(password)
         if f:
             entries.append(f)
-            self.f.selected = False
 
         ret = self.process(entries, duplicates, depth)
         f and ident(f)

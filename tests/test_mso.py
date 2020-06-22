@@ -13,6 +13,6 @@ def f(filename):
 def test_garbage():
     m = MsoFile(f("garbage.bin"))
     assert m.handles() is False
-    assert not m.f.selected
+    assert m.f.selected
     assert not m.unpack()
     assert m.f.mode == "failed"

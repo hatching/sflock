@@ -6,6 +6,7 @@ import io
 import os.path
 import tempfile
 import zipfile
+import pytest
 
 from sflock.abstracts import File
 from sflock.main import unpack, zipify
@@ -20,7 +21,6 @@ class TestZipfile(object):
         z = ZipFile(f("zip_plain.zip"))
         assert z.handles() is True
         assert not z.f.selected
-        assert z.f.preview is True
         files = list(z.unpack())
         assert len(files) == 1
         assert not files[0].filepath
@@ -30,14 +30,12 @@ class TestZipfile(object):
         assert files[0].magic == "ASCII text"
         assert files[0].parentdirs == []
         assert not files[0].selected
-        assert files[0].preview is True
 
     def test_zip_encrypted(self):
         assert "Zip archive" in f("zip_encrypted.zip").magic
         z = ZipFile(f("zip_encrypted.zip"))
         assert z.handles() is True
         assert not z.f.selected
-        assert z.f.preview is True
         files = list(z.unpack())
         assert len(files) == 1
         assert files[0].relapath == "sflock.txt"
@@ -116,19 +114,19 @@ class TestZipfile(object):
 
     def test_heuristics(self):
         t = unpack("tests/files/zip_plain.zip", filename="foo")
-        assert t.unpacker == "zipfile"
+        assert t.unpacker == "7zfile"
         assert t.filename == "foo"
 
         t = unpack("tests/files/zip_nested.zip", filename="foo")
-        assert t.unpacker == "zipfile"
+        assert t.unpacker == "7zfile"
         assert t.filename == "foo"
 
         t = unpack("tests/files/zip_nested2.zip", filename="foo")
-        assert t.unpacker == "zipfile"
+        assert t.unpacker == "7zfile"
         assert t.filename == "foo"
 
         t = unpack("tests/files/zip_encrypted.zip", filename="foo")
-        assert t.unpacker == "zipfile"
+        assert t.unpacker == "7zfile"
         assert t.filename == "foo"
 
         t = unpack("tests/files/zip_encrypted2.zip", filename="foo")
@@ -138,7 +136,7 @@ class TestZipfile(object):
     def test_garbage(self):
         t = ZipFile(f("garbage.bin"))
         assert t.handles() is False
-        assert not t.f.selected
+        assert t.f.selected
         assert not t.unpack()
         assert t.f.mode == "failed"
 
@@ -146,7 +144,6 @@ class TestZipfile(object):
         t = ZipFile(f("zip_garbage.zip"))
         assert t.handles() is True
         assert not t.f.selected
-        assert t.f.preview is True
         files = t.unpack()
         assert len(files) == 1
         assert not files[0].children
@@ -162,10 +159,10 @@ class TestZipfile(object):
         ))
         assert len(f.children) == 1
         assert f.children[0].filename == "path"
-        assert f.children[0].relapath == "/absolute/path"
+        assert f.children[0].relapath == "absolute/path"
         assert f.children[0].relaname == "absolute/path"
         assert f.children[0].contents == b"A"*1024
-        assert f.read("/absolute/path") == b"A"*1024
+        assert f.read("absolute/path") == b"A"*1024
 
     def test_docx1(self):
         t = ZipFile(f("doc_1.docx_"))
@@ -216,6 +213,7 @@ class TestZipfile(object):
         filepath = os.path.join(dirpath, "1.js")
         assert open(filepath, "rb").read() == b"baz"
 
+    @pytest.mark.skip(reason="Zipjail command line requires user interaction")
     def test_invalid_characters(self):
         """Tests .zip files with invalid character filenames in it, which
         can't be unpacked on Windows."""

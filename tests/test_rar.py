@@ -19,7 +19,7 @@ class TestRarFile:
         assert "RAR archive" in f("rar_plain.rar").magic
         t = RarFile(f("rar_plain.rar"))
         assert t.handles() is True
-        assert not t.f.selected
+        assert t.f.selected
         files = list(t.unpack())
         assert len(files) == 1
         assert not files[0].filepath
@@ -33,7 +33,7 @@ class TestRarFile:
         assert "RAR archive" in f("rar_nested.rar").magic
         t = RarFile(f("rar_nested.rar"))
         assert t.handles() is True
-        assert not t.f.selected
+        assert t.f.selected
         files = list(t.unpack())
         assert len(files) == 1
 
@@ -48,7 +48,7 @@ class TestRarFile:
         assert "RAR archive" in f("rar_nested2.rar").magic
         t = RarFile(f("rar_nested2.rar"))
         assert t.handles() is True
-        assert not t.f.selected
+        assert t.f.selected
         files = list(t.unpack())
         assert len(files) == 1
 
@@ -63,7 +63,7 @@ class TestRarFile:
         assert "RAR archive" in f("sflock_encrypted.rar").magic
         z = RarFile(f("sflock_encrypted.rar"))
         assert z.handles() is True
-        assert not z.f.selected
+        assert z.f.selected
         files = list(z.unpack(password="infected"))
         assert len(files) == 1
         assert files[0].relapath == "sflock.txt"
@@ -111,14 +111,14 @@ class TestRarFile:
     def test_garbage(self):
         t = RarFile(f("garbage.bin"))
         assert t.handles() is False
-        assert not t.f.selected
+        assert t.f.selected
         assert not t.unpack()
         assert t.f.mode == "failed"
 
     def test_garbage2(self):
         t = RarFile(f("rar_garbage.rar"))
         assert t.handles() is True
-        assert not t.f.selected
+        assert t.f.selected
         files = t.unpack()
         assert len(files) == 1
         assert not files[0].children
