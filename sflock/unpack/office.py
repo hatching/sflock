@@ -27,7 +27,6 @@ class OfficeFile(Unpacker):
         f = self.bruteforce(password)
         if f:
             entries.append(f)
-            self.f.preview = True
             self.f.selected = False
 
         ret = self.process(entries, duplicates, depth)

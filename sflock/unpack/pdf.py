@@ -73,6 +73,5 @@ class PdfFile(Unpacker):
 
         if temporary:
             os.unlink(filepath)
-        if entries:
-            self.f.preview = False
+
         return self.process(entries, duplicates, depth)

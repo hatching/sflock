@@ -239,7 +239,6 @@ class File(object):
         self.duplicate = False
         self.unpacker = None
         self.parent = None
-        self.preview = True
         self.archive = False
         # Extract the filename from any of the available path components.
         self.filename = ntpath.basename(
@@ -488,7 +487,6 @@ class File(object):
             "selected": self.selected,
             "dependency": self._dependency,
             "dependency_version": self._dependency_version,
-            "preview": self.preview,
             "error": self.error,
         }
 
@@ -509,7 +507,6 @@ class File(object):
             "selected": self.selected,
             "type": "container" if self.children else "file",
             "children": [],
-            "preview": self.preview,
             "error": self.error,
         }
 
@@ -532,8 +529,7 @@ class File(object):
             entry.append({
                 "type": "directory",
                 "filename": name,
-                "children": [],
-                "preview": True,
+                "children": []
             })
             return entry[-1]
         for child in self.children:
