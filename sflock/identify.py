@@ -20,8 +20,10 @@ class Deps:
     MULTIMEDIA = "multimedia"
     FLASH = "flash"
     POWERSHELL = "powershell"
-    UNRAR = "unrar"
+    UNARCHIVE = "unarchive"
     QUICKTIME = "quicktime"
+    ACE = "ace"
+    ARC = "ARC"
 
 class Platform:
     WINDOWS = "windows"
@@ -85,7 +87,7 @@ def ZIP(f):
             return "Word document", "docx", Platform.ANY, Deps.WORD
     if java(f):
         return "JAR file", "jar", (Platform.WINDOWS, Platform.MACOS, Platform.LINUX, Platform.ANDROID), Deps.JAVA
-    return "ZIP file", "zip", Platform.ANY, Deps.UNRAR
+    return "ZIP file", "zip", Platform.ANY, Deps.UNARCHIVE
 
 def JAR(f):
     if f.get_child("AndroidManifest.xml"):
@@ -203,11 +205,11 @@ string_matches = [
     # Archive/compression related
     #
     (False, ['7-zip'], "x-7z-compressed", "7zip", "Compressed archive",
-     Platform.ANY_DESKTOP, Deps.UNRAR),
-    (False, ['bzip2'], "x-bzip2", "bzip", "Compressed file", (Platform.LINUX,), Deps.UNRAR),
-    (False, ['gzip'], "gzip", "gz", "Compression file", (Platform.WINDOWS,), Deps.UNRAR),
+     Platform.ANY_DESKTOP, Deps.UNARCHIVE),
+    (False, ['bzip2'], "x-bzip2", "bzip", "Compressed file", (Platform.LINUX,), Deps.UNARCHIVE),
+    (False, ['gzip'], "gzip", "gz", "Compression file", (Platform.LINUX,), Deps.UNARCHIVE),
     (True, ['ACE', 'archive'], "octet-stream", "ace", "ACE archive",
-     Platform.ANY_DESKTOP, Deps.UNRAR),
+     Platform.ANY_DESKTOP, Deps.ACE),
     (False, ['MS', 'Compress'], "octet-stream", "zip",
      "Microsoft (de)compressor", (Platform.WINDOWS,)),
     (False, ['Microsoft', 'Cabinet', 'archive', 'data'], "vnd.ms-cab",
@@ -215,16 +217,16 @@ string_matches = [
     (True, ['POSIX', 'tar'], "tar", "tar",
      "Consolidated Unix File Archive", (Platform.LINUX,)),
     (True, ['RAR'], "rar", "rar", "WinRAR Compressed Archive",
-     Platform.ANY_DESKTOP, Deps.UNRAR),
+     Platform.ANY_DESKTOP, Deps.UNARCHIVE),
     (False, ['KGB'], "octet-stream", "kgb",
      "Discontinued file archiver ",
      (Platform.WINDOWS, Platform.LINUX)),
     (False, ['ASD', 'archive'], "octet-stream", "asd",
      "ASD archive", (Platform.WINDOWS,)),
     (False, ['ARJ'], "x-arj", "arj", "Compressed file archive",
-     (Platform.WINDOWS, Platform.MACOS)),
+     (Platform.WINDOWS, Platform.MACOS), Deps.UNARCHIVE),
     (False, ['ARC'], "x-arc", "arc", "Compressed file",
-     (Platform.WINDOWS, Platform.MACOS)),
+     (Platform.WINDOWS, Platform.MACOS), Deps.ARC),
     
     #
     # Apple related
@@ -408,7 +410,7 @@ func_matches = [
 ]
 
 def identify(f):
-    # return: selected, name, extension, platform
+    # return: selected, name, extension, platform, dependencies
     # Loop through every potential match
     fmagic = [i.replace(",", "") for i in f.magic.split(" ")]
 
@@ -438,3 +440,5 @@ def identify(f):
                 return (selected, *data, "")
 
             return (selected, *data)
+
+    return False, "", "", [], ""
