@@ -7,8 +7,14 @@ import io
 import os.path
 import tempfile
 import zipfile
+import pytest
 
 from sflock.main import unpack, supported
+from sflock.exception import MaxNestedError
+
+def test_unpack_nested_max():
+    with pytest.raises(MaxNestedError):
+        unpack("tests/files/edge/data11.zip")
 
 def test_unpack1():
     f = unpack("tests/files/tar_plain.tar")
