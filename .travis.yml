@@ -29,7 +29,7 @@ install:
   - pip install --upgrade pytest pytest-cov codecov coveralls mock
 
 script:
-  -  [[ $TRAVIS_OS_NAME == "linux" ]] && sudo apt update'
+  - '[[ $TRAVIS_OS_NAME == "linux" ]] && sudo apt update'
   - '[[ $TRAVIS_OS_NAME == "linux" ]] && sudo apt -y install p7zip-full rar unace-nonfree cabextract'
   - 'pytest --cov=sflock --cov-append'
 
