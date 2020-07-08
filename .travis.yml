@@ -25,10 +25,10 @@ matrix:
 
 install:
   - pip install -e .
-  - pip install pytest pytest-cov codecov coveralls mock
+  - pip install --upgrade pytest pytest-cov codecov coveralls mock
 
 script:
-  - 'py.test --cov=sflock'
+  - 'pytest --cov=sflock'
 
   - '[[ $TRAVIS_OS_NAME == "linux" ]] && sudo apt-get -y install p7zip-full rar unace-nonfree cabextract || true'
   - '[[ $TRAVIS_OS_NAME == "linux" ]] && py.test --cov=sflock --cov-append || true'
