@@ -1,4 +1,5 @@
 language: python
+dist: bionic
 
 matrix:
   fast_finish: true
@@ -28,10 +29,8 @@ install:
   - pip install --upgrade pytest pytest-cov codecov coveralls mock
 
 script:
-  - 'pytest --cov=sflock'
-
-  - '[[ $TRAVIS_OS_NAME == "linux" ]] && sudo apt-get -y install p7zip-full rar unace-nonfree cabextract || true'
-  - '[[ $TRAVIS_OS_NAME == "linux" ]] && py.test --cov=sflock --cov-append || true'
+  - '[[ $TRAVIS_OS_NAME == "linux" ]] && sudo apt -y install p7zip-full rar unace-nonfree cabextract || true'
+  - 'pytest --cov=sflock --cov-append'
 
   - python -c 'import sflock, sys ; assert "pkg_resources" not in sys.modules'
 
