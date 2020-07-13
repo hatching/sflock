@@ -81,13 +81,6 @@ def office_zip(f):
 
     return packages.get(application.group(1))
 
-def office_ole(f):
-    files = f.ole and f.ole.listdir() or []
-    if ["WordDocument"] in files:
-        return "doc"
-    if ["Workbook"] in files:
-        return "xls"
-
 def powershell(f):
     POWERSHELL_STRS = [
         b"$PSHOME", b"Get-WmiObject", b"Write-", b"new-object",
@@ -163,23 +156,3 @@ def java(f):
         return
     return "jar"
 
-def android(f):
-    if not f.get_child("AndroidManifest.xml"):
-        return
-    if not f.get_child("classes.dex"):
-        return
-    return "apk"
-
-def identify(f):
-    if not f.stream.read(0x1000):
-        return
-
-    for identifier in identifiers:
-        package = identifier(f)
-        if package:
-            return package
-
-identifiers = [
-    office_zip, office_ole, office_webarchive, office_activemime,
-    hta, powershell, javascript, visualbasic, android, java, wsf,
-]
