@@ -9,8 +9,6 @@ import logging
 import os
 import sys
 
-import sflock
-
 from sflock.misc import data_file
 
 log = logging.getLogger(__name__)

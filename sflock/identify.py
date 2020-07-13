@@ -1,4 +1,3 @@
-import re
 from sflock.ident import javascript, powershell, wsf, visualbasic, java, ruby
 
 ttf_hdr = (

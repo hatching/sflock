@@ -6,7 +6,6 @@
 import bz2
 import gzip
 import os
-import shutil
 import tarfile
 import tempfile
 

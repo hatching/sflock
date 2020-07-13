@@ -5,7 +5,6 @@
 
 import os
 import shutil
-import subprocess
 import tempfile
 
 from sflock.abstracts import Unpacker

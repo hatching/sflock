@@ -4,11 +4,9 @@
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 import os
-import subprocess
 import tempfile
 
 from sflock.abstracts import Unpacker
-from sflock.exception import UnpackException
 
 class Zip7File(Unpacker):
     name = "7zfile"

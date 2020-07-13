@@ -7,8 +7,6 @@ import hashlib
 import struct
 import xml.dom.minidom
 
-# from Crypto.Cipher import PKCS1_v1_5
-# from Crypto.PublicKey import RSA
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 

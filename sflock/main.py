@@ -14,8 +14,6 @@ import zipfile
 
 from sflock.abstracts import File, Unpacker
 from sflock.exception import IncorrectUsageException
-#from sflock.ident import identify
-from sflock.identify import identify
 from sflock.misc import make_list
 from sflock.unpack import plugins
 

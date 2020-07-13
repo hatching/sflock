@@ -1,7 +1,10 @@
-from sflock.main import unpack
+# Copyright (C) 2017-2020 Jurriaan Bremer.
+# This file is part of SFlock - http://www.sflock.org/.
+# See the file 'docs/LICENSE.txt' for copying permission.
+
 import os
-import pytest
-from sflock import exception
+
+from sflock.main import unpack
 
 path = os.path.join("tests", "files", "extension")
 
