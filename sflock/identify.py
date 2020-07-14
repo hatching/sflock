@@ -16,7 +16,7 @@ class Deps:
     PDF = "acrobat_reader"
     PERL = "perl"
     DOTNET = "microsoft_dotnet"
-    MULTIMEDIA = "multimedia"
+    MEDIAPLAYER = "mediaplayer"
     FLASH = "flash"
     POWERSHELL = "powershell"
     UNARCHIVE = "unarchive"
@@ -270,32 +270,32 @@ string_matches = [
     #
     # Audio / video 
     #
-    (False, ['RIFF'], "x-wav", "wav", "WAVE Audio File", (Platform.WINDOWS,), Deps.MULTIMEDIA),
+    (False, ['RIFF'], "x-wav", "wav", "WAVE Audio File", (Platform.WINDOWS,), Deps.MEDIAPLAYER),
     (True, ['Macromedia', 'Flash', 'data', '(compressed)'],
      "x-shockwave-flash", "swf", "Shockwave Flash Movie", (Platform.WINDOWS,), Deps.FLASH),  # todo
     (True, ['RIFF'], "msvideo", "avi", "Audio Video Interleave File",
-     (Platform.WINDOWS,), Deps.MULTIMEDIA),
+     (Platform.WINDOWS,), Deps.MEDIAPLAYER),
     (True, ['Macromedia', 'Flash', 'Video'], "x-flv", "flv",
      "Flash Video File", (Platform.WINDOWS,), Deps.FLASH),  
     (False, ['ISO'], "quicktime", "qt", "QuickTime file", (Platform.MACOS,), Deps.QUICKTIME), # todo, make magic more specific
     (False, ['MPEG', 'sequence'], "", "mpeg",
      "Compression for video and audio",
-     (Platform.WINDOWS,), Deps.MULTIMEDIA),
+     (Platform.WINDOWS,), Deps.MEDIAPLAYER),
     (False, ['MPEG', 'transport'], "", "mpeg",
      "Compression for video and audio",
-     (Platform.WINDOWS,), Deps.MULTIMEDIA),
+     (Platform.WINDOWS,), Deps.MEDIAPLAYER),
     (False, ['PCH', 'ROM'], "octet", "rom", "N64 Game ROM File",
      (Platform.WINDOWS,)),
     (False, ['ISO', 'Media'], "video/mp4", "mp4", "MPEG-4 Video File",
-     Platform.ANY, Deps.MULTIMEDIA),
+     Platform.ANY, Deps.MEDIAPLAYER),
     (True, ['contains:MPEG'], "mpeg", "mp3", "MP3 Audio File",
-     (Platform.ANY), Deps.MULTIMEDIA),  
+     (Platform.ANY), Deps.MEDIAPLAYER),
     (False, ['3GPP', 'MPEG', 'v4'], "octet-stream", "3gp",
-     "3GPP Multimedia File", (Platform.WINDOWS,), Deps.MULTIMEDIA), 
+     "3GPP Multimedia File", (Platform.WINDOWS,), Deps.MEDIAPLAYER),
     (False, ['FLAC'], "x-flac", "flac", "Free lossless audio codec",
-     (Platform.WINDOWS), Deps.MULTIMEDIA),    
-    (False, ['FLC'], "x-flc", "flc", "Animation file", (Platform.MACOS,), Deps.MULTIMEDIA),
-    (False, ['RealMedia', 'file'], "vnd.rn-realmedia", "rm", "RealMedia file", (Platform.WINDOWS,), Deps.MULTIMEDIA), 
+     (Platform.WINDOWS), Deps.MEDIAPLAYER),
+    (False, ['FLC'], "x-flc", "flc", "Animation file", (Platform.MACOS,), Deps.MEDIAPLAYER),
+    (False, ['RealMedia', 'file'], "vnd.rn-realmedia", "rm", "RealMedia file", (Platform.WINDOWS,), Deps.MEDIAPLAYER),
     
     #
     #  Scripts
