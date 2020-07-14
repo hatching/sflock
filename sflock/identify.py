@@ -99,7 +99,6 @@ def OCTET(f):
         return True, "Windows script file", "wsf", (Platform.WINDOWS,)
     if f.contents.startswith(ttf_hdr):
         return False, "TrueType Font", "ttf", (Platform.WINDOWS,)
-    return True, "octet", "", (Platform.WINDOWS,)
 
 # This function is used to distinct DLL and EXE. This was unable to work on
 # magic and mime. Because DLL files are matching positive on EXE mime/magic
@@ -433,9 +432,9 @@ def identify(f):
             # Check if there is already a match found (on a non function match)
             # The non function matches are narrower
             data = match[2](f)
-            if len(data) == 4:
-                return (*data, "")
-
-            return (*data,)
+            if data:
+                if len(data) == 4:
+                    return (*data, "")
+                return (*data,)
 
     return False, "", "", (), ""
