@@ -129,6 +129,8 @@ class Unpacker(object):
 
         ret = []
         for f in entries:
+            if f.filename and f.filename.strip() == "":
+                continue
             for unpacker in Unpacker.guess(f):
                 plugin = self.plugins[unpacker](f)
                 if plugin.supported():
