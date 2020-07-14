@@ -11,6 +11,8 @@ import pytest
 
 from sflock.main import unpack, supported
 from sflock.exception import MaxNestedError
+from sflock.abstracts import File
+from sflock.unpack.zip7 import Zip7File
 
 def test_unpack_nested_max():
     with pytest.raises(MaxNestedError):
@@ -431,7 +433,7 @@ def test_extract4_nopreserve():
     assert os.path.exists(filepath)
     assert open(filepath, "rb").read() == b"B"*1024
 
-def test_extract5_relative():
+def test_extract5_relative_no_spf():
     buf = io.BytesIO()
     z = zipfile.ZipFile(buf, "w")
     z.writestr("foobarfilename", "A"*1024)
@@ -441,9 +443,42 @@ def test_extract5_relative():
         b"thisisfilename", b"/../../../rela"
     ))
     dirpath = tempfile.mkdtemp(prefix="sfl")
-    f.extract(dirpath, preserve=True)
-    assert len(os.listdir(dirpath)) == 1
 
+    f.extract(dirpath, preserve=True)
+    assert len(os.listdir(dirpath)) == 2
+
+    filepath = os.path.join(dirpath, "foobarfilename")
+    assert open(filepath, "rb").read() == b"A"*1024
+
+def test_extract5_relative_spf():
+    """
+    This test demonstrates the 7z unpacking using the -spf flag
+
+    This flag enables 7z to enter an unsafe mode, it will try to write
+    files to a relative directory.
+
+    In this test Zipjail will catch the directory_traversal error
+    """
+    buf = io.BytesIO()
+    z = zipfile.ZipFile(buf, "w")
+    z.writestr("foobarfilename", "A"*1024)
+    z.writestr("thisisfilename", "B"*1024)
+    z.close()
+
+    contents = buf.getvalue().replace(
+        b"thisisfilename", b"/../../../rela"
+    )
+    f = File(None, contents, filename=None)
+    filepath = f.temp_path(b".7z")
+    dirpath = tempfile.mkdtemp()
+    u = Zip7File(f)
+    u.name = "7zfile"
+    args = ["-spf"]
+    u.zipjail(
+        filepath, dirpath, "x", "-mmt=off", "-o%s" % dirpath, filepath, *args
+    )
+    assert f.error == "directory_traversal"
+    assert len(os.listdir(dirpath)) == 1
     filepath = os.path.join(dirpath, "foobarfilename")
     assert open(filepath, "rb").read() == b"A"*1024
 
