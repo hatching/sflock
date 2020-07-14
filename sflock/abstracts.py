@@ -252,6 +252,7 @@ class File(object):
         self._contents = contents
         self._platforms = platforms
         self._selected = selected
+        self._identified = False
         self._human_type = None
         self._extension = None
         self._dependency_version = None
@@ -296,7 +297,10 @@ class File(object):
         self._stream.seek(0)
         return self._stream
 
-    def __identify(self):
+    def _identify(self):
+        if self._identified:
+            return
+        self._identified = True
         data = identify(self)
         if data:
             self._selected = data[0]
@@ -306,7 +310,7 @@ class File(object):
             self._dependency = data[4]
             self._dependency_version = ""
 
-    def __hashes(self):
+    def _hashes(self):
         sha256, s, buf = hashlib.sha256(), self.stream, True
         sha1 = hashlib.sha1()
         md5 = hashlib.md5()
@@ -323,19 +327,19 @@ class File(object):
     @property
     def md5(self):
         if not self._md5:
-            self.__hashes()
+            self._hashes()
         return self._md5
 
     @property
     def sha1(self):
         if not self._sha1:
-            self.__hashes()
+            self._hashes()
         return self._sha1
 
     @property
     def sha256(self):
         if not self._sha256:
-            self.__hashes()
+            self._hashes()
         return self._sha256
 
     @property
@@ -395,37 +399,37 @@ class File(object):
     @property
     def dependency(self):
         if self._dependency is None:
-            self.__identify()
+            self._identify()
         return self._dependency
 
     @property
     def dependency_version(self):
         if self._dependency_version is None:
-            self.__identify()
+            self._identify()
         return self._dependency_version
 
     @property
     def extension(self):
         if self._extension is None:
-            self.__identify()
+            self._identify()
         return self._extension
 
     @property
     def human_type(self):
         if self._human_type is None:
-            self.__identify()
+            self._identify()
         return self._human_type
 
     @property
     def platforms(self):
         if self._platforms is None:
-            self.__identify()
+            self._identify()
         return self._platforms
 
     @property
     def selected(self):
         if self._selected is None:
-            self.__identify()
+            self._identify()
         return self._selected
 
     @property
