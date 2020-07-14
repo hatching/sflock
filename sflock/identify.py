@@ -1,4 +1,4 @@
-from sflock.ident import javascript, powershell, wsf, visualbasic, java, ruby
+from sflock.ident import javascript, powershell, wsf, visualbasic, java, ruby, office_zip
 
 ttf_hdr = (
     b'\x00\x01\x00\x00\x00\xff\xff\xff\xff\x01\x00\x00\x00\x00\x00\x00'
@@ -86,6 +86,15 @@ def ZIP(f):
             return True, "Word document", "docx", Platform.ANY, Deps.WORD
     if java(f):
         return True, "JAR file", "jar", (Platform.WINDOWS, Platform.MACOS, Platform.LINUX, Platform.ANDROID), Deps.JAVA
+
+    office = office_zip(f)
+    if office == "doc":
+        return True, "Word document", "doc", Platform.ANY, Deps.WORD
+    if office == "ppt":
+        return True, "PowerPoint document", "ppt", Platform.ANY, Deps.POWERPOINT
+    if office == "xls":
+        return True, "Excel document", "xls", Platform.ANY, Deps.EXCEL
+
     return False, "ZIP file", "zip", Platform.ANY, Deps.UNARCHIVE
 
 def JAR(f):
