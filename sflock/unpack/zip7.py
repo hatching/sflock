@@ -13,7 +13,7 @@ class Zip7File(Unpacker):
     exe = "/usr/bin/7z"
     exts = ".7z", ".iso", ".zip"
     # TODO Should we use "isoparser" (check PyPI) instead of 7z?
-    magic = "7-zip archive", "ISO 9660"
+    magic = "7-zip archive", "ISO 9660", "CDFV2 Encrypted"
     priority = 1
 
     def handles(self):

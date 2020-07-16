@@ -33,3 +33,10 @@ def test_passwords():
 
     z = unpack(f2("zip_encrypted2.zip"), password=["sflock"])
     assert z.children[0].magic == "ASCII text"
+
+def test_decode_xlsx():
+    z = unpack(f2("xlsx_encoded.xlsx")).children
+    assert len(z) == 2
+    filenames = [x.filename for x in z]
+    assert "EncryptionInfo" in filenames
+    assert "EncryptedPackage" in filenames

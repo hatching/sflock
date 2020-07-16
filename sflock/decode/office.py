@@ -136,9 +136,13 @@ class Office(Decoder):
         if ["EncryptionInfo"] not in self.f.ole.listdir():
             return
 
-        info = xml.dom.minidom.parseString(
-            self.f.ole.openstream("EncryptionInfo").read()[8:]
-        )
+        try:
+            info = xml.dom.minidom.parseString(
+                self.f.ole.openstream("EncryptionInfo").read()[8:]
+            )
+        except xml.parsers.expat.ExpatError:
+            return
+
         key_data = info.getElementsByTagName("keyData")[0]
         password = info.getElementsByTagName("p:encryptedKey")[0]
 
