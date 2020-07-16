@@ -39,6 +39,7 @@ def test_bup_plain():
 def test_garbage():
     t = BupFile(f("garbage.bin"))
     assert t.handles() is False
-    assert t.f.selected
+    assert not t.f.selected
+    assert t.f.identified
     assert not t.unpack()
     assert t.f.mode == "failed"

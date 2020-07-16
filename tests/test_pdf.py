@@ -56,5 +56,6 @@ def test_bypass_minimized():
 def test_garbage():
     m = PdfFile(f("garbage.bin"))
     assert m.handles() is False
-    assert m.f.selected
+    assert not m.f.selected
+    assert m.f.identified
     assert not m.unpack()

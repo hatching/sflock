@@ -92,7 +92,8 @@ class Test7zFile(object):
     def test_garbage(self):
         t = Zip7File(f("garbage.bin"))
         assert t.handles() is False
-        assert t.f.selected
+        assert not t.f.selected
+        assert t.f.identified
         assert not t.unpack()
         assert t.f.mode == "failed"
 

@@ -446,4 +446,4 @@ def identify(f):
                     return (*data, "")
                 return (*data,)
 
-    return False, "", "", (), ""
+    return None

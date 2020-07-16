@@ -90,5 +90,6 @@ def test_eml_exception():
 def test_garbage():
     t = EmlFile(f("garbage.bin"))
     assert t.handles() is False
-    assert t.f.selected
+    assert not t.f.selected
+    assert t.f.identified
     assert not t.unpack()

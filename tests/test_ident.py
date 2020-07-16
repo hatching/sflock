@@ -21,10 +21,10 @@ def test_identify():
     assert f.extension == "apk"
 
 def test_ppt():
-    f = unpack(contents=open("tests/files/ppt_1.pptx", "rb").read())
+    f = unpack(contents=open("tests/files/ppt_1.ppt", "rb").read())
     assert f.duplicate is False
-    assert f.selected == False
-    assert f.extension == "zip" # based on magic/mime ..
+    assert f.selected
+    assert f.extension == "ppt" # based on magic/mime ..
     assert f.platforms == ('windows', 'darwin', 'linux', 'android', 'ios')
     assert f.get_child("[Content_Types].xml") is not None
     assert len(f.children) == 37

@@ -112,7 +112,8 @@ class TestRarFile:
     def test_garbage(self):
         t = RarFile(f("garbage.bin"))
         assert t.handles() is False
-        assert t.f.selected
+        assert not t.f.selected
+        assert t.f.identified
         assert not t.unpack()
         assert t.f.mode == "failed"
 

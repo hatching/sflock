@@ -39,14 +39,15 @@ def test_msg_embedded():
     assert not files[2].filepath
     assert files[2].relapath == "oledata.mso"
     assert files[2].filesize == 234898
-    assert files[2].platforms == ("windows",)
-    assert files[2].selected == True
+    assert files[2].platforms == ()
+    assert not files[2].selected
+    assert files[2].identified
 
     assert len(files[2].children) == 1
     assert not files[2].children[0].filepath
     assert files[2].children[0].relapath == "Firefox Setup Stub 43.0.1.exe"
     assert files[2].children[0].filesize == 249336
-    assert files[2].children[0].selected == False
+    assert files[2].children[0].selected
 
     assert hashlib.md5(
         files[2].children[0].contents
@@ -84,6 +85,7 @@ def test_msg_rtf_magic():
 def test_garbage():
     m = MsgFile(f("garbage.bin"))
     assert m.handles() is False
-    assert m.f.selected
+    assert not m.f.selected
+    assert m.f.identified
     assert not m.unpack()
     assert m.f.mode == "failed"

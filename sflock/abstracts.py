@@ -232,7 +232,7 @@ class File(object):
 
     def __init__(self, filepath=None, contents=None, relapath=None,
                  filename=None, mode=None, password=None, description=None,
-                 selected=None, stream=None, platforms=None):
+                 selected=False, stream=None, platforms=()):
 
         self.filepath = filepath
         self.relapath = relapath
@@ -245,6 +245,7 @@ class File(object):
         self.unpacker = None
         self.parent = None
         self.archive = False
+        self.identified = True
         # Extract the filename from any of the available path components.
         self.filename = ntpath.basename(
             filename or self.relapath or self.filepath or ""
@@ -252,11 +253,11 @@ class File(object):
         self._contents = contents
         self._platforms = platforms
         self._selected = selected
-        self._identified = False
-        self._human_type = None
-        self._extension = None
-        self._dependency_version = None
-        self._dependency = None
+        self._identified_ran = False
+        self._human_type = ""
+        self._extension = ""
+        self._dependency_version = ""
+        self._dependency = ""
         self._md5 = None
         self._sha1 = None
         self._sha256 = None
@@ -298,9 +299,9 @@ class File(object):
         return self._stream
 
     def _identify(self):
-        if self._identified:
+        if self._identified_ran:
             return
-        self._identified = True
+        self._identified_ran = True
         data = identify(self)
         if data:
             self._selected = data[0]
@@ -309,6 +310,7 @@ class File(object):
             self._platforms = data[3]
             self._dependency = data[4]
             self._dependency_version = ""
+            self.identified = True
 
     def _hashes(self):
         sha256, s, buf = hashlib.sha256(), self.stream, True
@@ -398,37 +400,37 @@ class File(object):
     
     @property
     def dependency(self):
-        if self._dependency is None:
+        if not self._identified_ran:
             self._identify()
         return self._dependency
 
     @property
     def dependency_version(self):
-        if self._dependency_version is None:
+        if not self._identified_ran:
             self._identify()
         return self._dependency_version
 
     @property
     def extension(self):
-        if self._extension is None:
+        if not self._identified_ran:
             self._identify()
         return self._extension
 
     @property
     def human_type(self):
-        if self._human_type is None:
+        if not self._identified_ran:
             self._identify()
         return self._human_type
 
     @property
     def platforms(self):
-        if self._platforms is None:
+        if not self._identified_ran:
             self._identify()
         return self._platforms
 
     @property
     def selected(self):
-        if self._selected is None:
+        if not self._identified_ran:
             self._identify()
         return self._selected
 
@@ -492,6 +494,7 @@ class File(object):
             "sha256": self.sha256,
             "md5": self.md5,
             "sha1": self.sha1,
+            "identified": self.identified,
             "platforms": self.platforms,
             "selected": self.selected,
             "dependency": self._dependency,
@@ -512,6 +515,7 @@ class File(object):
             "relaname": self.relaname,
             "extrpath": self.extrpath,
             "size": self.filesize,
+            "identified": self.identified,
             "platforms": self.platforms,
             "selected": self.selected,
             "type": "container" if self.children else "file",
