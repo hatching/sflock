@@ -211,7 +211,7 @@ string_matches = [
     #
     # Archive/compression related
     #
-    (False, ['7-zip'], "x-7z-compressed", "7zip", "Compressed archive",
+    (False, ['7-zip'], "x-7z-compressed", "7z", "Compressed archive",
      Platform.ANY_DESKTOP, Deps.UNARCHIVE),
     (False, ['bzip2'], "x-bzip2", "bzip", "Compressed file", (Platform.LINUX,), Deps.UNARCHIVE),
     (False, ['gzip'], "gzip", "gz", "Compression file", (Platform.LINUX,), Deps.UNARCHIVE),
