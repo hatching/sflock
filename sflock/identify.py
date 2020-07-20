@@ -22,7 +22,7 @@ class Deps:
     UNARCHIVE = "unarchive"
     QUICKTIME = "quicktime"
     ACE = "ace"
-    ARC = "ARC"
+    ARC = "arc"
 
 class Platform:
     WINDOWS = "windows"
