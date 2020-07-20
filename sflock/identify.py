@@ -84,6 +84,8 @@ def ZIP(f):
             return True, "Excel document", "xlsx", Platform.ANY, Deps.EXCEL
         if i.filename.lower() == "worddocument.xml":
             return True, "Word document", "docx", Platform.ANY, Deps.WORD
+        if i.magic == "AppleDouble encoded Macintosh file":
+            return True, "Mountable disk image", "dmg", Platform.MACOS
     if java(f):
         return True, "JAR file", "jar", (Platform.WINDOWS, Platform.MACOS, Platform.LINUX, Platform.ANDROID), Deps.JAVA
 
