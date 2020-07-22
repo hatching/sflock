@@ -245,7 +245,7 @@ class File(object):
         self.unpacker = None
         self.parent = None
         self.archive = False
-        self.identified = True
+        self.identified = False
         # Extract the filename from any of the available path components.
         self.filename = ntpath.basename(
             filename or self.relapath or self.filepath or ""
