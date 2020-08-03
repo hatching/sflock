@@ -232,7 +232,7 @@ class File(object):
 
     def __init__(self, filepath=None, contents=None, relapath=None,
                  filename=None, mode=None, password=None, description=None,
-                 selected=False, stream=None, platforms=()):
+                 selected=False, stream=None, platforms=[]):
 
         self.filepath = filepath
         self.relapath = relapath
@@ -253,6 +253,7 @@ class File(object):
         self._contents = contents
         self._platforms = platforms
         self._selected = selected
+        self._selectable = selected
         self._identified_ran = False
         self._human_type = ""
         self._extension = ""
@@ -305,9 +306,15 @@ class File(object):
         data = identify(self)
         if data:
             self._selected = data[0]
+            self._selectable = data[0]
             self._human_type = data[1]
             self._extension = data[2]
-            self._platforms = data[3]
+            self._platforms = []
+            for platform in data[3]:
+                self._platforms.append(
+                    {"platform": platform, "os_version": ""}
+                )
+
             self._dependency = data[4]
             self._dependency_version = ""
             self.identified = True
@@ -435,6 +442,12 @@ class File(object):
         return self._selected
 
     @property
+    def selectable(self):
+        if not self._identified_ran:
+            self._identify()
+        return self._selectable
+
+    @property
     def extrpath(self):
         ret, child = [], self
         while child.parent:
@@ -459,6 +472,13 @@ class File(object):
                 pass
             self._ole_tried = True
         return self._ole
+
+    def deselect(self):
+        self._selected = False
+
+    def unselectable(self):
+        self._selected = False
+        self._selectable = False
 
     def raise_no_ole(self, message):
         if self.ole is None:
@@ -491,18 +511,17 @@ class File(object):
             "password": self.password,
             "human_type": self.human_type,
             "extension": self.extension,
-            "sha256": self.sha256,
-            "md5": self.md5,
-            "sha1": self.sha1,
             "identified": self.identified,
             "platforms": self.platforms,
             "selected": self.selected,
+            "selectable": self.selectable,
             "dependency": self._dependency,
             "dependency_version": self._dependency_version,
             "error": self.error,
         }
 
-    def astree(self, finger=True, sanitize=False, selected_files=None):
+    def astree(self, finger=True, sanitize=False, selected_files=None,
+               child_cb=None):
         ret = {
             "duplicate": self.duplicate,
             "password": self.password,
@@ -518,6 +537,10 @@ class File(object):
             "identified": self.identified,
             "platforms": self.platforms,
             "selected": self.selected,
+            "selectable": self.selectable,
+            "sha256": self.sha256,
+            "md5": self.md5,
+            "sha1": self.sha1,
             "type": "container" if self.children else "file",
             "children": [],
             "error": self.error,
@@ -533,6 +556,9 @@ class File(object):
                 "magic": self.magic,
                 "magic_human": self.magic_human,
             }
+
+        if child_cb:
+            child_cb(self, ret)
 
         def findentry(entry, name):
             for idx in range(len(entry)):
@@ -555,7 +581,8 @@ class File(object):
                 child.astree(
                     finger=finger,
                     sanitize=sanitize,
-                    selected_files=selected_files
+                    selected_files=selected_files,
+                    child_cb=child_cb
                 )
             )
 
