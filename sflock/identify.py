@@ -406,6 +406,7 @@ func_matches = [
     (['text'], "text", Text),
     (['text'], "plain", Text),
     (['PE32'], "x-dosexec", PE32),
+    (['PE32+'], "x-dosexec", PE32),
     (['Macromedia', 'Flash', 'data'], "x-shockwave-flash", FLASH),
     (['Microsoft', 'Excel'],
      "openxmlformats-officedocument.spreadsheetml.sheet", EXCEL),
