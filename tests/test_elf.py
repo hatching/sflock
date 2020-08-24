@@ -6,4 +6,4 @@ from sflock.main import unpack
 
 def test_elf():
     elf = unpack("tests/files/busybox-i686")
-    assert elf.platforms == ("linux",)
+    assert elf.platforms == [{"platform": "linux", "os_version": ""},]

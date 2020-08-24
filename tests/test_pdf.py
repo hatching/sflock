@@ -57,5 +57,5 @@ def test_garbage():
     m = PdfFile(f("garbage.bin"))
     assert m.handles() is False
     assert not m.f.selected
-    assert m.f.identified
+    assert not m.f.identified
     assert not m.unpack()

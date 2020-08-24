@@ -39,9 +39,9 @@ def test_msg_embedded():
     assert not files[2].filepath
     assert files[2].relapath == "oledata.mso"
     assert files[2].filesize == 234898
-    assert files[2].platforms == ()
+    assert files[2].platforms == []
     assert not files[2].selected
-    assert files[2].identified
+    assert not files[2].identified
 
     assert len(files[2].children) == 1
     assert not files[2].children[0].filepath
@@ -86,6 +86,6 @@ def test_garbage():
     m = MsgFile(f("garbage.bin"))
     assert m.handles() is False
     assert not m.f.selected
-    assert m.f.identified
+    assert not m.f.identified
     assert not m.unpack()
     assert m.f.mode == "failed"

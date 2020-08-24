@@ -50,21 +50,39 @@ def test_eml_nested_eml():
     assert files[0].children[0].relapath == u"\u60e1\u610f\u8edf\u9ad4.doc"
     assert files[0].children[0].filesize == 12
     assert files[0].children[0].extension == "txt"
-    assert files[0].children[0].platforms == ('windows', 'darwin', 'linux', 'android', 'ios')
+    assert files[0].children[0].platforms == [
+                        {"platform": "windows", "os_version": ""},
+                        {"platform": "darwin", "os_version": ""},
+                        {"platform": "linux", "os_version": ""},
+                        {"platform": "android", "os_version": ""},
+                        {"platform": "ios", "os_version": ""}
+                    ]
     assert files[0].children[0].selected is False
 
     assert not files[0].children[1].filepath
     assert files[0].children[1].relapath == "cuckoo.png"
     assert files[0].children[1].filesize == 11970
     assert files[0].children[1].extension == "png"
-    assert files[0].children[1].platforms == ('windows', 'darwin', 'linux', 'android', 'ios')
+    assert files[0].children[1].platforms == [
+                        {"platform": "windows", "os_version": ""},
+                        {"platform": "darwin", "os_version": ""},
+                        {"platform": "linux", "os_version": ""},
+                        {"platform": "android", "os_version": ""},
+                        {"platform": "ios", "os_version": ""}
+                    ]
     assert not files[0].children[1].selected
 
     assert files[1].relapath == "att1"
     assert "UTF-8 Unicode" in files[1].magic
     assert files[1].contents == b"\xe6\x83\xa1\xe6\x84\x8f\xe8\xbb\x9f\xe9\xab\x94"
     assert files[1].extension == "txt"
-    assert files[1].platforms == ('windows', 'darwin', 'linux', 'android', 'ios')
+    assert files[1].platforms == [
+                        {"platform": "windows", "os_version": ""},
+                        {"platform": "darwin", "os_version": ""},
+                        {"platform": "linux", "os_version": ""},
+                        {"platform": "android", "os_version": ""},
+                        {"platform": "ios", "os_version": ""}
+                    ]
     assert not files[1].selected
 
 def test_faulty_eml():
@@ -91,5 +109,5 @@ def test_garbage():
     t = EmlFile(f("garbage.bin"))
     assert t.handles() is False
     assert not t.f.selected
-    assert t.f.identified
+    assert not t.f.identified
     assert not t.unpack()

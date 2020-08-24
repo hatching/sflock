@@ -11,7 +11,7 @@ def test_empty():
     fd, filepath = tempfile.mkstemp()
     os.close(fd)
     assert unpack(filepath).extension == ""
-    assert unpack(filepath).platforms == ()
+    assert unpack(filepath).platforms == []
 
 def test_identify():
     f = unpack(contents=open("tests/files/sample.jar", "rb").read())
@@ -25,7 +25,13 @@ def test_ppt():
     assert f.duplicate is False
     assert f.selected
     assert f.extension == "ppt" # based on magic/mime ..
-    assert f.platforms == ('windows', 'darwin', 'linux', 'android', 'ios')
+    assert f.platforms == [
+                        {"platform": "windows", "os_version": ""},
+                        {"platform": "darwin", "os_version": ""},
+                        {"platform": "linux", "os_version": ""},
+                        {"platform": "android", "os_version": ""},
+                        {"platform": "ios", "os_version": ""}
+                    ]
     assert f.get_child("[Content_Types].xml") is not None
     assert len(f.children) == 37
 
@@ -34,7 +40,13 @@ def test_doc1():
     assert f.duplicate is False
     assert f.selected is True
     assert f.extension == "thmx"
-    assert f.platforms == ('windows', 'darwin', 'linux', 'android', 'ios')
+    assert f.platforms == [
+                        {"platform": "windows", "os_version": ""},
+                        {"platform": "darwin", "os_version": ""},
+                        {"platform": "linux", "os_version": ""},
+                        {"platform": "android", "os_version": ""},
+                        {"platform": "ios", "os_version": ""}
+                    ]
     assert f.get_child("[Content_Types].xml") is not None
     assert len(f.children) == 12
     assert f.children[0].selected == True
@@ -47,7 +59,13 @@ def test_doc2():
     assert f.duplicate is False
     assert f.selected is True
     assert f.extension == "xlsm"
-    assert f.platforms == ('windows', 'darwin', 'linux', 'android', 'ios')
+    assert f.platforms == [
+                        {"platform": "windows", "os_version": ""},
+                        {"platform": "darwin", "os_version": ""},
+                        {"platform": "linux", "os_version": ""},
+                        {"platform": "android", "os_version": ""},
+                        {"platform": "ios", "os_version": ""}
+                    ]
     assert f.get_child("[Content_Types].xml") is not None
     assert len(f.children) == 12
     assert f.children[0].selected == True
@@ -56,19 +74,43 @@ def test_doc2():
 def test_oledoc1():
     f = unpack("tests/files/oledoc1.doc_")
     assert f.extension == "doc"
-    assert f.platforms == ('windows', 'darwin', 'linux', 'android', 'ios')
+    assert f.platforms == [
+                        {"platform": "windows", "os_version": ""},
+                        {"platform": "darwin", "os_version": ""},
+                        {"platform": "linux", "os_version": ""},
+                        {"platform": "android", "os_version": ""},
+                        {"platform": "ios", "os_version": ""}
+                    ]
 
 def test_url():
     f = unpack("tests/files/1.url")
     assert f.extension == "txt"
-    assert f.platforms == ('windows', 'darwin', 'linux', 'android', 'ios')
+    assert f.platforms == [
+                        {"platform": "windows", "os_version": ""},
+                        {"platform": "darwin", "os_version": ""},
+                        {"platform": "linux", "os_version": ""},
+                        {"platform": "android", "os_version": ""},
+                        {"platform": "ios", "os_version": ""}
+                    ]
 
 def test_slk():
     f = unpack("tests/files/1.slk")
     assert f.extension == "slk"
-    assert f.platforms == ('windows', 'darwin', 'linux', 'android', 'ios')
+    assert f.platforms == [
+                        {"platform": "windows", "os_version": ""},
+                        {"platform": "darwin", "os_version": ""},
+                        {"platform": "linux", "os_version": ""},
+                        {"platform": "android", "os_version": ""},
+                        {"platform": "ios", "os_version": ""}
+                    ]
 
 def test_iqy():
     f = unpack("tests/files/1.iqy")
     assert f.extension == "iqy"
-    assert f.platforms == ('windows', 'darwin', 'linux', 'android', 'ios')
+    assert f.platforms == [
+                        {"platform": "windows", "os_version": ""},
+                        {"platform": "darwin", "os_version": ""},
+                        {"platform": "linux", "os_version": ""},
+                        {"platform": "android", "os_version": ""},
+                        {"platform": "ios", "os_version": ""}
+                    ]

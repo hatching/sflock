@@ -137,7 +137,7 @@ class TestZipfile(object):
         t = ZipFile(f("garbage.bin"))
         assert t.handles() is False
         assert not t.f.selected
-        assert t.f.identified
+        assert not t.f.identified
         assert not t.unpack()
         assert t.f.mode == "failed"
 
