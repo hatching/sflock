@@ -4,9 +4,12 @@
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 import os
+
 import peepdf
 
 from sflock.abstracts import Unpacker, File
+from sflock.exception import UnpackException
+from sflock.misc import make_list
 
 class PdfFile(Unpacker):
     name = "pdffile"
@@ -16,6 +19,15 @@ class PdfFile(Unpacker):
 
     def supported(self):
         return True
+
+    def handles(self):
+
+        # Temporarily only use the file magic to detect PDF files, as peepdf
+        # can fail with invalid/fake PDFs.
+        for magic in make_list(self.magic or []):
+            if magic in self.f.magic:
+                return True
+        return False
 
     def unpack(self, depth=0, password=None, duplicates=None):
         entries = []
@@ -28,9 +40,14 @@ class PdfFile(Unpacker):
             temporary = True
 
         p = peepdf.PDFCore.PDFParser()
-        _, f = p.parse(
-            filepath, forceMode=True, looseMode=True, manualAnalysis=False
-        )
+
+        try:
+            _, f = p.parse(
+                filepath, forceMode=True, looseMode=True, manualAnalysis=False
+            )
+        except Exception as e:
+            raise UnpackException(f"peepdf parsing failure: {e}")
+
 
         for version in range(f.updates + 1):
             for obj in f.body[version].objects.values():
@@ -66,6 +83,7 @@ class PdfFile(Unpacker):
                 filename = filename.value
 
                 entries.append(File(
+                    relapath=filename,
                     contents=contents,
                     filename=filename,
                     selected=False
