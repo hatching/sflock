@@ -10,6 +10,8 @@ class Deps:
     PYTHON = "python"
     WORD = "microsoft_word"
     POWERPOINT = "microsoft_powerpoint"
+    GOOGLE_CHROME = "google_chrome"
+    PHP = "php"
     RUBY = "ruby"
     EXCEL = "microsoft_excel"
     JAVA = "oracle_java"
@@ -110,6 +112,8 @@ def OCTET(f):
         return True, "Windows script file", "wsf", (Platform.WINDOWS,)
     if f.contents.startswith(ttf_hdr):
         return False, "TrueType Font", "ttf", (Platform.WINDOWS,)
+
+    return False, "Random bytes/Memory dump", "", ()
 
 # This function is used to distinct DLL and EXE. This was unable to work on
 # magic and mime. Because DLL files are matching positive on EXE mime/magic
@@ -255,7 +259,7 @@ string_matches = [
      "Macintosh HFS", (Platform.MACOS,)),
     (False, ['Symbian'], "x-sisx-app", "sisx",
      "Software Installation Script", (Platform.MACOS,)),
-    (False, ['Mach-O'], "x-mach-binary", "o", "Bitmap graphic",
+    (True, ['Mach-O'], "x-mach-binary", "o", "Bitmap graphic",
      (Platform.MACOS,)),
 
     #
@@ -264,7 +268,7 @@ string_matches = [
     (False, ['PNG'], "png", "png", "Portable Network Graphic", Platform.ANY),
     (False, ['JPEG'], "jpeg", "jpg", "JPEG Image", Platform.ANY), 
     (False, ['SVG'], "svg+xml", "svg", "Scalable vector graphics", Platform.ANY),  
-    (True, ['PC', 'bitmap'], "x-ms-bmp", "bmp", "Bitmap Image File", Platform.ANY),
+    (False, ['PC', 'bitmap'], "x-ms-bmp", "bmp", "Bitmap Image File", Platform.ANY),
     (False, ['Targa'], "x-tga", "tga",
      "Truevision Graphics Adapter image file", (Platform.WINDOWS, Platform.MACOS)), 
     (False, ['GIF', 'image', 'data'], "gif", "gif",
@@ -315,18 +319,18 @@ string_matches = [
     (False, ['PostScript', 'document'], "postscript", "ps",
      "Encapsulated PostScript File", (Platform.WINDOWS,), Deps.PDF),  
     (False, ['PHP'], "x-php", "php", "PHP Source Code File",
-     (Platform.WINDOWS,)),
-    (False, ['Perl', 'script'], "x-perl", "perl", "Perl script",
+     (Platform.WINDOWS, Platform.LINUX, Platform.MACOS), Deps.PHP),
+    (True, ['Perl', 'script'], "x-perl", "perl", "Perl script",
      (Platform.WINDOWS, Platform.LINUX), Deps.PERL),
-    (False, ['Bourne-Again', 'shell'], "x-shellscript", "sh",
+    (True, ['Bourne-Again', 'shell'], "x-shellscript", "sh",
      "Shell script", (Platform.LINUX,)),
-    (False, ['Ruby', 'script'], "x-ruby", "rb",
+    (True, ['Ruby', 'script'], "x-ruby", "rb",
      "Ruby interpreted file", (Platform.WINDOWS,), Deps.RUBY),
 
     #
     # Binaries
     #
-    (False, ['COM', 'executable'], "application", "com",
+    (True, ['COM', 'executable'], "application", "com",
      "DOS Command File", (Platform.WINDOWS,)),    
     (False, ['Debian', 'binary', 'package'],
      "vnd.debian.binary-package", "deb", "Debian Software Package", (Platform.LINUX,)),
@@ -346,15 +350,15 @@ string_matches = [
      (Platform.WINDOWS,), Deps.PDF),  
     (True, ['Rich', 'Text'], "rtf", "rtf", "Rich Text Format File",
      (Platform.WINDOWS,)),
-    (False, ['MS', 'Windows', 'shortcut'], "octet-stream", "lnk",
+    (True, ['MS', 'Windows', 'shortcut'], "octet-stream", "lnk",
      "Windows Shortcut", (Platform.WINDOWS,)),
     (False, ['Adobe', 'Photoshop', 'Image'], "adobe.photoshop", "psd",
      "Adobe Photoshop Document", (Platform.WINDOWS, Platform.MACOS)),
-    (False, ['Microsoft', 'ASF'], "ms-asf", "asf",
+    (True, ['Microsoft', 'ASF'], "ms-asf", "asf",
      "Advanced Systems Format File", (Platform.WINDOWS,)),
-    (False, ['Google', 'Chrome', 'extension'], "x-chrome-extension",
-     "crx", "Chrome Extension", (Platform.WINDOWS, Platform.LINUX, Platform.MACOS)),
-    (False, ['compiled', 'Java', 'class'], "java-applet", "class",
+    (True, ['Google', 'Chrome', 'extension'], "x-chrome-extension",
+     "crx", "Chrome Extension", (Platform.WINDOWS, Platform.LINUX, Platform.MACOS), Deps.GOOGLE_CHROME),
+    (True, ['compiled', 'Java', 'class'], "java-applet", "class",
      "Java Class File", (Platform.WINDOWS, Platform.MACOS), Deps.JAVA),
     (False, ['Intel', 'serial', 'flash'], "octet", "rom",
      "N64 Game ROM File",
