@@ -141,7 +141,12 @@ class Unpacker(object):
                             "nested archive files" % MAX_NESTED
                         )
 
-                    f.children = plugin.unpack(depth, password, duplicates)
+                    try:
+                        f.children = plugin.unpack(depth, password, duplicates)
+                    except UnpackException as e:
+                        raise UnpackException(
+                            f"Failure while unpacking: {f.filename!r}. {e}"
+                        ).with_traceback(e.__traceback__)
 
                     depth -= 1
 
