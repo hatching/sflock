@@ -68,7 +68,7 @@ def Text(f):
     if wsf(f):
         return True, "Windows script file", "wsf", (Platform.WINDOWS,)
     if visualbasic(f):
-        return True, "Visual basic file", "vb", (Platform.WINDOWS,)
+        return True, "Visual basic file", "vbs", (Platform.WINDOWS,)
     if ruby(f):
         return True, "Ruby file", "rb", Platform.ANY_DESKTOP, Deps.RUBY
     if f.contents.startswith(b"WEB"):

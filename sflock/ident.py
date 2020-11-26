@@ -137,7 +137,8 @@ def visualbasic(f):
     VB_STRS = [
         b"Dim ", b"Set ", b"Attribute ", b"Public ",
         b"#If", b"#Else", b"#End If", b"End Function",
-        b"End Sub", b"VBA"
+        b"End Sub", b"VBA", b"Execute(", b"End if", b"Else",
+        b"Exit Function", b"Is Nothing"
     ]
 
     found = 0
