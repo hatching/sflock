@@ -65,8 +65,8 @@ class Zip7File(Unpacker):
             filepath = self.f.temp_path(b".7z")
             temporary = True
         if not password:
-            password = b""
-        ret = self.zipjail(filepath, dirpath, "x", "-mmt=off", "-p{}".format(password.decode("utf-8")), "-o{}".format(dirpath), filepath)
+            password = ""
+        ret = self.zipjail(filepath, dirpath, "x", "-mmt=off", "-p{}".format(password), "-o{}".format(dirpath), filepath)
         if not ret:
             return []
 
