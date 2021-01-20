@@ -77,7 +77,7 @@ def Text(f):
         return True, "SYLK file", "slk", Platform.ANY, Deps.EXCEL
     if b"Content-Type: text/html;" in f.contents:
         return True, "Mht file", "mht", Platform.ANY
-   
+
     return False, "Text", "txt", Platform.ANY
 
 def ZIP(f):
@@ -326,7 +326,8 @@ string_matches = [
      "Shell script", (Platform.LINUX,)),
     (True, ['Ruby', 'script'], "x-ruby", "rb",
      "Ruby interpreted file", (Platform.WINDOWS,), Deps.RUBY),
-
+    (True, ['DOS', 'batch'], "x-msdos-batch", "bat",
+     "DOS batch file", (Platform.WINDOWS,)),
     #
     # Binaries
     #
@@ -430,6 +431,7 @@ def identify(f):
         selected, magic, mime = match[:3]
         # Check if it matches
         tokens = all(elem in fmagic for elem in magic)
+
         if tokens and mime in f.mime:
             # If the match is a function
             # Check if there is already a match found (on a non function match)
