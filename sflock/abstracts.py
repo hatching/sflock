@@ -251,6 +251,8 @@ class File(object):
         self.parent = None
         self.archive = False
         self.identified = False
+        self.safelisted = False
+        self.safelist_reason = ""
         # Extract the filename from any of the available path components.
         self.filename = ntpath.basename(
             filename or self.relapath or self.filepath or ""
@@ -478,6 +480,10 @@ class File(object):
             self._ole_tried = True
         return self._ole
 
+    def safelist(self, reason):
+        self.safelisted = True
+        self.safelist_reason = reason
+
     def deselect(self):
         self._selected = False
 
@@ -522,6 +528,8 @@ class File(object):
             "selectable": self.selectable,
             "dependency": self._dependency,
             "dependency_version": self._dependency_version,
+            "safelisted": self.safelisted,
+            "safelist_reason": self.safelist_reason,
             "error": self.error,
         }
 
@@ -543,6 +551,8 @@ class File(object):
             "platforms": self.platforms,
             "selected": self.selected,
             "selectable": self.selectable,
+            "safelisted": self.safelisted,
+            "safelist_reason": self.safelist_reason,
             "sha256": self.sha256,
             "md5": self.md5,
             "sha1": self.sha1,
