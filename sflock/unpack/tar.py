@@ -54,6 +54,7 @@ class TargzFile(TarFile, Unpacker):
     name = "targzfile"
     mode = "r:gz"
     exts = ".tar.gz"
+    magic = "gzip compressed data"
 
     def handles(self):
         if self.f.filename and self.f.filename.lower().endswith(self.exts):
@@ -63,11 +64,12 @@ class TargzFile(TarFile, Unpacker):
             return False
 
         try:
-            f = File(contents=gzip.GzipFile(fileobj=self.f.stream).read())
-        except IOError:
+            File(contents=gzip.GzipFile(fileobj=self.f.stream).read())
+        except IOError as e:
+            print(f"Error: {e}")
             return False
 
-        return self.magic in f.magic
+        return self.magic in self.f.magic
 
 class Tarbz2File(TarFile, Unpacker):
     name = "tarbz2file"

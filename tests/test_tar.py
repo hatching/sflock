@@ -98,6 +98,20 @@ class TestTarFile(object):
         assert files[0].magic == "ASCII text"
         assert not files[0].selected
 
+    def test_tar_noext(self):
+        t = TarFile(f("tar_noext"))
+        assert t.handles() is True
+        assert not t.f.selected
+        files = list(t.unpack())
+        assert len(files) == 1
+
+        assert files[0].relapath == "foo/bar.txt"
+        assert files[0].parentdirs == ["foo"]
+        assert files[0].contents == b"hello world\n"
+        assert not files[0].password
+        assert files[0].magic == "ASCII text"
+        assert not files[0].selected
+
     def test_nested_bzip2(self):
         assert "bzip2 compr" in f("tar_nested.tar.bz2").magic
         t = Tarbz2File(f("tar_nested.tar.bz2"))
@@ -114,9 +128,38 @@ class TestTarFile(object):
         assert files[0].magic == "ASCII text"
         assert not files[0].selected
 
+    def test_tarbz2_noext(self):
+        t = Tarbz2File(f("tarbz2_noext"))
+        assert t.handles() is True
+        assert not t.f.selected
+        files = list(t.unpack())
+        assert len(files) == 1
+        files = files[0].children
+        assert len(files) == 1
+        assert files[0].relapath == "foo/bar.txt"
+        assert files[0].parentdirs == ["foo"]
+        assert files[0].contents == b"hello world\n"
+        assert not files[0].password
+        assert files[0].magic == "ASCII text"
+        assert not files[0].selected
+
     def test_nested_gz(self):
         assert "gzip compr" in f("tar_nested.tar.gz").magic
         t = TargzFile(f("tar_nested.tar.gz"))
+        assert t.handles() is True
+        assert not t.f.selected
+        files = list(t.unpack())
+        assert len(files) == 1
+
+        assert files[0].relapath == "foo/bar.txt"
+        assert files[0].parentdirs == ["foo"]
+        assert files[0].contents == b"hello world\n"
+        assert not files[0].password
+        assert files[0].magic == "ASCII text"
+        assert not files[0].selected
+
+    def test_targz_noext(self):
+        t = TargzFile(f("targz_no_ext"))
         assert t.handles() is True
         assert not t.f.selected
         files = list(t.unpack())
@@ -181,7 +224,6 @@ class TestTarFile(object):
         t = TarFile(f("garbage.bin"))
         assert t.handles() is False
         assert not t.f.selected
-        assert not t.f.identified
         assert not t.unpack()
         assert t.f.mode == "failed"
 
