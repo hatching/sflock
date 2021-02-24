@@ -1,4 +1,4 @@
-from sflock.ident import javascript, powershell, wsf, visualbasic, java, ruby, office_zip
+from sflock.ident import javascript, powershell, wsf, visualbasic, java, ruby, office_zip, python
 
 ttf_hdr = (
     b'\x00\x01\x00\x00\x00\xff\xff\xff\xff\x01\x00\x00\x00\x00\x00\x00'
@@ -77,6 +77,8 @@ def Text(f):
         return True, "SYLK file", "slk", Platform.ANY, Deps.EXCEL
     if b"Content-Type: text/html;" in f.contents:
         return True, "Mht file", "mht", Platform.ANY
+    if python(f):
+        return True, "Python script", "py", Platform.ANY, Deps.PYTHON
 
     return False, "Text", "txt", Platform.ANY
 

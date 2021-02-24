@@ -157,3 +157,17 @@ def java(f):
         return
     return "jar"
 
+
+def python(f):
+    PY_STRS = [
+        b"import os", b"import sys", b"import ", b"from ",
+        b"():", b"def ", b"#", b"print(", b"sleep("
+    ]
+
+    found = 0
+    for s in PY_STRS:
+        if s in f.contents:
+            found += 1
+
+    if found > 5:
+        return "py"
