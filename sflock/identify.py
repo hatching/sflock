@@ -138,7 +138,7 @@ def EXCEL(f):
     return True, "Microsoft Excel Open XML Spreadsheet", "xlsx", Platform.ANY, Deps.EXCEL
 
 def POWERPOINT(f):
-    content = f.get_child("[Content_Types].xml")                   
+    content = f.get_child("[Content_Types].xml")
     if b"ContentType=\"application/vnd.ms-powerpoint.slideshow.macroEnabled" in content.contents:
         return True, "PowerPoint Open XML Presentation", "ppsm", Platform.ANY, Deps.POWERPOINT
     if b"ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.slideshow" in content.contents:
@@ -194,7 +194,7 @@ string_matches = [
     (True, ['Composite', 'Document', 'File', 'V2', 'Document'],
      "ms-powerpoint", "ppt", "PowerPoint Presentation", Platform.ANY, Deps.POWERPOINT),
     (True, ['Composite', 'Document', 'File', 'V2'], "msword", "doc",
-     "Microsoft Word Document", Platform.ANY, Deps.WORD),  
+     "Microsoft Word Document", Platform.ANY, Deps.WORD),
     (True, ['OpenDocument', 'Text'], "oasis.opendocument.text", "odt",
      "OpenDocument Text Document", Platform.ANY, Deps.WORD),
     (True, ['OpenOffice'], "octet-stream", "odt",
@@ -240,7 +240,7 @@ string_matches = [
      (Platform.WINDOWS, Platform.MACOS), Deps.UNARCHIVE),
     (False, ['ARC'], "x-arc", "arc", "Compressed file",
      (Platform.WINDOWS, Platform.MACOS), Deps.ARC),
-    
+
     #
     # Apple related
     #
@@ -266,11 +266,11 @@ string_matches = [
     # Visual images
     #
     (False, ['PNG'], "png", "png", "Portable Network Graphic", Platform.ANY),
-    (False, ['JPEG'], "jpeg", "jpg", "JPEG Image", Platform.ANY), 
-    (False, ['SVG'], "svg+xml", "svg", "Scalable vector graphics", Platform.ANY),  
+    (False, ['JPEG'], "jpeg", "jpg", "JPEG Image", Platform.ANY),
+    (False, ['SVG'], "svg+xml", "svg", "Scalable vector graphics", Platform.ANY),
     (False, ['PC', 'bitmap'], "x-ms-bmp", "bmp", "Bitmap Image File", Platform.ANY),
     (False, ['Targa'], "x-tga", "tga",
-     "Truevision Graphics Adapter image file", (Platform.WINDOWS, Platform.MACOS)), 
+     "Truevision Graphics Adapter image file", (Platform.WINDOWS, Platform.MACOS)),
     (False, ['GIF', 'image', 'data'], "gif", "gif",
      "Graphical Interchange Format File", Platform.ANY),
     (False, ['JNG'], "x-jng", "jng", "Image file related to PNG",
@@ -282,7 +282,7 @@ string_matches = [
     (False, ['icon'], "image/x-icon", "ico", "Icon File", Platform.ANY),
 
     #
-    # Audio / video 
+    # Audio / video
     #
     (False, ['RIFF'], "x-wav", "wav", "WAVE Audio File", (Platform.WINDOWS,), Deps.MEDIAPLAYER),
     (True, ['Macromedia', 'Flash', 'data', '(compressed)'],
@@ -290,7 +290,7 @@ string_matches = [
     (True, ['RIFF'], "msvideo", "avi", "Audio Video Interleave File",
      (Platform.WINDOWS,), Deps.MEDIAPLAYER),
     (True, ['Macromedia', 'Flash', 'Video'], "x-flv", "flv",
-     "Flash Video File", (Platform.WINDOWS,), Deps.FLASH),  
+     "Flash Video File", (Platform.WINDOWS,), Deps.FLASH),
     (False, ['ISO'], "quicktime", "qt", "QuickTime file", (Platform.MACOS,), Deps.QUICKTIME), # todo, make magic more specific
     (False, ['MPEG', 'sequence'], "", "mpeg",
      "Compression for video and audio",
@@ -310,19 +310,21 @@ string_matches = [
      (Platform.WINDOWS), Deps.MEDIAPLAYER),
     (False, ['FLC'], "x-flc", "flc", "Animation file", (Platform.MACOS,), Deps.MEDIAPLAYER),
     (False, ['RealMedia', 'file'], "vnd.rn-realmedia", "rm", "RealMedia file", (Platform.WINDOWS,), Deps.MEDIAPLAYER),
-    
+
     #
     #  Scripts
     #
     (True, ['Python', 'script'], "x-python", "py", "Python Script",
-     Platform.ANY_DESKTOP, Deps.PYTHON),    
+     Platform.ANY_DESKTOP, Deps.PYTHON),
     (False, ['PostScript', 'document'], "postscript", "ps",
-     "Encapsulated PostScript File", (Platform.WINDOWS,), Deps.PDF),  
+     "Encapsulated PostScript File", (Platform.WINDOWS,), Deps.PDF),
     (False, ['PHP'], "x-php", "php", "PHP Source Code File",
      (Platform.WINDOWS, Platform.LINUX, Platform.MACOS), Deps.PHP),
     (True, ['Perl', 'script'], "x-perl", "perl", "Perl script",
      (Platform.WINDOWS, Platform.LINUX), Deps.PERL),
     (True, ['Bourne-Again', 'shell'], "x-shellscript", "sh",
+     "Shell script", (Platform.LINUX,)),
+    (True, ['POSIX', 'shell', 'script', 'ASCII', 'text', 'executable'], "x-shellscript", "sh",
      "Shell script", (Platform.LINUX,)),
     (True, ['Ruby', 'script'], "x-ruby", "rb",
      "Ruby interpreted file", (Platform.WINDOWS,), Deps.RUBY),
@@ -332,23 +334,23 @@ string_matches = [
     # Binaries
     #
     (True, ['COM', 'executable'], "application", "com",
-     "DOS Command File", (Platform.WINDOWS,)),    
+     "DOS Command File", (Platform.WINDOWS,)),
     (False, ['Debian', 'binary', 'package'],
      "vnd.debian.binary-package", "deb", "Debian Software Package", (Platform.LINUX,)),
     (True, ['(DLL)'], "x-dosexec", "dll", "Dynamic linked library",
-     (Platform.WINDOWS,)), 
+     (Platform.WINDOWS,)),
     (True, ['MS-DOS'], "x-dosexec", "exe", "Executable", (Platform.WINDOWS,)),
     (True, ['ELF'], "application", "elf", "Linux Executable",
      (Platform.LINUX,)),
     (True, ['MS-DOS'], "x-dosexec", "exe", "DOS MZ executable ",
-     (Platform.WINDOWS,)), 
+     (Platform.WINDOWS,)),
     (True, ['Composite', 'Document', 'File', 'V2', 'Document'], "msi",
      "msi", "Windows Installer Package", (Platform.WINDOWS,)),
     (False, ['Dzip'], "octet-stream", "dzip", "Witcher 2 game file",
      (Platform.WINDOWS,)),
-    (False, ['RPM'], "rpm", "rpm", "Red Hat Package Manager File", (Platform.LINUX,)),   
+    (False, ['RPM'], "rpm", "rpm", "Red Hat Package Manager File", (Platform.LINUX,)),
     (True, ['PDF'], "pdf", "pdf", "Portable Document Format File",
-     (Platform.WINDOWS,), Deps.PDF),  
+     (Platform.WINDOWS,), Deps.PDF),
     (True, ['Rich', 'Text'], "rtf", "rtf", "Rich Text Format File",
      (Platform.WINDOWS,)),
     (True, ['MS', 'Windows', 'shortcut'], "octet-stream", "lnk",
@@ -415,7 +417,7 @@ func_matches = [
     (['Macromedia', 'Flash', 'data'], "x-shockwave-flash", FLASH),
     (['Microsoft', 'Excel'],
      "openxmlformats-officedocument.spreadsheetml.sheet", EXCEL),
-    (['Microsoft', 'PowerPoint'], 
+    (['Microsoft', 'PowerPoint'],
      "openxmlformats-officedocument.presentationml.presentation", POWERPOINT),
     (['Microsoft', 'Word'],
      "openxmlformats-officedocument.wordprocessingml.document", WORD),
@@ -440,7 +442,7 @@ def identify(f):
                 return selected, match[4], match[3], match[5], match[6]
 
             return selected, match[4], match[3], match[5], ''
- 
+
     for match in func_matches:
         magic, mime = match[:2]
         # Check if it matches
