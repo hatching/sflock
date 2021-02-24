@@ -378,6 +378,8 @@ string_matches = [
      (Platform.WINDOWS, Platform.MACOS)),
     (False, ['ISO', '9660'], "x-iso9660-image", "iso", "ISO Image",
      (Platform.WINDOWS,)),
+     (False, ['UDF', 'filesystem', 'data'], "x-iso9660-image", "iso", "ISO Image",
+     (Platform.WINDOWS,)),
     (False, ['TeX', 'font'], "x-tex-tfm", "latex", "LaTeX file format",
      (Platform.WINDOWS, Platform.LINUX)),  # todo
     (False, ['awk'], "x-awk", "awk", "Script for text processing",
@@ -395,9 +397,8 @@ string_matches = [
      (Platform.WINDOWS,)),
     (False, ['capture'], "octet-stream", "pcap", "Network traffic data",
      (Platform.WINDOWS,)),
-    (
-    False, ['Netscape', 'cookie'], "plain", "iecookie", "Cookie for ie",
-    (Platform.WINDOWS)),
+    (False, ['Netscape', 'cookie'], "plain", "iecookie", "Cookie for ie",
+    (Platform.WINDOWS))
 ]
 
 # Add function variables
