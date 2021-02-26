@@ -151,12 +151,11 @@ def visualbasic(f):
     return
 
 def java(f):
-    if not f.get_child("META-INF/MANIFEST.MF"):
+    if not f.get_child("Start.class") and not f.get_child("META-INF/MANIFEST.MF"):
         return
     if f.get_child("AndroidManifest.xml"):
         return
     return "jar"
-
 
 def python(f):
     PY_STRS = [
