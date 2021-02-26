@@ -6,6 +6,8 @@ import os.path
 import pytest
 
 from sflock.abstracts import File
+from sflock.errors import Errors
+from sflock.exception import UnpackException
 from sflock.main import unpack
 from sflock.unpack import AceFile
 
@@ -90,9 +92,9 @@ class TestAceFile(object):
         t = AceFile(f("garbage.bin"))
         assert t.handles() is False
         assert not t.f.selected
-        assert not t.f.identified
-        assert not t.unpack()
-        assert t.f.mode == "failed"
+        with pytest.raises(UnpackException) as e:
+            t.unpack()
+        assert e.value.state == Errors.NOTHING_EXTRACTED
 
 @pytest.mark.skipif("AceFile(None).supported()")
 def test_noace_plain():

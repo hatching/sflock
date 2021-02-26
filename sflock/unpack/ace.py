@@ -14,6 +14,7 @@ class AceFile(Unpacker):
     exe = "/usr/bin/unace"
     exts = ".ace"
     magic = "ACE archive"
+    dependency = "unace-nonfree"
 
     def unpack(self, depth=0, password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()

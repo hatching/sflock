@@ -24,7 +24,6 @@ class TestOfficeFile(object):
         f = unpack("tests/files/maldoc.xls")
         assert f.selected is True
 
-    @pytest.mark.xfail
     def test_office_pw_failure(self):
         z = OfficeFile(f("encrypted1.docx"))
         assert z.handles() is True

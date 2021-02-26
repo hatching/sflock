@@ -9,6 +9,18 @@ class IncorrectUsageException(SflockException):
     pass
 
 class UnpackException(SflockException):
+
+    def __init__(self, message, state=None):
+        self.state = state
+        super().__init__(message)
+
+class NotSupportedError(UnpackException):
+    pass
+
+class DecryptionFailedError(UnpackException):
+    pass
+
+class IncorrectPasswordException(DecryptionFailedError):
     pass
 
 class DecoderException(SflockException):

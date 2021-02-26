@@ -11,6 +11,7 @@ import tempfile
 
 from sflock.abstracts import Unpacker, File
 from sflock.config import MAX_TOTAL_SIZE
+from sflock.errors import Errors
 
 class TarFile(Unpacker):
     name = "tarfile"
@@ -26,8 +27,7 @@ class TarFile(Unpacker):
         try:
             archive = tarfile.open(mode=self.mode, fileobj=self.f.stream)
         except tarfile.ReadError as e:
-            self.f.mode = "failed"
-            self.f.error = e
+            self.f.set_error(Errors.INVALID_ARCHIVE, str(e))
             return []
 
         entries, total_size = [], 0
@@ -40,7 +40,10 @@ class TarFile(Unpacker):
             # utilities over the Python implementation in the future.
             total_size += entry.size
             if total_size >= MAX_TOTAL_SIZE:
-                self.f.error = "files_too_large"
+                self.f.set_error(
+                    Errors.TOTAL_TOO_LARGE,
+                    f"Unpacked archive size exceeds: {MAX_TOTAL_SIZE}"
+                )
                 return []
 
             entries.append(File(
@@ -65,8 +68,7 @@ class TargzFile(TarFile, Unpacker):
 
         try:
             File(contents=gzip.GzipFile(fileobj=self.f.stream).read())
-        except IOError as e:
-            print(f"Error: {e}")
+        except IOError:
             return False
 
         return self.magic in self.f.magic
@@ -130,7 +132,10 @@ class Tarbz2File(TarFile, Unpacker):
         f.close()
 
         if filesize >= MAX_TOTAL_SIZE:
-            self.f.error = "files_too_large"
+            self.f.set_error(
+                Errors.TOTAL_TOO_LARGE,
+                f"Unpacked archive size exceeds: {MAX_TOTAL_SIZE}"
+            )
             return []
 
         return self.process_directory(dirpath, duplicates, depth)

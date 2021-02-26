@@ -3,6 +3,7 @@
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 from sflock.abstracts import Unpacker, File
+from sflock.errors import Errors
 
 class MsgFile(Unpacker):
     name = "msgfile"
@@ -48,8 +49,7 @@ class MsgFile(Unpacker):
         seen, entries = [], []
 
         if not self.f.ole:
-            self.f.mode = "failed"
-            self.f.error = "No OLE structure found"
+            self.f.set_error(Errors.UNPACK_FAILED, "No OLE structure found")
             return []
 
         for dirname in self.f.ole.listdir():

@@ -7,8 +7,11 @@ import os.path
 import pytest
 
 from sflock.abstracts import File
+from sflock.errors import Errors
+from sflock.exception import UnpackException, DecryptionFailedError
 from sflock.main import unpack
 from sflock.unpack import RarFile
+
 
 def f(filename):
     return File.from_path(os.path.join("tests", "files", filename))
@@ -64,14 +67,21 @@ class TestRarFile:
         z = RarFile(f("sflock_encrypted.rar"))
         assert z.handles() is True
         assert not z.f.selected
-        files = list(z.unpack(password="infected"))
+        files = list(z.unpack())
         assert len(files) == 1
         assert files[0].relapath == "sflock.txt"
         assert files[0].contents == b"sflock_encrypted_rar"
-        assert files[0].password == "infected"
         assert "ASCII text" in files[0].magic
         assert files[0].parentdirs == []
         assert not files[0].selected
+
+    def test_rar_decryption_fail(self):
+        z = RarFile(f("sflock_encrypted2.rar"))
+        assert z.handles() is True
+        assert not z.f.selected
+
+        with pytest.raises(DecryptionFailedError) as e:
+            z.unpack()
 
     def test_heuristics(self):
         t = unpack("tests/files/rar_plain.rar", filename="foo")
@@ -99,7 +109,7 @@ class TestRarFile:
     def test_symlink(self):
         t = unpack("tests/files/symlink.rar")
         assert t.unpacker == "rarfile"
-        assert t.error == "malicious_symlink"
+        assert t.mode == Errors.CANCELLED_SYMLINK
 
     def test_inmemory(self):
         contents = open("tests/files/rar_plain.rar", "rb").read()
@@ -113,18 +123,22 @@ class TestRarFile:
         t = RarFile(f("garbage.bin"))
         assert t.handles() is False
         assert not t.f.selected
-        assert not t.f.identified
-        assert not t.unpack()
-        assert t.f.mode == "failed"
+        with pytest.raises(UnpackException) as e:
+            t.unpack()
+
+        assert e.value.state == Errors.NOTHING_EXTRACTED
 
     def test_garbage2(self):
         t = RarFile(f("rar_garbage.rar"))
         assert t.handles() is True
         assert not t.f.selected
         files = t.unpack()
+
+        # The child file is garbage data. It should not be attempted
+        # to unpack.
         assert len(files) == 1
         assert not files[0].children
-        assert files[0].mode == "failed"
+        assert files[0].mode is None
 
 @pytest.mark.skipif("RarFile(None).supported()")
 def test_norar_plain():

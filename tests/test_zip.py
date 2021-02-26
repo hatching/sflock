@@ -9,8 +9,10 @@ import zipfile
 import pytest
 
 from sflock.abstracts import File
+from sflock.errors import Errors
+from sflock.exception import DecryptionFailedError
 from sflock.main import unpack, zipify
-from sflock.unpack import ZipFile
+from sflock.unpack import ZipFile, Zip7File
 
 def f(filename):
     return File.from_path(os.path.join("tests", "files", filename))
@@ -50,13 +52,10 @@ class TestZipfile(object):
         z = ZipFile(f("zip_encrypted2.zip"))
         assert z.handles() is True
         assert not z.f.selected
-        files = list(z.unpack())
-        assert len(files) == 1
-        assert files[0].mode == "failed"
-        assert files[0].description == "Error decrypting file"
-        assert files[0].magic is ""
-        assert files[0].parentdirs == []
-        assert not files[0].selected
+
+        with pytest.raises(DecryptionFailedError) as e:
+            z.unpack()
+        assert e.value.state == Errors.DECRYPTION_FAILED
 
         z = ZipFile(f("zip_encrypted2.zip"))
         assert z.handles() is True
@@ -113,33 +112,39 @@ class TestZipfile(object):
         assert not files[0].selected
 
     def test_heuristics(self):
+
+        unpacker = "zipfile"
+        if os.path.exists(Zip7File.exe):
+            unpacker = "7zfile"
+
         t = unpack("tests/files/zip_plain.zip", filename="foo")
-        assert t.unpacker == "7zfile"
+        assert t.unpacker == unpacker
         assert t.filename == "foo"
 
         t = unpack("tests/files/zip_nested.zip", filename="foo")
-        assert t.unpacker == "7zfile"
+        assert t.unpacker == unpacker
         assert t.filename == "foo"
 
         t = unpack("tests/files/zip_nested2.zip", filename="foo")
-        assert t.unpacker == "7zfile"
+        assert t.unpacker == unpacker
         assert t.filename == "foo"
 
         t = unpack("tests/files/zip_encrypted.zip", filename="foo")
-        assert t.unpacker == "7zfile"
+        assert t.unpacker == unpacker
         assert t.filename == "foo"
 
+        # No password provided - pass is sflock
         t = unpack("tests/files/zip_encrypted2.zip", filename="foo")
-        assert t.unpacker == "zipfile"
+        assert t.mode == Errors.DECRYPTION_FAILED
+        assert t.unpacker == unpacker
         assert t.filename == "foo"
 
     def test_garbage(self):
         t = ZipFile(f("garbage.bin"))
         assert t.handles() is False
         assert not t.f.selected
-        assert not t.f.identified
-        assert not t.unpack()
-        assert t.f.mode == "failed"
+        assert t.unpack() == []
+        assert t.f.mode == Errors.INVALID_ARCHIVE
 
     def test_garbage2(self):
         t = ZipFile(f("zip_garbage.zip"))
@@ -148,30 +153,31 @@ class TestZipfile(object):
         files = t.unpack()
         assert len(files) == 1
         assert not files[0].children
-        assert files[0].mode == "failed"
+        assert files[0].mode is None
 
     def test_absolute_path(self):
         buf = io.BytesIO()
         z = zipfile.ZipFile(buf, "w")
         z.writestr("thisisfilename", "A"*1024)
         z.close()
-        f = unpack(contents=buf.getvalue().replace(
+        t = unpack(contents=buf.getvalue().replace(
             b"thisisfilename", b"/absolute/path"
         ))
-        assert len(f.children) == 1
-        assert f.children[0].filename == "path"
-        assert f.children[0].relapath == "absolute/path"
-        assert f.children[0].relaname == "absolute/path"
-        assert f.children[0].contents == b"A"*1024
-        assert f.read("absolute/path") == b"A"*1024
+        assert len(t.children) == 1
+        assert t.children[0].filename == "path"
+        assert t.children[0].relapath == "absolute/path"
+        assert t.children[0].relaname == "absolute/path"
+        assert t.children[0].contents == b"A"*1024
+        assert t.read("absolute/path") == b"A"*1024
 
     def test_docx1(self):
         t = ZipFile(f("doc_1.docx_"))
         assert t.handles()
 
     def test_partial(self):
+        # Has PK header, but is an invalid archive.
         t = ZipFile(f("partial.zip"))
-        assert t.handles()
+        assert not t.handles()
         assert not t.unpack()
 
     def test_corrupt_directory(self):

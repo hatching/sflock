@@ -7,6 +7,8 @@ import os.path
 import pytest
 
 from sflock.abstracts import File
+from sflock.exception import UnpackException
+from sflock.errors import Errors
 from sflock.main import unpack
 from sflock.unpack import Zip7File
 
@@ -93,9 +95,10 @@ class Test7zFile(object):
         t = Zip7File(f("garbage.bin"))
         assert t.handles() is False
         assert not t.f.selected
-        assert not t.f.identified
-        assert not t.unpack()
-        assert t.f.mode == "failed"
+        with pytest.raises(UnpackException) as e:
+            t.unpack()
+
+        assert e.value.state == Errors.NOTHING_EXTRACTED
 
     def test_garbage2(self):
         t = Zip7File(f("7z_garbage.7z"))
@@ -103,8 +106,11 @@ class Test7zFile(object):
         assert not t.f.selected
         files = t.unpack()
         assert len(files) == 1
+
+        # The child file is garbage data. It should not be attempted
+        # to unpack.
         assert not files[0].children
-        assert files[0].mode == "failed"
+        assert files[0].mode is None
 
     def test_heuristics(self):
         t = unpack("tests/files/7z_plain.7z", filename="foo")

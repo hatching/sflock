@@ -7,6 +7,7 @@ import struct
 import zlib
 
 from sflock.abstracts import Unpacker, File
+from sflock.errors import Errors
 from sflock.exception import UnpackException
 
 class MsoFile(Unpacker):
@@ -72,7 +73,9 @@ class MsoFile(Unpacker):
         try:
             self.walk_ole(self.locate_ole(self.f.contents))
         except UnpackException as e:
-            self.f.mode = "failed"
-            self.f.error = e
+            self.f.set_error(Errors.UNPACK_FAILED, str(e))
+
+        if not self.entries:
+            return []
 
         return self.process(self.entries, duplicates, depth)

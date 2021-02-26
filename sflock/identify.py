@@ -10,6 +10,7 @@ class Deps:
     PYTHON = "python"
     WORD = "microsoft_word"
     POWERPOINT = "microsoft_powerpoint"
+    OUTLOOK = "microsoft_outlook"
     GOOGLE_CHROME = "google_chrome"
     PHP = "php"
     RUBY = "ruby"
@@ -212,7 +213,7 @@ string_matches = [
     (False, ['CDFV2', 'Encrypted'], 'encrypted', "cdf", "CDF file",
      Platform.ANY, Deps.WORD), # TODO, look at these cdf files and the right extension
     (False, ['CDFV2', 'Microsoft', 'Outlook'],
-     'ms-outlook', "cdf", "CDF file", Platform.ANY, Deps.WORD),  # TODO, look at these cdf files and the right extension
+     'ms-outlook', "msg", "Microsoft outlook message", Platform.ANY, Deps.OUTLOOK),
 
     #
     # Archive/compression related
@@ -220,7 +221,7 @@ string_matches = [
     (False, ['7-zip'], "x-7z-compressed", "7z", "Compressed archive",
      Platform.ANY_DESKTOP, Deps.UNARCHIVE),
     (False, ['bzip2'], "x-bzip2", "bzip", "Compressed file", (Platform.LINUX,), Deps.UNARCHIVE),
-    (False, ['gzip'], "gzip", "gz", "Compression file", (Platform.LINUX,), Deps.UNARCHIVE),
+    (False, ['gzip'], "gzip", "gz", "GZIP compressed file", (Platform.LINUX,), Deps.UNARCHIVE),
     (False, ['ACE', 'archive'], "octet-stream", "ace", "ACE archive",
      Platform.ANY_DESKTOP, Deps.ACE),
     (False, ['MS', 'Compress'], "octet-stream", "zip",
@@ -373,7 +374,7 @@ string_matches = [
     (False, ['Ogg'], "ogg", "ogg", "Free open container format ",
      (Platform.WINDOWS, Platform.MACOS)),
     (False, ['ISO', '9660'], "x-iso9660-image", "iso", "ISO Image",
-     (Platform.WINDOWS,)),
+     Platform.ANY),
     (False, ['TeX', 'font'], "x-tex-tfm", "latex", "LaTeX file format",
      (Platform.WINDOWS, Platform.LINUX)),  # todo
     (False, ['awk'], "x-awk", "awk", "Script for text processing",
