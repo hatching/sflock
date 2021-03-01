@@ -6,6 +6,7 @@
 import os.path
 
 from sflock.abstracts import File
+from sflock.errors import Errors
 from sflock.main import unpack
 from sflock.unpack import TarFile, TargzFile, Tarbz2File
 
@@ -225,13 +226,16 @@ class TestTarFile(object):
         assert t.handles() is False
         assert not t.f.selected
         assert not t.unpack()
-        assert t.f.mode == "failed"
+        assert t.f.mode == Errors.INVALID_ARCHIVE
 
     def test_garbage2(self):
         t = TarFile(f("tar_garbage.tar"))
         assert t.handles() is True
         assert not t.f.selected
         files = t.unpack()
+
+        # The child file is garbage data. It should not be attempted
+        # to unpack.
         assert len(files) == 1
         assert not files[0].children
-        assert files[0].mode == "failed"
+        assert files[0].mode is None

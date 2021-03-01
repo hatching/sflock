@@ -13,6 +13,13 @@ class RarFile(Unpacker):
     exe = "/usr/bin/rar"
     exts = ".rar"
     magic = "RAR archive"
+    dependency = "rar"
+
+    def decrypt(self, password, archive, entry):
+       return self.zipjail(
+            archive, entry, "x", "-mt1", "-p%s" % (password or "-"),
+            archive, entry
+        )
 
     def unpack(self, depth=0, password=None, duplicates=None):
         self.f.archive = True
@@ -25,14 +32,13 @@ class RarFile(Unpacker):
             filepath = self.f.temp_path()
             temporary = True
 
-        ret = self.zipjail(
-            filepath, dirpath, "x", "-mt1", "-p%s" % (password or "-"),
-            filepath, dirpath
-        )
+        try:
+            ret = self.bruteforce(password, filepath, dirpath)
+        finally:
+            if temporary:
+                os.unlink(filepath)
+
         if not ret:
             return []
-
-        if temporary:
-            os.unlink(filepath)
 
         return self.process_directory(dirpath, duplicates, depth, password)

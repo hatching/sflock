@@ -5,6 +5,7 @@
 import os.path
 
 from sflock.abstracts import File
+from sflock.errors import Errors
 from sflock.unpack import BupFile
 
 def f(filename):
@@ -46,6 +47,5 @@ def test_garbage():
     t = BupFile(f("garbage.bin"))
     assert t.handles() is False
     assert not t.f.selected
-    assert not t.f.identified
     assert not t.unpack()
-    assert t.f.mode == "failed"
+    assert t.f.mode == Errors.UNPACK_FAILED

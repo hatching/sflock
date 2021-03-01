@@ -10,9 +10,10 @@ import zipfile
 import pytest
 
 from sflock.main import unpack, supported
-from sflock.exception import MaxNestedError
+from sflock.exception import MaxNestedError, UnpackException
 from sflock.abstracts import File
 from sflock.unpack.zip7 import Zip7File
+from sflock.errors import Errors
 
 def test_unpack_nested_max():
     with pytest.raises(MaxNestedError):
@@ -52,6 +53,8 @@ def test_astree1():
         "relapath": None,
         "relaname": None,
         "identified": True,
+        "safelisted": False,
+        "safelist_reason": "",
         "filepath": "tests/files/zip_nested2.zip",
         "extrpath": [],
         "size": 496,
@@ -101,6 +104,8 @@ def test_astree1():
                     ],
                     "dependency": "",
                     "dependency_version": "",
+                    "safelisted": False,
+                    "safelist_reason": "",
                     "human_type": "Text",
                     "selected": False,
                     "selectable": False,
@@ -134,6 +139,8 @@ def test_astree2():
         "dependency": "",
         "dependency_version": "",
         "human_type": "Email file",
+        "safelisted": False,
+        "safelist_reason": "",
         "selected": False,
         "selectable": False,
         'md5': 'ded1a5de62d0882f41613b00d5be02f3',
@@ -157,6 +164,8 @@ def test_astree2():
             "platforms": [
                 {"platform": "linux", "os_version": ""}
             ],
+            "safelisted": False,
+            "safelist_reason": "",
             "dependency": "",
             "dependency_version": "",
             "human_type": "Consolidated Unix File Archive",
@@ -191,6 +200,8 @@ def test_astree2():
                         "dependency": "",
                         "dependency_version": "",
                         "human_type": "Text",
+                        "safelisted": False,
+                        "safelist_reason": "",
                         "selected": False,
                         "selectable": False,
                         'md5': '6f5902ac237024bdd0c176cb93063dc4',
@@ -233,6 +244,8 @@ def test_astree3():
         "extrpath": [],
         "selected": True,
         "selectable": True,
+        "safelisted": False,
+        "safelist_reason": "",
         'md5': '8199175d177670279f05eeb890f4092a',
         'sha1': 'f35de26d11ac2904fbdee9bab8ce502526ccc58e',
         'sha256': '78df974998868d10682fc3693bdfbbd61337923805b360394fae5e8371063f69',
@@ -252,6 +265,8 @@ def test_astree3():
             ],
             "dependency": "",
             "dependency_version": "",
+            "safelisted": False,
+            "safelist_reason": "",
             "human_type": "Mht file",
             "duplicate": False,
             "filename": "multipart.eml",
@@ -280,6 +295,8 @@ def test_astree3():
                     {"platform": "android", "os_version": ""},
                     {"platform": "ios", "os_version": ""}
                 ],
+                "safelisted": False,
+                "safelist_reason": "",
                 "dependency": "",
                 "dependency_version": "",
                 "human_type": "Text",
@@ -312,6 +329,8 @@ def test_astree3():
                     {"platform": "android", "os_version": ""},
                     {"platform": "ios", "os_version": ""}
                 ],
+                "safelisted": False,
+                "safelist_reason": "",
                 "dependency": "",
                 "dependency_version": "",
                 "human_type": "Portable Network Graphic",
@@ -354,6 +373,8 @@ def test_astree3():
                 {"platform": "android", "os_version": ""},
                 {"platform": "ios", "os_version": ""}
             ],
+            "safelisted": False,
+            "safelist_reason": "",
             "dependency": "",
             "dependency_version": "",
             "human_type": "Text",
@@ -377,8 +398,8 @@ def test_astree4():
         "relapath": None,
         "relaname": None,
         "filepath": "tests/files/msg_invoice.msg",
-        "human_type": "CDF file",
-        "extension": "cdf",
+        "human_type": "Microsoft outlook message",
+        "extension": "msg",
         "extrpath": [],
         "size": 270848,
         "identified": True,
@@ -397,10 +418,14 @@ def test_astree4():
         "selectable": False,
         "password": None,
         "error": None,
-        "dependency": "microsoft_word",
+        "safelisted": False,
+        "safelist_reason": "",
+        "dependency": "microsoft_outlook",
         "dependency_version": "",
         "type": "container",
         "children": [{
+            "safelisted": False,
+            "safelist_reason": "",
             "dependency": "unarchive",
             "dependency_version": "",
             "duplicate": False,
@@ -412,7 +437,7 @@ def test_astree4():
                 "image003.emz",
             ],
             "extension": "gz",
-            "human_type": "Compression file",
+            "human_type": "GZIP compressed file",
             "platforms": [
                 {"platform": "linux", "os_version": ""}
             ],
@@ -424,11 +449,13 @@ def test_astree4():
             "password": None,
             "identified": True,
             "size": 1137,
-            "error": None,
+            "error": "invalid header",
             "type": "file",
             "children": [],
         }, {
             "duplicate": False,
+            "safelisted": False,
+            "safelist_reason": "",
             "dependency": "",
             "dependency_version": "",
             "extension": "png",
@@ -460,17 +487,19 @@ def test_astree4():
             "children": [],
         }, {
             "duplicate": False,
-            "human_type": "",
+            "human_type": "Random bytes/Memory dump",
             "extension": "",
             "filename": "oledata.mso",
             "relapath": "oledata.mso",
             "relaname": "oledata.mso",
             "filepath": None,
-            "identified": False,
+            "identified": True,
             "extrpath": [
                 "oledata.mso",
             ],
             "platforms": [],
+            "safelisted": False,
+            "safelist_reason": "",
             "dependency": "",
             "dependency_version": "",
             "selected": False,
@@ -483,6 +512,8 @@ def test_astree4():
             "error": None,
             "type": "container",
             "children": [{
+                "safelisted": False,
+                "safelist_reason": "",
                 "dependency": "",
                 "dependency_version": "",
                 "extension": "exe",
@@ -618,10 +649,13 @@ def test_extract5_relative_spf():
     u = Zip7File(f)
     u.name = "7zfile"
     args = ["-spf"]
-    u.zipjail(
-        filepath, dirpath, "x", "-mmt=off", "-o%s" % dirpath, filepath, *args
-    )
-    assert f.error == "directory_traversal"
+
+    with pytest.raises(UnpackException) as e:
+        u.zipjail(
+            filepath, dirpath, "x", "-mmt=off", "-o%s" % dirpath, filepath,
+            *args
+        )
+    assert e.value.state == Errors.CANCELLED_DIR_TRAVERSAL
     assert len(os.listdir(dirpath)) == 1
     filepath = os.path.join(dirpath, "foobarfilename")
     assert open(filepath, "rb").read() == b"A"*1024
@@ -680,17 +714,17 @@ def test_maxsize_7z():
     f = unpack("tests/files/1025mb.7z")
     assert f.unpacker == "7zfile"
     assert not f.children
-    assert f.error == "files_too_large"
+    assert f.mode == Errors.TOTAL_TOO_LARGE
 
 def test_maxsize_tar():
     f = unpack("tests/files/1025mb.tar.bz2")
     assert f.unpacker == "tarbz2file"
     assert not f.children
-    assert f.error == "files_too_large"
+    assert f.mode == Errors.TOTAL_TOO_LARGE
 
 def test_maxsize_zip():
     f = unpack("tests/files/1025mb.zip")
-    assert f.unpacker == "zipfile"
+    assert f.unpacker in ("zipfile", "7zfile")
     assert not f.children
-    assert f.error == "files_too_large"
-    assert f.astree()["error"] == "files_too_large"
+    assert f.mode == Errors.TOTAL_TOO_LARGE
+

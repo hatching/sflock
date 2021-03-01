@@ -9,6 +9,7 @@ import zipfile
 
 from sflock import unpack, zipify
 from sflock.abstracts import File
+from sflock.errors import Errors
 from sflock.unpack import MsgFile
 
 def f(filename):
@@ -41,7 +42,6 @@ def test_msg_embedded():
     assert files[2].filesize == 234898
     assert files[2].platforms == []
     assert not files[2].selected
-    assert not files[2].identified
 
     assert len(files[2].children) == 1
     assert not files[2].children[0].filepath
@@ -86,6 +86,5 @@ def test_garbage():
     m = MsgFile(f("garbage.bin"))
     assert m.handles() is False
     assert not m.f.selected
-    assert not m.f.identified
     assert not m.unpack()
-    assert m.f.mode == "failed"
+    assert m.f.mode == Errors.UNPACK_FAILED

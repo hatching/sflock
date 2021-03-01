@@ -13,6 +13,7 @@ class CabFile(Unpacker):
     exe = "/usr/bin/cabextract"
     exts = ".cab"
     magic = "Microsoft Cabinet archive"
+    dependency = "cabextract"
 
     def unpack(self, depth=0,  password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()

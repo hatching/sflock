@@ -16,8 +16,12 @@ import tempfile
 from sflock.identify import identify
 from sflock.compat import magic
 from sflock.config import iter_passwords
-from sflock.exception import UnpackException, MaxNestedError
+from sflock.exception import (
+    UnpackException, MaxNestedError, DecryptionFailedError,
+    NotSupportedError
+)
 from sflock.misc import data_file, make_list
+from sflock.errors import Errors
 
 MAX_NESTED = 10
 
@@ -50,6 +54,7 @@ class Unpacker(object):
     package = None
     magic = None
     priority = 0
+    dependency = ""
 
     # Initiated at runtime - contains each Unpacker subclass.
     plugins = {}
@@ -79,28 +84,54 @@ class Unpacker(object):
 
         return_code = p.wait()
         out, err = p.communicate()
+        low_err = err.lower()
 
-        if b"Excessive writing caused incomplete unpacking!" in err:
-            self.f.error = "files_too_large"
-            return False
+        if b"excessive writing caused incomplete unpacking!" in low_err:
+            raise UnpackException(
+                "Cancelled: unpacked archive exceeds maximum size",
+                Errors.TOTAL_TOO_LARGE
+            )
 
-        if b"Detected potential out-of-path arbitrary overwrite!" in err:
-            self.f.error = "directory_traversal"
-            return False
+        if any(x in low_err for x in
+               (b"detected potential out-of-path arbitrary overwrite",
+                b"Detected potential directory traversal arbitrary overwrite")
+        ):
 
-        if b"Blocked system call" in err and b"syscall=symlink" in err:
-            self.f.error = "malicious_symlink"
-            return False
+            raise UnpackException(
+                "Cancelled: directory traversal attempt detected",
+                Errors.CANCELLED_DIR_TRAVERSAL
+            )
 
-        if b"Wrong password" in err:
-            self.f.error = "Bad password"
-            return False
+        if b"blocked system call" in low_err \
+                and b"syscall=symlink" in low_err or \
+                b"potential symlink-based arbitrary overwrite" in low_err:
+            raise UnpackException(
+                "Cancelled: symlink creation attempt detected",
+                Errors.CANCELLED_SYMLINK
+            )
+
+        if any(x in low_err for x in
+               (b"wrong password", b"bad password", b"password is incorrect",
+                b"password required")):
+            raise DecryptionFailedError(
+                "No correct password for encrypted archive"
+            )
+
+        if b"unknown lstat() errno" in low_err:
+            # Handle unknown lstat errors as if the unpacking tool does
+            # not supported the current file and allow another unpacker to
+            # be chosen.
+            raise NotSupportedError(f"Zipjail error: {err}")
+
+        if return_code == 1:
+            raise UnpackException(f"Zipjail error: {err}", Errors.ZIPJAIL_FAIL)
 
         return not return_code
 
     def handles(self):
-        if self.f.filename and self.f.filename.lower().endswith(self.exts):
-            return True
+        if not self.magic:
+            if self.f.filename and self.f.filename.lower().endswith(self.exts):
+                return True
 
         for magic in make_list(self.magic or []):
             if magic in self.f.magic:
@@ -117,6 +148,7 @@ class Unpacker(object):
         plugins.sort(key=lambda x: x.priority, reverse=True)
         for plugin in plugins:
             if plugin(f).handles():
+
                 yield plugin.name
 
     def unpack(self, depth=0, password=None, duplicates=None):
@@ -127,12 +159,20 @@ class Unpacker(object):
         if duplicates is None:
             duplicates = []
 
+        if self.f:
+            self.f.clear_error()
+
         ret = []
         for f in entries:
             if f.filename and f.filename.strip() == "":
                 continue
+
+            unavailable_plugins = []
+            detected_plugins = 0
             for unpacker in Unpacker.guess(f):
+                detected_plugins += 1
                 plugin = self.plugins[unpacker](f)
+
                 if plugin.supported():
                     depth += 1
                     if depth > MAX_NESTED:
@@ -143,10 +183,28 @@ class Unpacker(object):
 
                     try:
                         f.children = plugin.unpack(depth, password, duplicates)
+
+                    except NotSupportedError as e:
+                        # This state can occur when a unpacker encounters a
+                        # thing it cannot handle that it did not detect during
+                        # the 'handles' or 'supported' phase. We let other
+                        # unpackers try to unpack the current file after this.
+                        f.set_error(Errors.NOT_SUPPORTED, str(e))
+                        f.unpacker = unpacker
+                        continue
+
                     except UnpackException as e:
-                        raise UnpackException(
-                            f"Failure while unpacking: {f.filename!r}. {e}"
-                        ).with_traceback(e.__traceback__)
+                        state = e.state
+
+                        # Use a default error state if no error state was set
+                        if not state:
+                            state = Errors.UNPACK_FAILED
+
+                        f.set_error(state, str(e))
+
+                        # Store the unpacker and stop unpacking this file.
+                        f.unpacker = unpacker
+                        break
 
                     depth -= 1
 
@@ -158,6 +216,15 @@ class Unpacker(object):
                     f.unpacker = unpacker
                     if f.children:
                         break
+                else:
+                    unavailable_plugins.append(plugin)
+
+            if not f.mode and unavailable_plugins and \
+                    len(unavailable_plugins) == detected_plugins:
+                deps = ', '.join(p.dependency for p in unavailable_plugins)
+                err = "One or more unpackers support this file, but the " \
+                      f"following dependencies are missing: {deps}"
+                f.set_error(Errors.MISSING_DEPENDENCY, err)
 
             if f.sha256 not in duplicates:
                 duplicates.append(f.sha256)
@@ -180,9 +247,14 @@ class Unpacker(object):
         if duplicates is None:
             duplicates = []
 
+        if self.f:
+            self.f.clear_error()
+
         if not os.listdir(dirpath):
-            self.f.mode = "failed"
-            self.f.error = "no files extracted"
+            shutil.rmtree(dirpath)
+            raise UnpackException(
+                "Extraction directory was empty", Errors.NOTHING_EXTRACTED
+            )
 
         for dirpath2, dirnames, filepaths in os.walk(dirpath):
             for filepath in filepaths:
@@ -202,15 +274,28 @@ class Unpacker(object):
         elif not passwords:
             passwords = []
 
+        # If a password was provided, first try that.
+        insert_at = 0
+        if passwords:
+            insert_at = 1
+        passwords.insert(insert_at, None)
+
         for password in iter_passwords():
             if password not in passwords:
                 passwords.append(password)
 
-        passwords.insert(0, None)
+        last_error = None
         for password in passwords:
-            value = self.decrypt(password, *args, **kwargs)
-            if value:
-                return value
+            try:
+                return self.decrypt(password, *args, **kwargs)
+            except DecryptionFailedError as e:
+                last_error = str(e)
+
+        #
+        # self.f.set_error(Errors.DECRYPTION_FAILED, last_error)
+
+        raise DecryptionFailedError(last_error, Errors.DECRYPTION_FAILED)
+        #return False
 
 class Decoder(object):
     """Abstract class for Decoder engines."""
@@ -479,6 +564,14 @@ class File(object):
                 pass
             self._ole_tried = True
         return self._ole
+
+    def set_error(self, state, error):
+        self.mode = state
+        self.error = error
+
+    def clear_error(self):
+        self.mode = Errors.NO_ERROR
+        self.error = None
 
     def safelist(self, reason):
         self.safelisted = True
