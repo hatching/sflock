@@ -449,7 +449,7 @@ def test_astree4():
             "password": None,
             "identified": True,
             "size": 1137,
-            "error": "invalid header",
+            "error": "Invalid tar/tar.gz archive: invalid header",
             "type": "file",
             "children": [],
         }, {

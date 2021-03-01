@@ -4,9 +4,11 @@
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 import os.path
+import pytest
 
 from sflock.abstracts import File
 from sflock.errors import Errors
+from sflock.exception import NotSupportedError
 from sflock.main import unpack
 from sflock.unpack import TarFile, TargzFile, Tarbz2File
 
@@ -225,8 +227,9 @@ class TestTarFile(object):
         t = TarFile(f("garbage.bin"))
         assert t.handles() is False
         assert not t.f.selected
-        assert not t.unpack()
-        assert t.f.mode == Errors.INVALID_ARCHIVE
+
+        with pytest.raises(NotSupportedError):
+            t.unpack()
 
     def test_garbage2(self):
         t = TarFile(f("tar_garbage.tar"))

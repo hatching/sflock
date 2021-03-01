@@ -14,7 +14,8 @@ class Zip7File(Unpacker):
     exe = "/usr/bin/7z"
     exts = ".7z", ".iso", "zip"
     # TODO Should we use "isoparser" (check PyPI) instead of 7z?
-    magic = "7-zip archive", "ISO 9660", "CDFV2 Encrypted", "Zip archive"
+    magic = ("7-zip archive", "ISO 9660", "CDFV2 Encrypted",
+             "Zip archive", "UDF filesystem")
     priority = 1
     dependency = "p7zip-full"
 
@@ -68,7 +69,7 @@ class GzipFile(Unpacker):
     name = "gzipfile"
     exe = "/usr/bin/7z"
     exts = ".gzip"
-    magic = "gzip compressed data, was"
+    magic = "gzip compressed data, was", "gzip compressed data, from"
     dependency = "p7zip-full"
 
     def unpack(self, depth=0, password=None, duplicates=None):

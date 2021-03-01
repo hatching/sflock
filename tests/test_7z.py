@@ -75,6 +75,12 @@ class Test7zFile(object):
         assert len(t.children) == 1
         assert len(t.children[0].contents) == 801792
 
+    def test_gzip_noext(self):
+        t = unpack("tests/files/gzip_noext")
+        assert t.unpacker == "gzipfile"
+        assert len(t.children) == 1
+        assert len(t.children[0].contents) == 7381
+
     """
     def test_zip_encrypted(self):
         assert "7-zip archive" in f("7z_encrypted.7z").magic
@@ -146,6 +152,15 @@ class Test7zFile(object):
         )
         assert files[0].selected is True
         assert files[0].duplicate is False
+
+    def test_udf_iso_noext(self):
+        upacker = Zip7File(f("iso_udf_noext"))
+        assert upacker.handles()
+        assert upacker.supported()
+        t = unpack("tests/files/iso_udf_noext")
+        assert t.unpacker == "7zfile"
+        assert len(t.children) == 1
+        assert t.children[0].filename == "ATTACHME.EXE"
 
 @pytest.mark.skipif("Zip7File(None).supported()")
 def test_no7z_plain():

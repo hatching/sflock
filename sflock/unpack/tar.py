@@ -10,6 +10,7 @@ import tarfile
 import tempfile
 
 from sflock.abstracts import Unpacker, File
+from sflock.exception import NotSupportedError
 from sflock.config import MAX_TOTAL_SIZE
 from sflock.errors import Errors
 
@@ -27,8 +28,11 @@ class TarFile(Unpacker):
         try:
             archive = tarfile.open(mode=self.mode, fileobj=self.f.stream)
         except tarfile.ReadError as e:
-            self.f.set_error(Errors.INVALID_ARCHIVE, str(e))
-            return []
+            # Raise not supported instead of setting invalid archive error
+            # as .gzip archives are also recognized as tar.gz files.
+            # this errors tells the unpack caller to try the next
+            # supporting plugin.
+            raise NotSupportedError(f"Invalid tar/tar.gz archive: {e}")
 
         entries, total_size = [], 0
         for entry in archive:
