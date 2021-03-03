@@ -1,4 +1,4 @@
-from sflock.ident import javascript, powershell, wsf, visualbasic, java, ruby, office_zip, python
+from sflock.ident import javascript, powershell, wsf, visualbasic, java, ruby, office_zip, python, batch
 
 ttf_hdr = (
     b'\x00\x01\x00\x00\x00\xff\xff\xff\xff\x01\x00\x00\x00\x00\x00\x00'
@@ -80,7 +80,8 @@ def Text(f):
         return True, "Mht file", "mht", Platform.ANY
     if python(f):
         return True, "Python script", "py", Platform.ANY, Deps.PYTHON
-
+    if batch(f):
+        return False, "DOS batch file", "bat", Platform.ANY
     return False, "Text", "txt", Platform.ANY
 
 def ZIP(f):

@@ -170,3 +170,19 @@ def python(f):
 
     if found > 5:
         return "py"
+
+def batch(f):
+    BC_STRS = [
+        b"@echo", b"@setlocal ", b"@exit", b"set", b"@pause",
+        b"@ECHO", b"@SETLOCAL ", b"@EXIT", b"SET", b"@PAUSE",
+        b"REM", b":init", b":parse",
+        b":main", b"goto ", b"shift"
+    ]
+
+    found = 0
+    for s in BC_STRS:
+        if s in f.contents:
+            found += 1
+
+    if found > 5:
+        return "bc"
