@@ -105,9 +105,13 @@ def ZIP(f):
     return False, "ZIP file", "zip", Platform.ANY, Deps.UNARCHIVE
 
 def JAR(f):
+    if java(f):
+        return True, "Java Archive File", "jar", (Platform.WINDOWS, Platform.MACOS, Platform.LINUX, Platform.ANDROID), Deps.JAVA
+
     if f.get_child("AndroidManifest.xml"):
         return True, "Android Package File", "apk", (Platform.ANDROID,)
 
+    # Default
     return True, "Java Archive File", "jar", (Platform.WINDOWS, Platform.MACOS, Platform.LINUX, Platform.ANDROID), Deps.JAVA
 
 def OCTET(f):
