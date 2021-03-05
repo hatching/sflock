@@ -173,9 +173,9 @@ def python(f):
 
 def batch(f):
     BC_STRS = [
-        b"@echo", b"@setlocal ", b"@exit", b"set", b"@pause",
-        b"@ECHO", b"@SETLOCAL ", b"@EXIT", b"SET", b"@PAUSE",
-        b"REM", b":init", b":parse",
+        b"@echo ", b"@setlocal ", b"@exit ", b"set ", b"@pause ",
+        b"@ECHO ", b"@SETLOCAL ", b"@EXIT ", b"SET ", b"@PAUSE ",
+        b"REM ", b":init", b":parse", b"GOTO ",
         b":main", b"goto ", b"shift"
     ]
 

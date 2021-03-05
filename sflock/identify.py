@@ -70,6 +70,8 @@ def Text(f):
         return True, "Windows script file", "wsf", (Platform.WINDOWS,)
     if visualbasic(f):
         return True, "Visual basic file", "vbs", (Platform.WINDOWS,)
+    if batch(f):
+        return False, "DOS batch file", "bat", Platform.ANY
     if ruby(f):
         return True, "Ruby file", "rb", Platform.ANY_DESKTOP, Deps.RUBY
     if f.contents.startswith(b"WEB"):
@@ -80,8 +82,7 @@ def Text(f):
         return True, "Mht file", "mht", Platform.ANY
     if python(f):
         return True, "Python script", "py", Platform.ANY, Deps.PYTHON
-    if batch(f):
-        return False, "DOS batch file", "bat", Platform.ANY
+
     return False, "Text", "txt", Platform.ANY
 
 def ZIP(f):
