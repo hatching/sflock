@@ -71,7 +71,7 @@ class Unpacker(object):
 
     def zipjail(self, filepath, dirpath, *args):
         zipjail = data_file("zipjail.elf")
-        arg = "--clone=1" if self.name == "7zfile" else "--clone=0"
+        arg = "--clone=10" if self.name == "7zfile" else "--clone=0"
 
         if os.path.exists(dirpath):
             shutil.rmtree(dirpath)
