@@ -64,7 +64,7 @@ class ZipFile(Unpacker):
             )
         except (RuntimeError, zipfile.BadZipFile, OverflowError,
                 zlib.error, UnicodeDecodeError) as e:
-            msg = getattr(e, "message", None) or e.args[0]
+            msg = str(e)
 
             if any(x in msg for x in ("Bad password", "password required")):
                 raise DecryptionFailedError(
@@ -73,7 +73,8 @@ class ZipFile(Unpacker):
 
             if any(x in msg for x in (
                     "compression method is not supported",
-                    "compression type 99"
+                    "compression type 99",
+                    "strong encryption (flag bit 6)"
             )):
                 raise NotSupportedError(
                     "7z is required to unpack this ZIP archive"
@@ -81,7 +82,9 @@ class ZipFile(Unpacker):
 
             skippable = ("Bad CRC-32", "Truncated file header",
                          "invalid distance too far back",
-                         "cannot fit 'long' into", "Bad magic number for")
+                         "cannot fit 'long' into", "Bad magic number for",
+                         "'utf-8' codec can't decode byte",
+                         "invalid stored block lengths")
 
             if any(x in msg for x in skippable):
                 raise InvalidZipEntryError(msg)
@@ -139,7 +142,7 @@ class ZipFile(Unpacker):
                 # We do not stop unpacking if an entry in the archive is
                 # invalid. Mark the invalid entry and continue.
                 f = File(filename=entry.filename, mode="failed")
-                f.error = str(e)
+                f.error = f"Could not unpack: {e}"
 
             entries.append(f)
             if entries[-1].relaname:
