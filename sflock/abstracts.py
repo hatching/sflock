@@ -6,22 +6,24 @@
 import hashlib
 import io
 import ntpath
-import olefile
 import os.path
 import re
 import shutil
 import subprocess
 import tempfile
+from pathlib import Path
 
-from sflock.identify import identify
+import olefile
+
 from sflock.compat import magic
 from sflock.config import iter_passwords
+from sflock.errors import Errors
 from sflock.exception import (
     UnpackException, MaxNestedError, DecryptionFailedError,
     NotSupportedError
 )
+from sflock.identify import identify
 from sflock.misc import data_file, make_list
-from sflock.errors import Errors
 
 MAX_NESTED = 10
 
@@ -324,7 +326,11 @@ class File(object):
                  filename=None, mode=None, password=None, description=None,
                  selected=False, stream=None, platforms=[]):
 
-        self.filepath = filepath
+
+        if isinstance(filepath, Path):
+            self.filepath = str(filepath)
+        else:
+            self.filepath = filepath
         self.relapath = relapath
         self.mode = mode
         self.error = None
@@ -531,12 +537,20 @@ class File(object):
     def selected(self):
         if not self._identified_ran:
             self._identify()
+
+        if self.error:
+            return False
+
         return self._selected
 
     @property
     def selectable(self):
         if not self._identified_ran:
             self._identify()
+
+        if self.error:
+            return False
+
         return self._selectable
 
     @property
