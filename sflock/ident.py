@@ -151,9 +151,38 @@ def visualbasic(f):
     return
 
 def java(f):
-    if not f.get_child("META-INF/MANIFEST.MF"):
+    if not f.get_child(".*\.class$", regex=True) and not f.get_child("META-INF/MANIFEST.MF"):
         return
     if f.get_child("AndroidManifest.xml"):
         return "apk"
     return "jar"
 
+def python(f):
+    PY_STRS = [
+        b"import os", b"import sys", b"import ", b"from ",
+        b"():", b"def ", b"#", b"print(", b"sleep("
+    ]
+
+    found = 0
+    for s in PY_STRS:
+        if s in f.contents:
+            found += 1
+
+    if found > 5:
+        return "py"
+
+def batch(f):
+    BC_STRS = [
+        b"@echo ", b"@setlocal ", b"@exit ", b"set ", b"@pause ",
+        b"@ECHO ", b"@SETLOCAL ", b"@EXIT ", b"SET ", b"@PAUSE ",
+        b"REM ", b":init", b":parse", b"GOTO ",
+        b":main", b"goto ", b"shift"
+    ]
+
+    found = 0
+    for s in BC_STRS:
+        if s in f.contents:
+            found += 1
+
+    if found > 5:
+        return "bc"
