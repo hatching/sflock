@@ -56,7 +56,7 @@ def XML(f):
 def SAT(f):
     if f.get_child("ppt/presentation.xml"):
         return True, "Powerpoint", "ppt",  Platform.ANY, Deps.POWERPOINT
-    return False, None, None, None
+    return False
 
 def SECTION(f):
     return False, 'CDF file', 'cdf', (Platform.WINDOWS,)
@@ -86,11 +86,15 @@ def ZIP(f):
         if i.filename.lower() == "workbook.xml":
             return True, "Excel document", "xlsx", Platform.ANY, Deps.EXCEL
         if i.filename.lower() == "worddocument.xml":
-            return True, "Word document", "docx", Platform.ANY, Deps.WORD
+            return True, "Word document", "doc", Platform.ANY, Deps.WORD
         if i.magic == "AppleDouble encoded Macintosh file":
             return True, "Mountable disk image", "dmg", Platform.MACOS
-    if java(f):
+
+    r = java(f)
+    if r  == "jar":
         return True, "JAR file", "jar", (Platform.WINDOWS, Platform.MACOS, Platform.LINUX, Platform.ANDROID), Deps.JAVA
+    elif r == "apk":
+        return True, "Android Package File", "apk", (Platform.ANDROID,)
 
     office = office_zip(f)
     if office == "doc":
@@ -132,31 +136,55 @@ def FLASH(f):
 
 def EXCEL(f):
     content = f.get_child("[Content_Types].xml")
+    if not content or not content.contents:
+        return False
+
     if b"ContentType=\"application/vnd.ms-excel.sheet.macroEnabled" in content.contents:
         return True, "Microsoft Excel Open XML Spreadsheet", "xlsm", Platform.ANY, Deps.EXCEL
     if b"ContentType=\"application/vnd.ms-excel.sheet.binary.macroEnabled.main" in content.contents:
         return True, "Microsoft Excel Open XML Spreadsheet", "xlsb", Platform.ANY, Deps.EXCEL
-    return True, "Microsoft Excel Open XML Spreadsheet", "xlsx", Platform.ANY, Deps.EXCEL
+    return True, "Microsoft Excel Open XML Spreadsheet", "xls", Platform.ANY, Deps.EXCEL
 
 def POWERPOINT(f):
-    content = f.get_child("[Content_Types].xml")                   
+    content = f.get_child("[Content_Types].xml")
+    if not content or not content.contents:
+        return False
+
     if b"ContentType=\"application/vnd.ms-powerpoint.slideshow.macroEnabled" in content.contents:
         return True, "PowerPoint Open XML Presentation", "ppsm", Platform.ANY, Deps.POWERPOINT
     if b"ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.slideshow" in content.contents:
         return True, "PowerPoint Open XML Presentation", "ppsx", Platform.ANY, Deps.POWERPOINT
     if b"ContentType=\"application/vnd.ms-powerpoint.presentation.macroEnabled" in content.contents:
         return True, "PowerPoint Open XML Presentation", "pptm", Platform.ANY, Deps.POWERPOINT
-    return True, "PowerPoint Open XML Presentation", "pptx", Platform.ANY, Deps.POWERPOINT
+    return True, "PowerPoint Open XML Presentation", "ppt", Platform.ANY, Deps.POWERPOINT
 
 def WORD(f):
     content = f.get_child("[Content_Types].xml")
+    if not content or not content.contents:
+        return False
+
     if b"ContentType=\"application/vnd.ms-word.document.macroEnabled" in content.contents:
         return True, "Microsoft Open XML Presentation", "docm", Platform.ANY, Deps.WORD
     if b"ContentType=\"application/vnd.ms-word.template.macroEnabledTemplate" in content.contents:
         return True, "Microsoft Open XML Presentation", "dotm", Platform.ANY, Deps.WORD
     if b"ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.template" in content.contents:
         return True, "Microsoft Open XML Presentation", "dotx", Platform.ANY, Deps.WORD
-    return True, "Microsoft Word Open XML Document", "docx", Platform.ANY, Deps.WORD
+    return True, "Microsoft Word Open XML Document", "doc", Platform.ANY, Deps.WORD
+
+def OFFICEXML(f):
+    contenttypes = f.get_child("[Content_Types].xml")
+    if not contenttypes:
+        return False
+
+    for child in f.children:
+        if child.relapath.startswith("xl/"):
+            return True, "Microsoft Excel Open XML Spreadsheet", "xls", Platform.ANY, Deps.EXCEL
+        if child.relapath.startswith("word/"):
+            return True, "Microsoft Word Open XML Document", "doc", Platform.ANY, Deps.WORD
+        if child.relapath.startswith("ppt/"):
+            return True, "PowerPoint Open XML Presentation", "ppt", Platform.ANY, Deps.POWERPOINT
+
+    return False
 
 def MICROSOFT(f):
     if f.get_child("[Content_Types].xml"):
@@ -206,7 +234,7 @@ string_matches = [
      "ods", "OpenDocument Spreadsheet", Platform.ANY, Deps.EXCEL),
     (True, ['OpenDocument'], "opendocument.presentation", "odp",
      "OpenDocument Presentation", Platform.ANY, Deps.POWERPOINT),
-    (True, ['CDFV2', 'Microsoft', 'Excel'], "ms-excel", "xlsx",
+    (True, ['CDFV2', 'Microsoft', 'Excel'], "ms-excel", "xls",
      "Excel Spreadsheet", Platform.ANY, Deps.EXCEL),
     (True, ['Composite', 'Document', 'File', 'V2', 'Document'],
      "ms-office", "cdf", "CDF file", Platform.ANY, Deps.WORD), # TODO, look at these cdf files and the right extension
@@ -420,6 +448,7 @@ func_matches = [
      "openxmlformats-officedocument.presentationml.presentation", POWERPOINT),
     (['Microsoft', 'Word'],
      "openxmlformats-officedocument.wordprocessingml.document", WORD),
+    (["Microsoft"], "openxmlformats-officedocument", OFFICEXML),
     (['Microsoft'], "octet", MICROSOFT)
 ]
 

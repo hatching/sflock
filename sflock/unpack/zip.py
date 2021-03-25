@@ -18,6 +18,8 @@ from sflock.errors import Errors
 class InvalidZipEntryError(UnpackException):
     pass
 
+
+
 class ZipFile(Unpacker):
     name = "zipfile"
     exts = ".zip"
@@ -27,6 +29,11 @@ class ZipFile(Unpacker):
         return True
 
     def handles(self):
+        # This file unpacker must always be selected for office xml files.
+        # therefore do not use file magic or extensions. 7z is more strict.
+        # we need this unpacker to have more control over specific file
+        # unpacking with office files.
+        # (such as with corrupt zipinfo entries to exploit office)
         if self.f.stream.read(2) == b"PK":
             try:
                 z = zipfile.ZipFile(self.f.stream)
@@ -47,6 +54,10 @@ class ZipFile(Unpacker):
         return False
 
     def decrypt(self, password, archive, entry):
+        if entry.header_offset < 0:
+            raise InvalidZipEntryError(
+                f"Negative header offset, cannot unpack this file"
+            )
         try:
             if password:
                 archive.setpassword(password.encode())
@@ -100,7 +111,6 @@ class ZipFile(Unpacker):
             return []
 
         entries, directories, total_size = [], [], 0
-
         illegal = ("..", ":", "\x00")
         for entry in archive.infolist():
             if entry.filename.endswith("/") or entry.file_size < 0:
@@ -141,7 +151,7 @@ class ZipFile(Unpacker):
             except InvalidZipEntryError as e:
                 # We do not stop unpacking if an entry in the archive is
                 # invalid. Mark the invalid entry and continue.
-                f = File(filename=entry.filename, mode="failed")
+                f = File(relapath=entry.filename, mode="failed")
                 f.error = f"Could not unpack: {e}"
 
             entries.append(f)

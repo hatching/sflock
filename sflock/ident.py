@@ -154,6 +154,6 @@ def java(f):
     if not f.get_child("META-INF/MANIFEST.MF"):
         return
     if f.get_child("AndroidManifest.xml"):
-        return
+        return "apk"
     return "jar"
 

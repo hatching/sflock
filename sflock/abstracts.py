@@ -557,6 +557,9 @@ class File(object):
     def extrpath(self):
         ret, child = [], self
         while child.parent:
+            if not child.relapath:
+                return ret
+
             ret.insert(0, child.relapath)
             child = child.parent
         return ret
