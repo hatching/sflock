@@ -11,7 +11,7 @@ import re
 import shutil
 import subprocess
 import tempfile
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 
 import olefile
 
@@ -331,7 +331,13 @@ class File(object):
             self.filepath = str(filepath)
         else:
             self.filepath = filepath
-        self.relapath = relapath
+
+        # Remove all \\ slashes by always parsing the relapath as a Windows
+        # path and changing it to posix.
+        if relapath:
+            self.relapath = PureWindowsPath(relapath).as_posix()
+        else:
+            self.relapath = relapath
         self.mode = mode
         self.error = None
         self.description = description

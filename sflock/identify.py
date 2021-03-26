@@ -71,7 +71,7 @@ def Text(f):
     if visualbasic(f):
         return True, "Visual basic file", "vbs", (Platform.WINDOWS,)
     if batch(f):
-        return False, "DOS batch file", "bat", Platform.ANY
+        return True, "DOS batch file", "bat", (Platform.WINDOWS,)
     if ruby(f):
         return True, "Ruby file", "rb", Platform.ANY_DESKTOP, Deps.RUBY
     if f.contents.startswith(b"WEB"):
@@ -86,27 +86,19 @@ def Text(f):
     return False, "Text", "txt", Platform.ANY
 
 def ZIP(f):
-    for i in f.children:
-        if i.filename.lower() == "workbook.xml":
-            return True, "Excel document", "xlsx", Platform.ANY, Deps.EXCEL
-        if i.filename.lower() == "worddocument.xml":
-            return True, "Word document", "doc", Platform.ANY, Deps.WORD
-        if i.magic == "AppleDouble encoded Macintosh file":
-            return True, "Mountable disk image", "dmg", Platform.MACOS
-
     r = java(f)
     if r  == "jar":
         return True, "JAR file", "jar", (Platform.WINDOWS, Platform.MACOS, Platform.LINUX, Platform.ANDROID), Deps.JAVA
     elif r == "apk":
         return True, "Android Package File", "apk", (Platform.ANDROID,)
 
-    office = office_zip(f)
-    if office == "doc":
-        return True, "Word document", "doc", Platform.ANY, Deps.WORD
-    if office == "ppt":
-        return True, "PowerPoint document", "ppt", Platform.ANY, Deps.POWERPOINT
-    if office == "xls":
-        return True, "Excel document", "xls", Platform.ANY, Deps.EXCEL
+    match = OFFICEXML(f)
+    if match:
+        return match
+
+    for i in f.children:
+        if i.magic == "AppleDouble encoded Macintosh file":
+            return True, "Mountable disk image", "dmg", Platform.MACOS
 
     return False, "ZIP file", "zip", Platform.ANY, Deps.UNARCHIVE
 
@@ -147,11 +139,13 @@ def EXCEL(f):
     if not content or not content.contents:
         return False
 
-    if b"ContentType=\"application/vnd.ms-excel.sheet.macroEnabled" in content.contents:
-        return True, "Microsoft Excel Open XML Spreadsheet", "xlsm", Platform.ANY, Deps.EXCEL
     if b"ContentType=\"application/vnd.ms-excel.sheet.binary.macroEnabled.main" in content.contents:
         return True, "Microsoft Excel Open XML Spreadsheet", "xlsb", Platform.ANY, Deps.EXCEL
-    return True, "Microsoft Excel Open XML Spreadsheet", "xls", Platform.ANY, Deps.EXCEL
+    if b"ContentType=\"application/vnd.ms-excel.sheet.macroEnabled" in content.contents:
+        return True, "Microsoft Excel Open XML Spreadsheet", "xlsm", Platform.ANY, Deps.EXCEL
+    if b"ContentType=\"application/vnd.ms-office.vbaProject" in content.contents:
+        return True, "Microsoft Excel Open XML Spreadsheet", "xlsm", Platform.ANY, Deps.EXCEL
+    return True, "Microsoft Excel Open XML Spreadsheet", "xlsx", Platform.ANY, Deps.EXCEL
 
 def POWERPOINT(f):
     content = f.get_child("[Content_Types].xml")
@@ -164,7 +158,7 @@ def POWERPOINT(f):
         return True, "PowerPoint Open XML Presentation", "ppsx", Platform.ANY, Deps.POWERPOINT
     if b"ContentType=\"application/vnd.ms-powerpoint.presentation.macroEnabled" in content.contents:
         return True, "PowerPoint Open XML Presentation", "pptm", Platform.ANY, Deps.POWERPOINT
-    return True, "PowerPoint Open XML Presentation", "ppt", Platform.ANY, Deps.POWERPOINT
+    return True, "PowerPoint Open XML Presentation", "pptx", Platform.ANY, Deps.POWERPOINT
 
 def WORD(f):
     content = f.get_child("[Content_Types].xml")
@@ -177,27 +171,52 @@ def WORD(f):
         return True, "Microsoft Open XML Presentation", "dotm", Platform.ANY, Deps.WORD
     if b"ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.template" in content.contents:
         return True, "Microsoft Open XML Presentation", "dotx", Platform.ANY, Deps.WORD
-    return True, "Microsoft Word Open XML Document", "doc", Platform.ANY, Deps.WORD
+    return True, "Microsoft Word Open XML Document", "docx", Platform.ANY, Deps.WORD
+
+def _ooxml_excel(f):
+    if f.get_child("xl/workbook.bin"):
+        return True, "Microsoft Excel Open XML Spreadsheet", "xlsb", Platform.ANY, Deps.EXCEL
+
+    if f.get_child("xl/macrosheets", regex=True) or f.get_child("xl/.*vbaProject", regex=True):
+        return True, "Microsoft Excel Open XML Spreadsheet", "xlsm", Platform.ANY, Deps.EXCEL
+
+    return True, "Microsoft Excel Open XML Spreadsheet", "xlsx", Platform.ANY, Deps.EXCEL
 
 def OFFICEXML(f):
     contenttypes = f.get_child("[Content_Types].xml")
     if not contenttypes:
         return False
 
+    contentchecks = {
+        "xl": EXCEL,
+        "word": WORD,
+        "ppt": POWERPOINT
+    }
+
+    doctype = None
+    contentchecked = False
     for child in f.children:
         if child.relapath.startswith("xl/"):
-            return True, "Microsoft Excel Open XML Spreadsheet", "xls", Platform.ANY, Deps.EXCEL
+            doctype = "xl"
         if child.relapath.startswith("word/"):
-            return True, "Microsoft Word Open XML Document", "doc", Platform.ANY, Deps.WORD
+            doctype = "word"
         if child.relapath.startswith("ppt/"):
+            doctype = "ppt"
+
+        if doctype and not contentchecked:
+            data = contentchecks[doctype](f)
+            if data:
+                return data
+            contentchecked = True
+
+        if doctype == "xl":
+            return _ooxml_excel(f)
+        if doctype == "word":
+            return True, "Microsoft Word Open XML Document", "doc", Platform.ANY, Deps.WORD
+        if doctype == "ppt":
             return True, "PowerPoint Open XML Presentation", "ppt", Platform.ANY, Deps.POWERPOINT
 
     return False
-
-def MICROSOFT(f):
-    if f.get_child("[Content_Types].xml"):
-        return True, "Excel theme", "thmx", Platform.ANY, Deps.EXCEL
-    return True, "Microsoft Document", "doc", Platform.ANY, Deps.WORD
 
 # The magic and mime of a file will be used to match it to an extension or
 # a function.
@@ -454,13 +473,13 @@ func_matches = [
     (['PE32+'], "x-dosexec", PE32),
     (['Macromedia', 'Flash', 'data'], "x-shockwave-flash", FLASH),
     (['Microsoft', 'Excel'],
-     "openxmlformats-officedocument.spreadsheetml.sheet", EXCEL),
+     "openxmlformats-officedocument.spreadsheetml.sheet", OFFICEXML),
     (['Microsoft', 'PowerPoint'],
-     "openxmlformats-officedocument.presentationml.presentation", POWERPOINT),
+     "openxmlformats-officedocument.presentationml.presentation", OFFICEXML),
     (['Microsoft', 'Word'],
-     "openxmlformats-officedocument.wordprocessingml.document", WORD),
+     "openxmlformats-officedocument.wordprocessingml.document", OFFICEXML),
     (["Microsoft"], "openxmlformats-officedocument", OFFICEXML),
-    (['Microsoft'], "octet", MICROSOFT)
+    (["Microsoft", "OOXML"], "octet", OFFICEXML)
 ]
 
 def identify(f):
