@@ -10,6 +10,7 @@ import tempfile
 from sflock.abstracts import Unpacker
 from sflock.exception import UnpackException
 
+
 class Zip7File(Unpacker):
     name = "7zfile"
     exe = "/usr/bin/7z"
@@ -20,13 +21,6 @@ class Zip7File(Unpacker):
     def unpack(self, password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()
 
-        if password:
-            raise UnpackException(
-                "Currently password-protected .7z files are not supported "
-                "due to a ZipJail-related monitoring issue (namely, due to "
-                "7z calling clone(2) when a password has been provided)."
-            )
-
         if self.f.filepath:
             filepath = self.f.filepath
             temporary = False
@@ -34,16 +28,23 @@ class Zip7File(Unpacker):
             filepath = self.f.temp_path(b".7z")
             temporary = True
 
-        ret = self.zipjail(
-            filepath, dirpath, "x", "-mmt=off", "-o%s" % dirpath, filepath
-        )
+        if password:
+            ret = self.zipjail_multithreaded(
+                filepath, dirpath, "x", "-mmt=off", b"-P%s" % password, "-o%s" % dirpath, filepath
+            )
+        else:
+            ret = self.zipjail(
+                filepath, dirpath, "x", "-mmt=off", "-o%s" % dirpath, filepath
+            )
+
         if not ret:
             return []
 
         if temporary:
             os.unlink(filepath)
 
-        return self.process_directory(dirpath, duplicates)
+        return self.process_directory(dirpath, duplicates, password=password)
+
 
 class GzipFile(Unpacker):
     name = "gzipfile"
@@ -128,3 +129,4 @@ class VHDFile(Unpacker):
             os.unlink(filepath)
 
         return self.process_directory(dirpath, duplicates)
+

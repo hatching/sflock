@@ -20,6 +20,7 @@ from sflock.exception import UnpackException
 from sflock.misc import data_file, make_list
 from sflock.pick import package, platform
 
+
 class Unpacker(object):
     """Abstract class for Unpacker engines."""
     name = None
@@ -34,6 +35,7 @@ class Unpacker(object):
     def __init__(self, f):
         self.f = f
         self.init()
+        self.zipjail_binary = data_file(b"zipjail.elf")
 
     def init(self):
         pass
@@ -42,10 +44,24 @@ class Unpacker(object):
         return os.path.exists(self.exe)
 
     def zipjail(self, filepath, dirpath, *args):
-        zipjail = data_file(b"zipjail.elf")
+        call = [self.zipjail_binary, filepath, dirpath, "--", self.exe]
+        call.extend(args)
 
+        return self.run_zipjail(call)
+
+    def zipjail_multithreaded(self, filepath, dirpath, *args):
+        """
+        To be able to decrypt a password-protected .7z file, it appears that up to two additional threads are used, so
+        in order to do so one will have to bump the allowed clone(2) calls to two by using --clone=1.
+        """
+        call = [self.zipjail_binary, filepath, dirpath, "--clone=1", "--", self.exe]
+        call.extend(args)
+
+        return self.run_zipjail(call)
+
+    def run_zipjail(self, call):
         p = subprocess.Popen(
-            (zipjail, filepath, dirpath, "--", self.exe) + args,
+            call,
             stdin=subprocess.PIPE, stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
         )
