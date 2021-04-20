@@ -150,7 +150,8 @@ def powershell(f):
 def javascript(f):
     JS_STRS = [
         b"var ", b"function ", b"eval", b" true",
-        b" false", b" null", b"Math", b"alert("
+        b" false", b" null", b"Math", b"alert(", b"charAt",
+        b"decodeURIComponent", b"charCodeAt", b"toString",
     ]
 
     found = 0
