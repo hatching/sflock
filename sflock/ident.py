@@ -236,12 +236,12 @@ def identify(f):
         if package:
             return package
 
-        if f.mime in mimes:
-            return mimes[f.mime]
-
         for magic_types in magics:
             if f.magic.startswith(magic_types):
                 return magics[magic_types]
+
+        if f.mime in mimes:
+            return mimes[f.mime]
 
 identifiers = [
     dmg, office_zip, office_ole, office_webarchive, office_activemime,
