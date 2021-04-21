@@ -18,6 +18,7 @@ mimes = {
     "application/java-archive": "jar",
     "application/x-dosexec": "exe",
     "application/vnd.ms-cab-compressed": "cab",
+    "application/pdf": "pdf",
 
 }
 
@@ -34,6 +35,7 @@ magics = {
     "Microsoft Office Word": "doc",
     "Microsoft Word": "doc",
     "Microsoft Disk Image": "vhd",
+    "PDF document": "pdf",
 
 }
 

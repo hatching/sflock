@@ -4,8 +4,8 @@
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 import os
-import peepdf
-import six
+import sys
+# import peepdf
 
 from sflock.abstracts import Unpacker, File
 
@@ -15,11 +15,11 @@ class PdfFile(Unpacker):
     package = "pdf"
 
     def supported(self):
-        return True
+        return False
 
     def unpack(self, password=None, duplicates=None):
         entries = []
-
+        """
         if self.f.filepath:
             filepath = self.f.filepath
             temporary = False
@@ -65,7 +65,7 @@ class PdfFile(Unpacker):
                 contents = obj.object.decodedStream
                 filename = filename.value
 
-                if six.PY3:
+                if sys.version_info.major == 3:
                     contents = contents.encode("latin-1")
                     filename = filename.encode()
 
@@ -79,4 +79,6 @@ class PdfFile(Unpacker):
             os.unlink(filepath)
         if entries:
             self.f.preview = False
+        """
         return self.process(entries, duplicates)
+

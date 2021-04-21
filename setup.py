@@ -28,6 +28,7 @@ setup(
         "click",
         "cryptography>=2.1",
         "olefile>=0.43",
+        # "peepdf>=0.4.1",
         "python-magic>=0.4.13",
     ],
 )
