@@ -31,6 +31,9 @@ class ZipFile(Unpacker):
     def unpack(self, password="infected", duplicates=None):
         dirpath = tempfile.mkdtemp()
 
+        if not password:
+            password = "infected"
+
         if self.f.filepath:
             filepath = self.f.filepath
             temporary = False

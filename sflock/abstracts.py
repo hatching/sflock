@@ -89,7 +89,7 @@ class Unpacker(object):
             if plugin(f).handles():
                 yield plugin.name
 
-    def unpack(self, password=None, duplicates=None):
+    def unpack(self, password="infected", duplicates=None):
         raise NotImplementedError
 
     def process(self, entries, duplicates, password=None):
