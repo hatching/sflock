@@ -407,21 +407,29 @@ class File(object):
         if self._identified_ran:
             return
         self._identified_ran = True
-        data = identify(self)
-        if data:
-            self._selected = data[0]
-            self._selectable = data[0]
-            self._human_type = data[1]
-            self._extension = data[2]
-            self._platforms = []
-            for platform in data[3]:
-                self._platforms.append(
-                    {"platform": platform, "os_version": ""}
-                )
 
-            self._dependency = data[4]
-            self._dependency_version = ""
+        if self.filesize > 0:
+            data = identify(self)
+            if data:
+                self._selected = data[0]
+                self._selectable = data[0]
+                self._human_type = data[1]
+                self._extension = data[2]
+                self._platforms = []
+                for platform in data[3]:
+                    self._platforms.append(
+                        {"platform": platform, "os_version": ""}
+                    )
+
+                self._dependency = data[4]
+                self._dependency_version = ""
+                self.identified = True
+        else:
+            self._selected = False
+            self._selectable = False
+            self._human_type = "Empty file"
             self.identified = True
+
 
     def _hashes(self):
         sha256, s, buf = hashlib.sha256(), self.stream, True
@@ -505,6 +513,9 @@ class File(object):
 
     @property
     def filesize(self):
+        if self.filepath:
+            return os.path.getsize(self.filepath)
+
         s = self.stream
         s.seek(0, os.SEEK_END)
         return s.tell()
