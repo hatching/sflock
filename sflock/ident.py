@@ -107,9 +107,13 @@ def office_zip(f):
     if not f.get_child(b"[Content_Types].xml"):
         return
 
+    if f.get_child(b'workbook.bin'):
+        return "xls"
+
     # Shortcut for PowerPoint files.
     if f.get_child(b"ppt/presentation.xml"):
         return "ppt"
+
 
     if not f.get_child(b"docProps/app.xml"):
         return
@@ -235,12 +239,11 @@ def identify(f):
         package = identifier(f)
         if package:
             return package
-        for magic_types in magics:
-            if f.magic.startswith(magic_types):
-                return magics[magic_types]
-        if f.mime in mimes:
-            #print(f.mime, "miem")
-            return mimes[f.mime]
+    for magic_types in magics:
+        if f.magic.startswith(magic_types):
+            return magics[magic_types]
+    if f.mime in mimes:
+        return mimes[f.mime]
 
 identifiers = [
     dmg, office_zip, office_ole, office_webarchive, office_activemime,
