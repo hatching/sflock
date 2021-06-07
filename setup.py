@@ -3,12 +3,19 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
-from setuptools import setup
-from sflock import __version__
+from setuptools import setup, find_packages
+from distutils.util import convert_path
+
+ver_module_ns = {}
+ver_module = convert_path('sflock/__version__.py')
+with open(ver_module) as fh:
+    exec(fh.read(), ver_module_ns)
+assert '__version__' in ver_module_ns
+version = ver_module_ns['__version__']
 
 setup(
     name="SFlock",
-    version=__version__,
+    version=version,
     author="Hatching B.V.",
     author_email="jbr@hatching.io",
     packages=[
