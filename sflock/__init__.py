@@ -5,3 +5,5 @@
 from sflock.compat import magic
 from sflock.exception import UnpackException
 from sflock.main import ident, unpack, supported, zipify
+
+__version__ = "0.3.13"

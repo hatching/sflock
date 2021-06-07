@@ -4,10 +4,11 @@
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 from setuptools import setup
+from sflock import __version__
 
 setup(
     name="SFlock",
-    version="0.3.12",
+    version=__version__,
     author="Hatching B.V.",
     author_email="jbr@hatching.io",
     packages=[
