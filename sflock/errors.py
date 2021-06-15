@@ -1,6 +1,6 @@
-# Copyright (C) 2020 - 2021 Cuckoo Foundation.
-# This file is part of Cuckoo Sandbox - http://www.cuckoosandbox.org
-# See the file 'docs/LICENSE' for copying permission.
+# Copyright (C) 2021 Hatching B.V.
+# This file is part of SFlock - http://www.sflock.org/.
+# See the file 'docs/LICENSE.txt' for copying permission.
 
 class Errors:
     NO_ERROR = None
