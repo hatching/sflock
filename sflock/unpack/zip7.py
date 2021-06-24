@@ -158,3 +158,28 @@ class VHDFile(Unpacker):
             os.unlink(filepath)
 
         return self.process_directory(dirpath, duplicates)
+
+class WimFile(Unpacker):
+    name = "wimfile"
+    exe = "/usr/bin/7z"
+    exts = b".wim"
+    magic = "Windows imaging (WIM) image"
+
+    def unpack(self, password=None, duplicates=None):
+        dirpath = tempfile.mkdtemp()
+
+        if self.f.filepath:
+            filepath = self.f.filepath
+            temporary = False
+        else:
+            filepath = self.f.temp_path(".wim")
+            temporary = True
+
+        ret = self.zipjail(filepath, dirpath, "x", "-o%s" % dirpath, filepath)
+        if not ret:
+            return []
+
+        if temporary:
+            os.unlink(filepath)
+
+        return self.process_directory(dirpath, duplicates)

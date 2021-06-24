@@ -37,6 +37,7 @@ magics = OrderedDict([
     ("Microsoft Word", "doc"),
     ("Microsoft Disk Image", "vhd"),
     ("PDF document", "pdf"),
+    ("Windows imaging (WIM) image", "wim"),
 ])
 
 def xxe(f):
