@@ -3,6 +3,54 @@
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 import re
+from collections import OrderedDict
+
+from sflock.aux.decode_vbe_jse import DecodeVBEJSE
+
+mimes = OrderedDict([
+    ("application/x-lzh-compressed", "lzh"),
+    ("application/x-iso9660-image", "iso"),
+    ("application/zip", "zip"),
+    ("application/gzip", "gzip"),
+    ("text/x-python", "py"),
+    ("application/x-rar", "rar"),
+    ("application/x-7z-compressed", "7z"),
+    ("application/x-bzip2", "bzip2"),
+    ("application/x-tar", "tar"),
+    ("application/java-archive", "jar"),
+    ("application/x-dosexec", "exe"),
+    ("application/vnd.ms-cab-compressed", "cab"),
+    ("application/pdf", "pdf"),
+])
+
+magics = OrderedDict([
+    ("ACE archive data", "ace"),
+    ("PE32 executable (DLL)", "dll"),
+    ("PE32+ executable (DLL)", "dll"),
+    ("PE32 executable", "exe"),
+    ("PE32+ executable", "exe"),
+    ("Microsoft PowerPoint", "ppt"),
+    ("Microsoft Office Excel", "xls"),
+    ("Microsoft Excel", "xls"),
+    ("Rich Text Format", "doc"),
+    ("Microsoft Office Word", "doc"),
+    ("Microsoft Word", "doc"),
+    ("Microsoft Disk Image", "vhd"),
+    ("PDF document", "pdf"),
+    ("Windows imaging (WIM) image", "wim"),
+])
+
+def xxe(f):
+    STRINGS = [
+        b"XXEncode", b"begin", b"+",
+    ]
+
+    found = 0
+    for string in STRINGS:
+        found += f.contents.count(string)
+
+    if found >= 300:
+        return "xxe"
 
 def hta(f):
     STRINGS = [
@@ -60,9 +108,13 @@ def office_zip(f):
     if not f.get_child(b"[Content_Types].xml"):
         return
 
+    if f.get_child(b'workbook.bin'):
+        return "xls"
+
     # Shortcut for PowerPoint files.
     if f.get_child(b"ppt/presentation.xml"):
         return "ppt"
+
 
     if not f.get_child(b"docProps/app.xml"):
         return
@@ -105,7 +157,8 @@ def powershell(f):
 def javascript(f):
     JS_STRS = [
         b"var ", b"function ", b"eval", b" true",
-        b" false", b" null", b"Math.", b"alert("
+        b" false", b" null", b"Math", b"alert(", b"charAt",
+        b"decodeURIComponent", b"charCodeAt", b"toString",
     ]
 
     found = 0
@@ -113,7 +166,7 @@ def javascript(f):
         if s in f.contents:
             found += 1
 
-    if found > 5:
+    if found >= 5:
         return "js"
 
 def wsf(f):
@@ -123,11 +176,24 @@ def wsf(f):
     if match:
         return "wsf"
 
+def pub(f):
+    PUB_STRS = [
+        b"Microsoft Publisher", b"MSPublisher",
+    ]
+    found = 0
+    for s in PUB_STRS:
+        if s in f.contents:
+            found += 1
+
+    if found >= 1:
+        return "pub"
+
+
 def visualbasic(f):
     VB_STRS = [
-        b"Dim ", b"Set ", b"Attribute ", b"Public ",
-        b"#If", b"#Else", b"#End If", b"End Function",
-        b"End Sub", b"VBA"
+        b"Dim ", b"dim ", b"Set ", b"Attribute ", b"Public ",
+        b"If", b"Else", b"End If", b"End Function",
+        b"End Sub", b"VBA", b"On Error"
     ]
 
     found = 0
@@ -153,6 +219,19 @@ def android(f):
         return
     return "apk"
 
+def dmg(f):
+    if any([child.magic == 'AppleDouble encoded Macintosh file' for child in f.children or []]):
+        return "dmg"
+
+def vbe_jse(f):
+    if b"#@~^" in f.contents[:100]:
+        data = DecodeVBEJSE(f.contents, "")
+        if data:
+            if re.findall(b"\s?Dim\s", data, re.I):
+                return "vbs"
+            else:
+                return "js"
+
 def identify(f):
     if not f.stream.read(0x1000):
         return
@@ -161,8 +240,14 @@ def identify(f):
         package = identifier(f)
         if package:
             return package
+    for magic_types in magics:
+        if f.magic.startswith(magic_types):
+            return magics[magic_types]
+    if f.mime in mimes:
+        return mimes[f.mime]
 
 identifiers = [
-    office_zip, office_ole, office_webarchive, office_activemime,
+    dmg, office_zip, office_ole, office_webarchive, office_activemime,
     hta, powershell, javascript, visualbasic, android, java, wsf,
+    xxe, pub, vbe_jse
 ]

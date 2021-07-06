@@ -5,3 +5,4 @@
 from sflock.compat import magic
 from sflock.exception import UnpackException
 from sflock.main import ident, unpack, supported, zipify
+from sflock.__version__ import __version__

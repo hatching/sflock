@@ -14,6 +14,7 @@ import tempfile
 from sflock.abstracts import Unpacker, File
 from sflock.config import MAX_TOTAL_SIZE
 
+
 class TarFile(Unpacker):
     name = "tarfile"
     mode = "r:"
@@ -60,19 +61,62 @@ class TargzFile(TarFile, Unpacker):
     mode = "r:gz"
     exts = b".tar.gz"
 
+    def supported(self):
+        return True
+
     def handles(self):
-        if self.f.filename and self.f.filename.lower().endswith(self.exts):
+        ret = False
+        if self.f.filename and self.f.filename.lower().endswith(b".tar.gz"):
             return True
 
         if not self.f.filesize:
-            return False
+            return ret
+
+        fd, filepath = tempfile.mkstemp()
+        os.write(fd, self.f.stream.read(0x1000))
+        os.close(fd)
+
+        d = gzip.open(filepath)
 
         try:
-            f = File(contents=gzip.GzipFile(fileobj=self.f.stream).read())
+            ret = False
+            if d.read(0x1000):
+                ret = True
         except IOError:
-            return False
+            pass
 
-        return self.magic in f.magic
+        d.close()
+        os.unlink(filepath)
+        return ret
+
+
+    def unpack(self, password=None, duplicates=None):
+        dirpath = tempfile.mkdtemp()
+
+        if not self.f.filepath:
+            filepath = self.f.temp_path(".gz")
+            temporary = True
+        else:
+            filepath = self.f.filepath
+            temporary = False
+
+        outfile = open(os.path.join(dirpath, "output"), 'wb')
+        with gzip.open(filepath) as infile:
+            try:
+                while True:
+                    chunk = infile.read(0x10000)
+                    if not chunk:
+                        break
+                    outfile.write(chunk)
+            except gzip.zlib.error:
+                pass
+
+        outfile.close()
+
+        if temporary:
+            os.unlink(filepath)
+        return self.process_directory(dirpath, duplicates)
+
 
 class Tarbz2File(TarFile, Unpacker):
     name = "tarbz2file"
@@ -137,3 +181,4 @@ class Tarbz2File(TarFile, Unpacker):
             return []
 
         return self.process_directory(dirpath, duplicates)
+

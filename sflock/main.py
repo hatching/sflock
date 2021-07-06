@@ -2,6 +2,7 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+from __future__ import absolute_import
 from __future__ import print_function
 
 import click
@@ -57,7 +58,7 @@ def unpack(filepath=None, contents=None, password=None, filename=None,
         if isinstance(filepath, str) or isinstance(contents, str):
             raise IncorrectUsageException
 
-        if isinstance(filename, str) or isinstance(password, str):
+        if isinstance(filename, str):
             raise IncorrectUsageException
 
     if contents:

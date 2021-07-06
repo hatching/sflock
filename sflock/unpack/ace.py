@@ -3,6 +3,9 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+from __future__ import absolute_import
+from __future__ import print_function
+
 import os
 import subprocess
 import tempfile
