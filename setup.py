@@ -14,7 +14,7 @@ assert '__version__' in ver_module_ns
 version = ver_module_ns['__version__']
 
 setup(
-    name="SFlock",
+    name="SFlock2",
     version=version,
     author="Hatching B.V.",
     author_email="jbr@hatching.io",
@@ -28,7 +28,22 @@ setup(
             "sflock = sflock.main:main",
         ],
     },
-    url="http://sflock.org/",
+    classifiers=[
+        "Development Status :: 5 - Production/Stable",
+        "Environment :: Console",
+        "Intended Audience :: Information Technology",
+        "Intended Audience :: Science/Research",
+        "Natural Language :: English",
+        "Operating System :: POSIX :: Linux",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Topic :: Security",
+    ],
+     keywords=(
+        "sflock unarchive"
+    ),
+    url="https://github.com/doomedraven/sflock/",
     license="GPLv3",
     description="Sample staging and detonation utility",
     include_package_data=True,
