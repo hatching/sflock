@@ -54,7 +54,7 @@ class ZipFile(Unpacker):
 class Zip7File(Unpacker):
     name = "7zfile"
     exe = "/usr/bin/7z"
-    exts = b".7z", b".iso", b".xz"
+    exts = b".7z", b".iso", b".udf", b".xz"
     # TODO Should we use "isoparser" (check PyPI) instead of 7z?
     magic = "7-zip archive", "ISO 9660", "UDF filesystem data", "XZ compressed data"
 
@@ -81,7 +81,7 @@ class Zip7File(Unpacker):
 class GzipFile(Unpacker):
     name = "gzipfile"
     exe = "/usr/bin/7z"
-    exts = b".gzip"
+    exts = b".gzip", b".gz"
     magic = "gzip compressed data, was"
 
     def unpack(self, password=None, duplicates=None):
@@ -176,6 +176,34 @@ class WimFile(Unpacker):
             temporary = True
 
         ret = self.zipjail(filepath, dirpath, "x", "-o%s" % dirpath, filepath)
+        if not ret:
+            return []
+
+        if temporary:
+            os.unlink(filepath)
+
+        return self.process_directory(dirpath, duplicates)
+
+class XZFile(Unpacker):
+    name = "xzfile"
+    exe = "/usr/bin/7z"
+    exts = b".xz"
+    magic = "XZ compressed data"
+
+    def unpack(self, password=None, duplicates=None):
+        dirpath = tempfile.mkdtemp()
+
+        if self.f.filepath:
+            filepath = self.f.filepath
+            temporary = False
+        else:
+            filepath = self.f.temp_path(".7z")
+            temporary = True
+
+        ret = self.zipjail(
+            filepath, dirpath, "x", "-o%s" % dirpath, filepath
+        )
+
         if not ret:
             return []
 
