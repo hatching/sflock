@@ -12,3 +12,5 @@ SFlock.egg-info/
 dist/
 build/
 SFlock2.egg-info/
+tests/files/document3230.vbe.lz
+tests/files/test.win
