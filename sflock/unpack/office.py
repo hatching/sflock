@@ -16,7 +16,10 @@ class OfficeFile(Unpacker):
         if password is None:
             return
 
-        return plugins["office"](self.f, password).decode()
+        try:
+            return plugins["office"](self.f, password).decode()
+        except:
+            return
 
     def unpack(self, password=None, duplicates=None):
         # Avoiding recursive imports. TODO Can this be generalized?
