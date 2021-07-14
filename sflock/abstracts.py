@@ -289,7 +289,11 @@ class Unpacker(object):
         last_error = None
         for password in passwords:
             try:
-                return self.decrypt(password, *args, **kwargs)
+                unpacked = self.decrypt(password, *args, **kwargs)
+                if password:
+                    self.f.password = password
+
+                return unpacked
             except DecryptionFailedError as e:
                 last_error = str(e)
 
