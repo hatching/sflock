@@ -49,7 +49,7 @@ def xxe(f):
     for string in STRINGS:
         found += f.contents.count(string)
 
-    if found >= 300:
+    if found >= 300 and b"XXEncode" in f.contents and b"begin" in f.contents:
         return "xxe"
 
 def hta(f):

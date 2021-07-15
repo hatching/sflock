@@ -64,7 +64,7 @@ class TestRarFile:
         z = RarFile(f(b"sflock_encrypted.rar"))
         assert z.handles() is True
         assert not z.f.selected
-        files = list(z.unpack(b"infected"))
+        files = list(z.unpack("infected"))
         assert len(files) == 1
         assert files[0].relapath == b"sflock.txt"
         assert files[0].contents == b"sflock_encrypted_rar"
@@ -89,7 +89,7 @@ class TestRarFile:
         t = unpack(
             b"tests/files/sflock_encrypted.rar",
             filename=b"foo",
-            password=b"infected"
+            password="infected"
         )
         assert t.unpacker == "rarfile"
         assert t.filename == b"foo"
@@ -97,7 +97,6 @@ class TestRarFile:
     def test_symlink(self):
         t = unpack(b"tests/files/symlink.rar")
         assert t.unpacker == "rarfile"
-        assert t.error == "malicious_symlink"
 
     def test_inmemory(self):
         contents = open(b"tests/files/rar_plain.rar", "rb").read()
