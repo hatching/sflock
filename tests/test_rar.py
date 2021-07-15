@@ -68,7 +68,7 @@ class TestRarFile:
         assert len(files) == 1
         assert files[0].relapath == b"sflock.txt"
         assert files[0].contents == b"sflock_encrypted_rar"
-        assert files[0].password == b"infected"
+        assert files[0].password == "infected"
         assert "ASCII text" in files[0].magic
         assert files[0].parentdirs == []
         assert not files[0].selected
