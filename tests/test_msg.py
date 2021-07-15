@@ -28,7 +28,7 @@ def test_msg_embedded():
     assert files[0].relapath == b"image003.emz"
     assert files[0].filesize == 1137
     assert files[0].package is None
-    assert not files[0].children
+    assert files[0].children == 1
     assert not files[0].selected
 
     assert not files[1].filepath
