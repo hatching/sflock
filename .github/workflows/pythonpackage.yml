@@ -24,6 +24,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install pytest>=3.6 mock "pytest-cov<2.6.0" codecov win_inet_pton
         pip install click "cryptography>=2.1" "olefile>=0.43" "python-magic>=0.4.13"
+        pip install .
     - name: Test with pytest
       run: |
         pip install pytest
