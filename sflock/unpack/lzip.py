@@ -45,6 +45,7 @@ class LzipFile(Unpacker):
 
         return self.process_directory(dirpath, duplicates, password)
 
+
 """
 >>> from sflock import unpack
 >>> q = unpack(b"test.lz")

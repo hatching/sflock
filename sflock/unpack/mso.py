@@ -9,6 +9,7 @@ import zlib
 from sflock.abstracts import Unpacker, File
 from sflock.exception import UnpackException
 
+
 class MsoFile(Unpacker):
     name = "msofile"
     exts = b".mso"
@@ -44,19 +45,15 @@ class MsoFile(Unpacker):
 
     def parse_ole10_native(self, ole, name):
         def parse_string(off):
-            ret = stream[off:stream.find(b"\x00", off)]
+            ret = stream[off : stream.find(b"\x00", off)]
             return off + len(ret) + 1, ret
 
         stream = self.get_stream(ole, "\x01Ole10Native")
         off, filename = parse_string(6)
         off, filepath = parse_string(off)
         off, tempname = parse_string(off + 8)
-        embed = struct.unpack("I", stream[off:off+4])[0]
-        self.entries.append(File(
-            relapath=filename,
-            contents=stream[off+4:off+4+embed],
-            selected=False
-        ))
+        embed = struct.unpack("I", stream[off : off + 4])[0]
+        self.entries.append(File(relapath=filename, contents=stream[off + 4 : off + 4 + embed], selected=False))
 
     def walk_ole(self, ole):
         for dirname in ole.listdir():

@@ -10,8 +10,10 @@ from sflock.abstracts import File
 from sflock.main import unpack
 from sflock.unpack import Zip7File
 
+
 def f(filename):
     return File.from_path(os.path.join(b"tests", b"files", filename))
+
 
 @pytest.mark.skipif("not Zip7File(None).supported()")
 class Test7zFile(object):
@@ -130,15 +132,12 @@ class Test7zFile(object):
         assert not t.f.selected
         files = t.unpack()
         assert len(files) == 1
-        assert hashlib.md5(files[0].contents).hexdigest() == (
-            "eccd7c33037181277ae23f3c3b5baf74"
-        )
+        assert hashlib.md5(files[0].contents).hexdigest() == ("eccd7c33037181277ae23f3c3b5baf74")
         assert not files[0].children
-        assert files[0].relaname == (
-            b"payment slip and bank confirmation document.exe"
-        )
+        assert files[0].relaname == (b"payment slip and bank confirmation document.exe")
         assert files[0].selected is True
         assert files[0].duplicate is False
+
 
 @pytest.mark.skipif("Zip7File(None).supported()")
 def test_no7z_plain():

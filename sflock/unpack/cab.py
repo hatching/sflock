@@ -9,6 +9,7 @@ import tempfile
 
 from sflock.abstracts import Unpacker
 
+
 class CabFile(Unpacker):
     name = "cabfile"
     exe = "/usr/bin/cabextract"
@@ -25,9 +26,7 @@ class CabFile(Unpacker):
             filepath = self.f.temp_path(".cab")
             temporary = True
 
-        ret = self.zipjail(
-            filepath, dirpath, "-d%s" % dirpath, filepath
-        )
+        ret = self.zipjail(filepath, dirpath, "-d%s" % dirpath, filepath)
         if not ret:
             return []
 

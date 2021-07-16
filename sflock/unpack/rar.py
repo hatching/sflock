@@ -9,6 +9,7 @@ import tempfile
 
 from sflock.abstracts import Unpacker
 
+
 class RarFile(Unpacker):
     name = "rarfile"
     exe = "/usr/bin/rar"
@@ -28,10 +29,7 @@ class RarFile(Unpacker):
         # backwards just in case
         if password and type(password) is not str:
             password = password.decode("utf-8")
-        ret = self.zipjail(
-            filepath, dirpath, "x", "-mt1", "-p%s" % (password or "-"),
-            filepath, dirpath
-        )
+        ret = self.zipjail(filepath, dirpath, "x", "-mt1", "-p%s" % (password or "-"), filepath, dirpath)
         if not ret:
             return []
 

@@ -4,6 +4,7 @@
 
 from sflock.misc import make_list
 
+
 def test_make_list():
     assert make_list(None) == [None]
     assert make_list([]) == []

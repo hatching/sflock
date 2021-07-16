@@ -8,8 +8,10 @@ import pytest
 from sflock.abstracts import File
 from sflock.unpack import WimFile
 
+
 def f(filename):
     return File.from_path(os.path.join(b"tests", b"files", filename))
+
 
 class TestWINFile(object):
     @pytest.mark.skip("Skipping, we don't want malware in repo: f7501360eadfb326a0568535dd1c134f5e0febccbe4d0168c0ea902c940855f3")

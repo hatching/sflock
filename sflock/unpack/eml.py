@@ -9,12 +9,14 @@ import six
 
 from sflock.abstracts import Unpacker, File
 
+
 class EmlFile(Unpacker):
     name = "emlfile"
     exts = b".eml"
 
     whitelisted_content_type = [
-        "text/plain", "text/html",
+        "text/plain",
+        "text/html",
     ]
 
     def supported(self):
@@ -46,8 +48,7 @@ class EmlFile(Unpacker):
             if part.is_multipart():
                 continue
 
-            if not part.get_filename() and \
-                    part.get_content_type() in self.whitelisted_content_type:
+            if not part.get_filename() and part.get_content_type() in self.whitelisted_content_type:
                 continue
 
             payload = part.get_payload(decode=True)
@@ -57,18 +58,12 @@ class EmlFile(Unpacker):
             filename = part.get_filename()
 
             if six.PY2 and filename:
-                filename = unicode(email.header.make_header(
-                    email.header.decode_header(filename)
-                )).encode('utf-8')
+                filename = unicode(email.header.make_header(email.header.decode_header(filename))).encode("utf-8")
             if six.PY3 and filename:
-                filename = email.header.make_header(
-                    email.header.decode_header(filename)
-                )
+                filename = email.header.make_header(email.header.decode_header(filename))
                 filename = str(filename).encode()
 
-            entries.append(File(
-                relapath=filename or b"att1", contents=payload
-            ))
+            entries.append(File(relapath=filename or b"att1", contents=payload))
 
         return entries
 

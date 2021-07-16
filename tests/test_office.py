@@ -9,8 +9,10 @@ from sflock.abstracts import File
 from sflock.main import unpack
 from sflock.unpack import OfficeFile
 
+
 def f(filename):
     return File.from_path(os.path.join(b"tests", b"files", filename))
+
 
 class TestOfficeFile(object):
     def test_office_plain(self):
@@ -37,7 +39,7 @@ class TestOfficeFile(object):
     def test_office_pw_success(self):
         z = OfficeFile(f(b"encrypted1.docx"))
         assert z.handles() is True
-        d, = z.unpack("Password1234_")
+        (d,) = z.unpack("Password1234_")
         assert z.f.selected is False
         assert z.f.preview is True
         assert d.magic.startswith(("Microsoft Word 2007+", "Zip archive data"))

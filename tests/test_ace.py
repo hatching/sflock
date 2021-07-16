@@ -9,8 +9,10 @@ from sflock.abstracts import File
 from sflock.main import unpack
 from sflock.unpack import AceFile
 
+
 def f(filename):
     return File.from_path(os.path.join(b"tests", b"files", filename))
+
 
 @pytest.mark.skipif("not AceFile(None).supported()")
 class TestAceFile(object):
@@ -74,9 +76,7 @@ class TestAceFile(object):
     def test_doubledot(self):
         files = list(AceFile(f(b"ace_doubledot.ace")).unpack())
         assert len(files) == 1
-        assert files[0].filename == (
-            b"Procurement commercial terms & conditions..exe"
-        )
+        assert files[0].filename == (b"Procurement commercial terms & conditions..exe")
 
     def test_inmemory(self):
         contents = open(b"tests/files/ace_plain.ace", "rb").read()
@@ -92,6 +92,7 @@ class TestAceFile(object):
         assert not t.f.selected
         assert not t.unpack()
         assert t.f.mode == "failed"
+
 
 @pytest.mark.skipif("AceFile(None).supported()")
 def test_noace_plain():

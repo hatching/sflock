@@ -9,8 +9,10 @@ from sflock.abstracts import File
 from sflock.main import unpack
 from sflock.unpack import DaaFile
 
+
 def f(filename):
     return File.from_path(os.path.join(b"tests", b"files", filename))
+
 
 @pytest.mark.skipif("not DaaFile(None).supported()")
 class TestDaaFile(object):

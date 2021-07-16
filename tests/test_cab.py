@@ -9,8 +9,10 @@ from sflock.abstracts import File
 from sflock.main import unpack
 from sflock.unpack import CabFile
 
+
 def f(filename):
     return File.from_path(os.path.join(b"tests", b"files", filename))
+
 
 @pytest.mark.skipif("not CabFile(None).supported()")
 class TestCabFile(object):
@@ -51,6 +53,7 @@ class TestCabFile(object):
         assert not t.f.selected
         assert not t.unpack()
         assert t.f.mode == "failed"
+
 
 @pytest.mark.skipif("CabFile(None).supported()")
 def test_nocab_plain():

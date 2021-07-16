@@ -20,8 +20,10 @@ from sflock.exception import UnpackException
 from sflock.misc import data_file, make_list
 from sflock.pick import package, platform
 
+
 class Unpacker(object):
     """Abstract class for Unpacker engines."""
+
     name = None
     exe = None
     exts = ()
@@ -46,8 +48,9 @@ class Unpacker(object):
 
         p = subprocess.Popen(
             (zipjail, filepath, dirpath, "-c=1", "--", self.exe) + args,
-            stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
         )
 
         return_code = p.wait()
@@ -139,11 +142,7 @@ class Unpacker(object):
         for dirpath2, dirnames, filepaths in os.walk(dirpath):
             for filepath in filepaths:
                 filepath = os.path.join(dirpath2, filepath)
-                entries.append(File(
-                    relapath=filepath[len(dirpath)+1:],
-                    password=password,
-                    contents=open(filepath, "rb").read()
-                ))
+                entries.append(File(relapath=filepath[len(dirpath) + 1 :], password=password, contents=open(filepath, "rb").read()))
 
         shutil.rmtree(dirpath)
         return self.process(entries, duplicates)
@@ -164,6 +163,7 @@ class Unpacker(object):
             if value:
                 return value
 
+
 class Decoder(object):
     """Abstract class for Decoder engines."""
 
@@ -178,6 +178,7 @@ class Decoder(object):
     def init(self):
         pass
 
+
 class File(object):
     """Abstract class for all file operations.
 
@@ -187,9 +188,19 @@ class File(object):
     The `extrpath` determines the extraction path and may be used for read().
     """
 
-    def __init__(self, filepath=None, contents=None, relapath=None,
-                 filename=None, mode=None, password=None, description=None,
-                 selected=None, stream=None, platform=None):
+    def __init__(
+        self,
+        filepath=None,
+        contents=None,
+        relapath=None,
+        filename=None,
+        mode=None,
+        password=None,
+        description=None,
+        selected=None,
+        stream=None,
+        platform=None,
+    ):
         if six.PY3 and isinstance(relapath, str):
             relapath = relapath.encode()
 
@@ -206,9 +217,7 @@ class File(object):
         self.preview = True
 
         # Extract the filename from any of the available path components.
-        self.filename = ntpath.basename(
-            filename or self.relapath or self.filepath or b""
-        ).rstrip(b"\x00") or None
+        self.filename = ntpath.basename(filename or self.relapath or self.filepath or b"").rstrip(b"\x00") or None
 
         self._contents = contents
         self._package = None
@@ -224,12 +233,8 @@ class File(object):
         self._ole_tried = False
 
     @classmethod
-    def from_path(self, filepath, relapath=None, filename=None,
-                  password=None):
-        return File(
-            filepath=filepath, stream=open(filepath, "rb"),
-            relapath=relapath, filename=filename, password=password
-        )
+    def from_path(self, filepath, relapath=None, filename=None, password=None):
+        return File(filepath=filepath, stream=open(filepath, "rb"), relapath=relapath, filename=filename, password=password)
 
     def temp_path(self, suffix=""):
         # TODO Depending on use-case we may not need a full copy. Perhaps
@@ -266,15 +271,13 @@ class File(object):
     @property
     def magic(self):
         if not self._magic and self.filesize:
-            self._magic = magic.from_buffer(self.stream.read(1024*1024))
+            self._magic = magic.from_buffer(self.stream.read(1024 * 1024))
         return self._magic or ""
 
     @property
     def mime(self):
         if not self._mime and self.filesize:
-            self._mime = magic.from_buffer(
-                self.stream.read(1024*1024), mime=True
-            )
+            self._mime = magic.from_buffer(self.stream.read(1024 * 1024), mime=True)
         return self._mime or ""
 
     @property
@@ -438,12 +441,14 @@ class File(object):
                 if entry[idx]["filename"] == name:
                     return entry[idx]
 
-            entry.append({
-                "type": "directory",
-                "filename": name,
-                "children": [],
-                "preview": True,
-            })
+            entry.append(
+                {
+                    "type": "directory",
+                    "filename": name,
+                    "children": [],
+                    "preview": True,
+                }
+            )
             return entry[-1]
 
         for child in self.children:
@@ -464,23 +469,21 @@ class File(object):
             if not preserve:
                 filepath = os.path.join(dirpath, child.filename)
             else:
-                filepath = os.path.abspath(os.path.join(
-                    dirpath, child.relaname
-                ))
+                filepath = os.path.abspath(os.path.join(dirpath, child.relaname))
                 # Avoid path traversal.
                 if not filepath.startswith(dirpath):
                     continue
                 if not os.path.exists(os.path.dirname(filepath)):
                     os.mkdir(os.path.dirname(filepath))
 
-            shutil.copyfileobj(child.stream, open(filepath, "wb"), 1024*1024)
+            shutil.copyfileobj(child.stream, open(filepath, "wb"), 1024 * 1024)
             child.extract(dirpath, preserve=preserve)
 
     def read(self, relapath, stream=False):
         """Extract a single file from a possibly nested archive. See also the
         `extrpath` field of an embedded document."""
         if isinstance(relapath, (six.string_types, six.binary_type)):
-            relapath = relapath,
+            relapath = (relapath,)
 
         relapath, nextpath = relapath[0], relapath[1:]
         for child in self.children:

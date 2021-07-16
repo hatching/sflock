@@ -8,8 +8,10 @@ import pytest
 from sflock.abstracts import File
 from sflock.unpack import LzipFile
 
+
 def f(filename):
     return File.from_path(os.path.join(b"tests", b"files", filename))
+
 
 class TestLzipFile(object):
     def test_lzip_plain(self):

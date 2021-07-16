@@ -10,8 +10,10 @@ from sflock.abstracts import File
 from sflock.main import unpack
 from sflock.unpack import RarFile
 
+
 def f(filename):
     return File.from_path(os.path.join(b"tests", b"files", filename))
+
 
 @pytest.mark.skipif("not RarFile(None).supported()")
 class TestRarFile:
@@ -86,11 +88,7 @@ class TestRarFile:
         assert t.unpacker == "rarfile"
         assert t.filename == b"foo"
 
-        t = unpack(
-            b"tests/files/sflock_encrypted.rar",
-            filename=b"foo",
-            password="infected"
-        )
+        t = unpack(b"tests/files/sflock_encrypted.rar", filename=b"foo", password="infected")
         assert t.unpacker == "rarfile"
         assert t.filename == b"foo"
 
@@ -121,6 +119,7 @@ class TestRarFile:
         assert len(files) == 1
         assert not files[0].children
         assert files[0].mode == "failed"
+
 
 @pytest.mark.skipif("RarFile(None).supported()")
 def test_norar_plain():

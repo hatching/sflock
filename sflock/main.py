@@ -11,7 +11,6 @@ import io
 import json
 import os.path
 import re
-import six
 import zipfile
 
 from sflock.abstracts import File, Unpacker
@@ -19,6 +18,7 @@ from sflock.exception import IncorrectUsageException
 from sflock.ident import identify
 from sflock.misc import make_list
 from sflock.unpack import plugins
+
 
 def supported():
     """Returns the supported extensions for this machine. Support for the
@@ -30,6 +30,7 @@ def supported():
             for ext in make_list(plugin.exts):
                 ret.append(ext)
     return ret
+
 
 def ident(f):
     """Identifies a file based on its contents."""
@@ -48,18 +49,20 @@ def ident(f):
     for child in f.children:
         ident(child)
 
-def unpack(filepath=None, contents=None, password=None, filename=None,
-           duplicates=None):
+
+def unpack(filepath: bytes = None, contents: bytes = None, password: str = None, filename=None, duplicates=None):
     """Unpacks the file or contents provided."""
     if duplicates is None:
         duplicates = []
 
-    if six.PY3:
-        if isinstance(filepath, str) or isinstance(contents, str):
-            raise IncorrectUsageException
+    if isinstance(filepath, str) or isinstance(contents, str):
+        raise IncorrectUsageException
 
-        if isinstance(filename, str):
-            raise IncorrectUsageException
+    if isinstance(filename, str):
+        raise IncorrectUsageException
+
+    if isinstance(password, bytes):
+        raise IncorrectUsageException
 
     if contents:
         f = File(filepath, contents, filename=filename)
@@ -71,12 +74,13 @@ def unpack(filepath=None, contents=None, password=None, filename=None,
     ident(f)
     return f
 
+
 def zipify(f):
     """Turns any type of archive into an equivalent .zip file."""
     r = io.BytesIO()
     z = zipfile.ZipFile(r, "w")
-
     for child in f.children:
+
         # Avoid specific characters that aren't allowed under Windows NTFS.
         if re.search('["*<>?]', child.relapath.decode()):
             continue
@@ -87,16 +91,19 @@ def zipify(f):
     z.close()
     return r.getvalue()
 
+
 def process_file(filepath, extract):
     f = unpack(filepath)
     print(json.dumps(f.astree()))
 
     extract and f.extract(extract)
 
+
 def process_directory(dirpath, extract):
     for rootpath, directories, filenames in os.walk(dirpath):
         for filename in filenames:
             process_file(os.path.join(rootpath, filename), extract)
+
 
 @click.command()
 @click.argument("files", nargs=-1)

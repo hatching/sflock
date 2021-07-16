@@ -9,8 +9,10 @@ import pytest
 from sflock.abstracts import File
 from sflock.unpack import LzhFile
 
+
 def f(filename):
     return File.from_path(os.path.join(b"tests", b"files", filename))
+
 
 @pytest.mark.skipif("not LzhFile(None).supported()")
 class TestLzhFile(object):

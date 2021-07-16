@@ -9,8 +9,10 @@ from sflock.abstracts import File
 from sflock.main import unpack
 from sflock.unpack import plugins
 
+
 def f(filename):
     return File.from_path(os.path.join(b"tests", b"files", filename))
+
 
 def test_attributes():
     for filename in os.listdir(b"tests/files"):
@@ -22,6 +24,7 @@ def test_attributes():
 
         f = unpack(b"tests/files/%s" % filename)
         assert json.loads(json.dumps(list(f.to_dict()))) == list(f.to_dict())
+
 
 """
 def test_unpack_not_none():

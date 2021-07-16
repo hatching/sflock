@@ -4,6 +4,7 @@
 
 from sflock.abstracts import File
 
+
 def test_package():
     assert File(filename=b"a.pdf").package == "pdf"
     assert File(filename=b"a.rtf").package == "doc"
@@ -64,12 +65,14 @@ def test_package():
     assert File(filename=b"a.hta").package == "ie"
     assert File(filename=b"a.sh").package == "generic"
 
+
 def test_case():
     assert File(filename=b"A.PDF").package == "pdf"
     assert File(filename=b"A.RTF").package == "doc"
     assert File(filename=b"A.DOC").package == "doc"
     assert File(filename=b"A.PUB").package == "pub"
     assert File(filename=b"A.JAR").package == "jar"
+
 
 def test_platform():
     assert File(filename=b"a.pdf").platform is None

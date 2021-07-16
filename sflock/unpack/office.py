@@ -5,6 +5,7 @@
 from sflock.abstracts import Unpacker
 from sflock.decode import plugins
 
+
 class OfficeFile(Unpacker):
     name = "office"
     package = "doc", "xls", "ppt"

@@ -7,13 +7,13 @@ import os.path
 from sflock.abstracts import File
 from sflock.unpack import BupFile
 
+
 def f(filename):
     return File.from_path(os.path.join(b"tests", b"files", filename))
 
+
 def test_bup_plain():
-    assert f(b"bup_test.bup").magic.startswith((
-        "Composite Document File V2", "CDF V2 Document"
-    ))
+    assert f(b"bup_test.bup").magic.startswith(("Composite Document File V2", "CDF V2 Document"))
     t = BupFile(f(b"bup_test.bup"))
     assert t.handles() is True
     assert not t.f.selected
@@ -35,6 +35,7 @@ def test_bup_plain():
     assert files[0].children[0].package == "exe"
     assert files[0].children[0].platform == "windows"
     assert files[0].children[0].selected is True
+
 
 def test_garbage():
     t = BupFile(f(b"garbage.bin"))

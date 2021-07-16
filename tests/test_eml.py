@@ -10,8 +10,10 @@ import re
 from sflock.abstracts import File
 from sflock.unpack import EmlFile
 
+
 def f(filename):
     return File.from_path(os.path.join(b"tests", b"files", filename))
+
 
 def test_eml_tar_nested2():
     assert "smtp mail" in f(b"eml_tar_nested2.eml").magic.lower()
@@ -32,6 +34,7 @@ def test_eml_tar_nested2():
     assert files[0].children[0].parentdirs == [b"deepfoo", b"foo"]
     assert not files[0].children[0].selected
 
+
 def test_eml_nested_eml():
     assert "MIME entity" in f(b"eml_nested_eml.eml").magic
     t = EmlFile(f(b"eml_nested_eml.eml"))
@@ -47,7 +50,7 @@ def test_eml_nested_eml():
     assert not files[0].selected
 
     assert not files[0].children[0].filepath
-    assert files[0].children[0].relapath == u"\u60e1\u610f\u8edf\u9ad4.doc".encode('utf-8')
+    assert files[0].children[0].relapath == "\u60e1\u610f\u8edf\u9ad4.doc".encode("utf-8")
     assert files[0].children[0].filesize == 12
     assert files[0].children[0].package == "doc"
     assert files[0].children[0].platform == "windows"
@@ -67,6 +70,7 @@ def test_eml_nested_eml():
     assert files[1].platform is None
     assert not files[1].selected
 
+
 def test_faulty_eml():
     assert f(b"eml_faulty.eml_").magic in ("data", "RFC 822 mail text")
     t = EmlFile(f(b"eml_faulty.eml_"))
@@ -75,17 +79,19 @@ def test_faulty_eml():
     assert files[0].children[0].filename == b"DOC1820617988-PDF.vbs"
     assert files[0].children[0].filesize == 89851
 
+
 def test_eml_exception():
     """We must ensure that re.compile is restored at all times."""
     re_compile = re.compile
     EmlFile(f(b"eml_faulty.eml_")).unpack()
     assert re.compile == re_compile
 
-    with mock.patch("email.message_from_string", side_effect=Exception('test_exception')):
+    with mock.patch("email.message_from_string", side_effect=Exception("test_exception")):
         with pytest.raises(Exception) as e:
             EmlFile(f(b"eml_faulty.eml_")).unpack()
         e.match("test_exception")
     assert re.compile == re_compile
+
 
 def test_garbage():
     t = EmlFile(f(b"garbage.bin"))

@@ -8,6 +8,7 @@ import six
 
 import sflock
 
+
 def import_plugins(dirpath, module_prefix, namespace, class_):
     """Import plugins of type `class` located at `dirpath` into the
     `namespace` that starts with `module_prefix`. If `dirpath` represents a
@@ -27,12 +28,14 @@ def import_plugins(dirpath, module_prefix, namespace, class_):
         class_.plugins[subclass.name.lower()] = subclass
     return plugins
 
+
 def data_file(*path):
     """Return the path for the filepath of an embedded file."""
     dirpath = sflock.__path__[0]
     if six.PY3:
         dirpath = dirpath.encode()
     return os.path.abspath(os.path.join(dirpath, b"data", *path))
+
 
 def make_list(obj):
     if isinstance(obj, (tuple, list)):

@@ -3,23 +3,55 @@
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 doc_ext = (
-    b".rtf", b".doc", b".docx", b".docm", b".dot", b".dotx", b".docb",
+    b".rtf",
+    b".doc",
+    b".docx",
+    b".docm",
+    b".dot",
+    b".dotx",
+    b".docb",
     b".mso",
 )
-doc_hdr = (
-    b"\x7b\x5c\x72\x74",
-)
+doc_hdr = (b"\x7b\x5c\x72\x74",)
 xls_ext = (
-    b".xls", b".xlsx", b".xlm", b".xlt", b".xltx", b".xlsm", b".xltm",
-    b".xlsb", b".xla", b".xlam", b".xll", b".xlw", b".slk", b".iqy",
+    b".xls",
+    b".xlsx",
+    b".xlm",
+    b".xlt",
+    b".xltx",
+    b".xlsm",
+    b".xltm",
+    b".xlsb",
+    b".xla",
+    b".xlam",
+    b".xll",
+    b".xlw",
+    b".slk",
+    b".iqy",
 )
 ppt_ext = (
-    b".ppt", b".pptx", b".pps", b".ppsx", b".pptm", b".potm", b".potx",
-    b".ppsm", b".pot", b".ppam", b".sldx", b".sldm",
+    b".ppt",
+    b".pptx",
+    b".pps",
+    b".ppsx",
+    b".pptm",
+    b".potm",
+    b".potx",
+    b".ppsm",
+    b".pot",
+    b".ppam",
+    b".sldx",
+    b".sldm",
 )
 ie_ext = (
-    b".htm", b".html", b".hta", b".mht", b".mhtml", b".url",
+    b".htm",
+    b".html",
+    b".hta",
+    b".mht",
+    b".mhtml",
+    b".url",
 )
+
 
 def package(f):
     """Guesses the package based on the filename and/or contents."""
@@ -52,16 +84,13 @@ def package(f):
 
     # TODO Get rid of this logic and replace it by actually inspecting
     # the contents of the .zip files (in case of Office 2007+).
-    if "Rich Text Format" in f.magic or \
-            "Microsoft Word" in f.magic or \
-            "Microsoft Office Word" in f.magic:
+    if "Rich Text Format" in f.magic or "Microsoft Word" in f.magic or "Microsoft Office Word" in f.magic:
         return "doc"
 
     if header.startswith(doc_hdr):
         return "doc"
 
-    if "Microsoft Office Excel" in f.magic or \
-            "Microsoft Excel" in f.magic:
+    if "Microsoft Office Excel" in f.magic or "Microsoft Excel" in f.magic:
         return "xls"
 
     if "Microsoft PowerPoint" in f.magic:
@@ -106,11 +135,14 @@ def package(f):
     if is_bash_script(f) or is_elf_executable(f):
         return "generic"
 
+
 def is_bash_script(f):
     return f.filename and f.filename.endswith(b".sh")
 
+
 def is_elf_executable(f):
     return f.magic.startswith("ELF")
+
 
 platforms = {
     "cpl": "windows",
@@ -126,6 +158,7 @@ platforms = {
     "wsf": "windows",
     "xls": "windows",
 }
+
 
 def platform(f):
     if f.package == "generic":

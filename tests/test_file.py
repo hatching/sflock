@@ -9,12 +9,14 @@ import tempfile
 from sflock.abstracts import File
 from sflock.main import unpack
 
+
 def test_temp_path():
     filepath = File(contents=b"foo").temp_path()
     assert open(filepath, "rb").read() == b"foo"
 
     filepath = File(stream=io.BytesIO(b"bar")).temp_path()
     assert open(filepath, "rb").read() == b"bar"
+
 
 def test_stream():
     f = File(contents=b"foo1")
@@ -43,6 +45,7 @@ def test_stream():
     assert s.read(6) == b"hello "
     assert s.read() == b"world"
     assert f.sha256.startswith("b94d27b9934d3e08a52e52d7da7da")
+
 
 def test_has_child():
     f = unpack(b"tests/files/doc_1.docx_")

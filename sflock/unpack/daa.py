@@ -9,6 +9,7 @@ import tempfile
 from sflock.abstracts import Unpacker
 from sflock.misc import data_file
 
+
 class DaaFile(Unpacker):
     name = "daafile"
     exts = b".daa"
@@ -28,10 +29,7 @@ class DaaFile(Unpacker):
             filepath = self.f.temp_path(".daa")
             temporary = True
 
-        ret = self.zipjail(
-            filepath, dirpath, "extract",
-            filepath, "/", "-od", dirpath
-        )
+        ret = self.zipjail(filepath, dirpath, "extract", filepath, "/", "-od", dirpath)
         if temporary:
             os.unlink(filepath)
 

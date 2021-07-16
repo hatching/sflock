@@ -49,12 +49,10 @@ class TarFile(Unpacker):
             if six.PY3:
                 relapath = relapath.encode()
 
-            entries.append(File(
-                relapath=relapath,
-                contents=archive.extractfile(entry).read()
-            ))
+            entries.append(File(relapath=relapath, contents=archive.extractfile(entry).read()))
 
         return self.process(entries, duplicates)
+
 
 class TargzFile(TarFile, Unpacker):
     name = "targzfile"
@@ -89,7 +87,6 @@ class TargzFile(TarFile, Unpacker):
         os.unlink(filepath)
         return ret
 
-
     def unpack(self, password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()
 
@@ -100,7 +97,7 @@ class TargzFile(TarFile, Unpacker):
             filepath = self.f.filepath
             temporary = False
 
-        outfile = open(os.path.join(dirpath, "output"), 'wb')
+        outfile = open(os.path.join(dirpath, "output"), "wb")
         with gzip.open(filepath) as infile:
             try:
                 while True:
@@ -181,4 +178,3 @@ class Tarbz2File(TarFile, Unpacker):
             return []
 
         return self.process_directory(dirpath, duplicates)
-

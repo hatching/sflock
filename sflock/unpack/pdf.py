@@ -5,9 +5,11 @@
 
 import os
 import sys
+
 # import peepdf
 
 from sflock.abstracts import Unpacker, File
+
 
 class PdfFile(Unpacker):
     name = "pdffile"
@@ -81,4 +83,3 @@ class PdfFile(Unpacker):
             self.f.preview = False
         """
         return self.process(entries, duplicates)
-

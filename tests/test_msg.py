@@ -11,13 +11,19 @@ from sflock import unpack, zipify
 from sflock.abstracts import File
 from sflock.unpack import MsgFile
 
+
 def f(filename):
     return File.from_path(os.path.join(b"tests", b"files", filename))
 
+
 def test_msg_embedded():
-    assert f(b"msg_invoice.msg").magic.startswith((
-        "Composite Document File V2", "CDF V2 Document", "CDFV2 Microsoft",
-    ))
+    assert f(b"msg_invoice.msg").magic.startswith(
+        (
+            "Composite Document File V2",
+            "CDF V2 Document",
+            "CDFV2 Microsoft",
+        )
+    )
     m = MsgFile(f(b"msg_invoice.msg"))
     assert m.handles() is True
     assert not m.f.selected
@@ -28,7 +34,7 @@ def test_msg_embedded():
     assert files[0].relapath == b"image003.emz"
     assert files[0].filesize == 1137
     assert files[0].package is None
-    assert files[0].children == 1
+    assert len(files[0].children) == 1
     assert not files[0].selected
 
     assert not files[1].filepath
@@ -51,9 +57,8 @@ def test_msg_embedded():
     assert files[2].children[0].filesize == 249336
     assert files[2].children[0].selected is False
 
-    assert hashlib.md5(
-        files[2].children[0].contents
-    ).hexdigest() == "c8cd8eb88f1848cf456725d67baaaa35"
+    assert hashlib.md5(files[2].children[0].contents).hexdigest() == "c8cd8eb88f1848cf456725d67baaaa35"
+
 
 def test_msg_nullbyte():
     f = unpack(b"tests/files/ole_nullbyte.zip")
@@ -72,17 +77,20 @@ def test_msg_nullbyte():
     z = zipfile.ZipFile(io.BytesIO(zipify(ole)))
     assert z.read(doc.relaname.decode()) == doc.contents
 
+
 def test_msg_doc_magic():
     f = unpack(b"tests/files/msg_doc.msg_")
     assert len(f.children) == 1
     assert f.children[0].filename == b"Kristina_Meyer.doc"
     assert f.children[0].filesize == 57856
 
+
 def test_msg_rtf_magic():
     f = unpack(b"tests/files/msg_rtf.msg_")
     assert len(f.children) == 1
     assert f.children[0].filename == b"g94ys83xi8_8fb0ud5,7.rtf"
     assert f.children[0].filesize == 138638
+
 
 def test_garbage():
     m = MsgFile(f(b"garbage.bin"))

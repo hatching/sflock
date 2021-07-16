@@ -7,11 +7,11 @@ from setuptools import setup, find_packages
 from distutils.util import convert_path
 
 ver_module_ns = {}
-ver_module = convert_path('sflock/__version__.py')
+ver_module = convert_path("sflock/__version__.py")
 with open(ver_module) as fh:
     exec(fh.read(), ver_module_ns)
-assert '__version__' in ver_module_ns
-version = ver_module_ns['__version__']
+assert "__version__" in ver_module_ns
+version = ver_module_ns["__version__"]
 
 setup(
     name="SFlock2",
@@ -40,9 +40,7 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Topic :: Security",
     ],
-     keywords=(
-        "sflock unarchive"
-    ),
+    keywords=("sflock unarchive"),
     url="https://github.com/doomedraven/sflock/",
     license="GPLv3",
     description="Sample staging and detonation utility",

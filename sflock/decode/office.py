@@ -14,6 +14,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
 from sflock.abstracts import Decoder, File
 
+
 class EncryptedInfo(object):
     key_data_salt = None
     key_data_hash_alg = None
@@ -24,6 +25,7 @@ class EncryptedInfo(object):
     password_salt = None
     password_hash_alg = None
     password_key_bits = None
+
 
 class Office(Decoder):
     name = "office"
@@ -44,20 +46,15 @@ class Office(Decoder):
             self.password = self.password.decode()
 
         # Initial round sha512(salt + password).
-        h = self.get_hash(
-            self.ei.password_salt + str(self.password).encode("utf-16le"),
-            self.ei.password_hash_alg
-        )
+        h = self.get_hash(self.ei.password_salt + str(self.password).encode("utf-16le"), self.ei.password_hash_alg)
 
         # Iteration of 0 -> spincount-1; hash = sha512(iterator + hash).
         for i in range(self.ei.spin_value):
-            h = self.get_hash(
-                struct.pack("<I", i) + h, self.ei.password_hash_alg
-            )
+            h = self.get_hash(struct.pack("<I", i) + h, self.ei.password_hash_alg)
 
         # Final skey and truncation.
         h = self.get_hash(h + block, self.ei.password_hash_alg)
-        skey = h[:self.ei.password_key_bits // 8]
+        skey = h[: self.ei.password_key_bits // 8]
         return skey
 
     def init_secret_key(self):
@@ -67,67 +64,59 @@ class Office(Decoder):
             # self.secret_key = rsa.decrypt(self.ei.encrypted_key_value, None)
             # Presumably the following is correct.
             # self.verifier_hash_input = rsa.decrypt(
-                # self.ei.verifier_hash_input, None
+            # self.ei.verifier_hash_input, None
             # )
             # self.verifier_hash_value = rsa.decrypt(
-                # self.ei.verifier_hash_value, None
+            # self.ei.verifier_hash_value, None
             # )
             pass
 
         if self.password:
-            block_verifier_input = bytearray([
-                0xfe, 0xa7, 0xd2, 0x76, 0x3b, 0x4b, 0x9e, 0x79
-            ])
-            block_verifier_value = bytearray([
-                0xd7, 0xaa, 0x0f, 0x6d, 0x30, 0x61, 0x34, 0x4e
-            ])
-            block_encrypted_key = bytearray([
-                0x14, 0x6e, 0x0b, 0xe7, 0xab, 0xac, 0xd0, 0xd6,
-            ])
+            block_verifier_input = bytearray([0xFE, 0xA7, 0xD2, 0x76, 0x3B, 0x4B, 0x9E, 0x79])
+            block_verifier_value = bytearray([0xD7, 0xAA, 0x0F, 0x6D, 0x30, 0x61, 0x34, 0x4E])
+            block_encrypted_key = bytearray(
+                [
+                    0x14,
+                    0x6E,
+                    0x0B,
+                    0xE7,
+                    0xAB,
+                    0xAC,
+                    0xD0,
+                    0xD6,
+                ]
+            )
 
             # AES decrypt the encrypted* values with their pre-defined block
             # keys and salt in order to get secret key.
             aes = Cipher(
                 algorithms.AES(self.gen_encryption_key(block_verifier_input)),
                 modes.CBC(self.ei.password_salt),
-                backend=default_backend()
+                backend=default_backend(),
             ).decryptor()
-            self.verifier_hash_input = aes.update(
-                self.ei.verifier_hash_input
-            ) + aes.finalize()
+            self.verifier_hash_input = aes.update(self.ei.verifier_hash_input) + aes.finalize()
 
             aes = Cipher(
                 algorithms.AES(self.gen_encryption_key(block_verifier_value)),
                 modes.CBC(self.ei.password_salt),
-                backend=default_backend()
+                backend=default_backend(),
             ).decryptor()
-            self.verifier_hash_value = aes.update(
-                self.ei.verifier_hash_value
-            ) + aes.finalize()
+            self.verifier_hash_value = aes.update(self.ei.verifier_hash_value) + aes.finalize()
 
             aes = Cipher(
                 algorithms.AES(self.gen_encryption_key(block_encrypted_key)),
                 modes.CBC(self.ei.password_salt),
-                backend=default_backend()
+                backend=default_backend(),
             ).decryptor()
-            self.secret_key = (
-                aes.update(self.ei.encrypted_key_value) + aes.finalize()
-            )
+            self.secret_key = aes.update(self.ei.encrypted_key_value) + aes.finalize()
 
     def decrypt_blob(self, f):
         ret = []
         # TODO Ensure that the assumption of "total size" being a 64-bit
         # integer is correct?
         for idx in range(0, struct.unpack("Q", f.read(8))[0], 0x1000):
-            iv = self.get_hash(
-                self.ei.key_data_salt + struct.pack("<I", idx),
-                self.ei.key_data_hash_alg
-            )
-            aes = Cipher(
-                algorithms.AES(self.secret_key),
-                modes.CBC(iv[:16]),
-                backend=default_backend()
-            ).decryptor()
+            iv = self.get_hash(self.ei.key_data_salt + struct.pack("<I", idx), self.ei.key_data_hash_alg)
+            aes = Cipher(algorithms.AES(self.secret_key), modes.CBC(iv[:16]), backend=default_backend()).decryptor()
             ret.append(aes.update(f.read(0x1000)) + aes.finalize())
         return File(contents=b"".join(ret))
 
@@ -138,38 +127,24 @@ class Office(Decoder):
         if ["EncryptionInfo"] not in self.f.ole.listdir():
             return
 
-        info = xml.dom.minidom.parseString(
-            self.f.ole.openstream("EncryptionInfo").read()[8:]
-        )
+        info = xml.dom.minidom.parseString(self.f.ole.openstream("EncryptionInfo").read()[8:])
         key_data = info.getElementsByTagName("keyData")[0]
         password = info.getElementsByTagName("p:encryptedKey")[0]
 
         self.ei = ei = EncryptedInfo()
-        ei.key_data_salt = base64.b64decode(
-            key_data.getAttribute("saltValue")
-        )
+        ei.key_data_salt = base64.b64decode(key_data.getAttribute("saltValue"))
         ei.key_data_hash_alg = key_data.getAttribute("hashAlgorithm")
-        ei.verifier_hash_input = base64.b64decode(
-            password.getAttribute("encryptedVerifierHashInput")
-        )
-        ei.verifier_hash_value = base64.b64decode(
-            password.getAttribute("encryptedVerifierHashValue")
-        )
-        ei.encrypted_key_value = base64.b64decode(
-            password.getAttribute("encryptedKeyValue")
-        )
+        ei.verifier_hash_input = base64.b64decode(password.getAttribute("encryptedVerifierHashInput"))
+        ei.verifier_hash_value = base64.b64decode(password.getAttribute("encryptedVerifierHashValue"))
+        ei.encrypted_key_value = base64.b64decode(password.getAttribute("encryptedKeyValue"))
         ei.spin_value = int(password.getAttribute("spinCount"))
-        ei.password_salt = base64.b64decode(
-            password.getAttribute("saltValue")
-        )
+        ei.password_salt = base64.b64decode(password.getAttribute("saltValue"))
         ei.password_hash_alg = password.getAttribute("hashAlgorithm")
         ei.password_key_bits = int(password.getAttribute("keyBits"))
 
         self.init_secret_key()
 
-        verifier_hash = self.get_hash(
-            self.verifier_hash_input, self.ei.password_hash_alg
-        )
+        verifier_hash = self.get_hash(self.verifier_hash_input, self.ei.password_hash_alg)
         # Incorrect password.
         if verifier_hash != self.verifier_hash_value:
             return False
