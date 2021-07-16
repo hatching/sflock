@@ -3,61 +3,11 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
-from sflock import unpack
+from sflock.main import unpack
 
 
 def test_embed_lzip():
-    f = unpack(b"tests/files/test.vbe.lz.zip")
-    assert f.astree(finger=False) == {
-        "children": [
-            {
-                "children": [
-                    {
-                        "children": [],
-                        "duplicate": False,
-                        "error": None,
-                        "extrpath": [b"document3230.vbe.lz", b"tmpcxvzmmir.out"],
-                        "filename": b"tmpcxvzmmir.out",
-                        "filepath": None,
-                        "package": None,
-                        "password": None,
-                        "platform": None,
-                        "preview": True,
-                        "relaname": b"tmpcxvzmmir.out",
-                        "relapath": b"tmpcxvzmmir.out",
-                        "selected": False,
-                        "size": 748345,
-                        "type": "file",
-                    }
-                ],
-                "duplicate": False,
-                "error": None,
-                "extrpath": [b"document3230.vbe.lz"],
-                "filename": b"document3230.vbe.lz",
-                "filepath": None,
-                "package": None,
-                "password": "infected",
-                "platform": None,
-                "preview": True,
-                "relaname": b"document3230.vbe.lz",
-                "relapath": b"document3230.vbe.lz",
-                "selected": False,
-                "size": 2800,
-                "type": "container",
-            }
-        ],
-        "duplicate": False,
-        "error": None,
-        "extrpath": [],
-        "filename": b"document3230.vbe.lz.zip",
-        "filepath": b"document3230.vbe.lz.zip",
-        "package": "zip",
-        "password": None,
-        "platform": None,
-        "preview": False,
-        "relaname": None,
-        "relapath": None,
-        "selected": True,
-        "size": 3016,
-        "type": "container",
-    }
+    t = unpack(b"tests/files/test.vbe.lz.zip")
+    assert t.filename == b"test.vbe.lz.zip"
+    assert t.children[0].filename == b"document3230.vbe.lz"
+    assert t.children[0].children[0].sha256 == "36ef14835a9d2c8fe241286a7758b7f849bdabccc698e7e78318abfb195dc1db"
