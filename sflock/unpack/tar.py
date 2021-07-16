@@ -97,18 +97,29 @@ class TargzFile(TarFile, Unpacker):
             filepath = self.f.filepath
             temporary = False
 
-        outfile = open(os.path.join(dirpath, "output"), "wb")
-        with gzip.open(filepath) as infile:
-            try:
-                while True:
-                    chunk = infile.read(0x10000)
-                    if not chunk:
-                        break
-                    outfile.write(chunk)
-            except gzip.zlib.error:
-                pass
+        try:
+            with tarfile.open(filepath, self.mode) as _tar:
+                for member in _tar:
+                    if member.isdir():
+                        continue
 
-        outfile.close()
+                    fname = member.name
+                    if "/" in fname:
+                        fname = fname.rsplit("/", 1)[1]
+                    _tar.makefile(member, os.path.join(dirpath, fname))
+        except tarfile.ReadError:
+            outfile = open(os.path.join(dirpath, "output"), "wb")
+            with gzip.open(filepath) as infile:
+                try:
+                    while True:
+                        chunk = infile.read(0x10000)
+                        if not chunk:
+                            break
+                        outfile.write(chunk)
+                except gzip.zlib.error:
+                    pass
+
+            outfile.close()
 
         if temporary:
             os.unlink(filepath)
