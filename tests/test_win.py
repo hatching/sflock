@@ -33,5 +33,5 @@ class TestWINFile(object):
     def test_embed_win(self):
         t = unpack(b"tests/files/test.win.zip")
         assert t.children[0].filename == b"test.win"
-        assert t.children[0].children[0].filename == "Invoice_for_part_shipped(Feb 19,2021).exe"
+        assert t.children[0].children[0].filename == b"Invoice_for_part_shipped(Feb 19,2021).exe"
         assert t.children[0].children[0].sha256 == "62966847ea9cc94aa58288579519ee2fb2bf17c40579537f949c2665e84f29ba"
