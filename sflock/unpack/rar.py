@@ -16,7 +16,7 @@ class RarFile(Unpacker):
     exts = b".rar"
     magic = "RAR archive"
 
-    def unpack(self, password: str=None, duplicates=None):
+    def unpack(self, password: str = None, duplicates=None):
         dirpath = tempfile.mkdtemp()
 
         if self.f.filepath:

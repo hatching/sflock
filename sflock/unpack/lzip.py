@@ -40,7 +40,7 @@ class LzipFile(Unpacker):
             if not files:
                 return []
 
-        if temporary:
+        if temporary and os.path.exists(filepath):
             os.unlink(filepath)
 
         return self.process_directory(dirpath, duplicates, password)

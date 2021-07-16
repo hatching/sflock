@@ -61,7 +61,6 @@ class EmlFile(Unpacker):
     def unpack(self, password=None, duplicates=None):
         re_compile_orig = re.compile
 
-
         def re_compile_our(pattern):
             return re_compile_orig(pattern.replace("?P<end>--", "?P<end>--+"))
 
