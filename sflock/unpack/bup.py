@@ -2,9 +2,9 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
-import io
+
 import ntpath
-import six.moves
+import configparser
 
 from sflock.abstracts import Unpacker, File
 
@@ -40,11 +40,8 @@ class BupFile(Unpacker):
 
         details = self.decrypt(bytearray(self.f.ole.openstream("Details").read()))
 
-        config = six.moves.configparser.ConfigParser()
-        if six.PY3:
-            config.read_string(details.decode())
-        else:
-            config.readfp(io.BytesIO(details))
+        config = configparser.ConfigParser()
+        config.read_string(details.decode())
 
         ole = self.f.ole
 
@@ -53,8 +50,7 @@ class BupFile(Unpacker):
                 continue
 
             relapath = ntpath.basename(config.get(filename[0], "OriginalName"))
-            if six.PY3:
-                relapath = relapath.encode()
+            relapath = relapath.encode()
 
             entries.append(File(relapath=relapath, contents=self.decrypt(bytearray(ole.openstream(filename[0]).read()))))
 

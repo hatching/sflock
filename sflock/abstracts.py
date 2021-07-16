@@ -9,7 +9,6 @@ import ntpath
 import olefile
 import os.path
 import re
-import six
 import shutil
 import subprocess
 import tempfile
@@ -148,7 +147,7 @@ class Unpacker(object):
         return self.process(entries, duplicates)
 
     def bruteforce(self, passwords, *args, **kwargs):
-        if isinstance(passwords, (six.string_types, six.binary_type)):
+        if type(passwords) is str:
             passwords = [passwords]
         elif not passwords:
             passwords = []
@@ -201,7 +200,7 @@ class File(object):
         stream=None,
         platform=None,
     ):
-        if six.PY3 and isinstance(relapath, str):
+        if isinstance(relapath, str):
             relapath = relapath.encode()
 
         self.filepath = filepath
@@ -482,7 +481,7 @@ class File(object):
     def read(self, relapath, stream=False):
         """Extract a single file from a possibly nested archive. See also the
         `extrpath` field of an embedded document."""
-        if isinstance(relapath, (six.string_types, six.binary_type)):
+        if isinstance(relapath, (str, bytes)):
             relapath = (relapath,)
 
         relapath, nextpath = relapath[0], relapath[1:]
