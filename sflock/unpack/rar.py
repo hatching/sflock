@@ -16,7 +16,7 @@ class RarFile(Unpacker):
     exts = b".rar"
     magic = "RAR archive"
 
-    def unpack(self, password=None, duplicates=None):
+    def unpack(self, password: str=None, duplicates=None):
         dirpath = tempfile.mkdtemp()
 
         if self.f.filepath:
@@ -26,9 +26,6 @@ class RarFile(Unpacker):
             filepath = self.f.temp_path()
             temporary = True
 
-        # backwards just in case
-        if password and type(password) is not str:
-            password = password.decode("utf-8")
         ret = self.zipjail(filepath, dirpath, "x", "-mt1", "-p%s" % (password or "-"), filepath, dirpath)
         if not ret:
             return []
