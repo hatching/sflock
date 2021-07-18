@@ -1,13 +1,9 @@
 # sflock
 
-[![Build Status](https://travis-ci.org/jbremer/sflock.svg?branch=master)](https://travis-ci.org/jbremer/sflock)
-[![Windows Build Status](https://ci.appveyor.com/api/projects/status/32r7s2skrgm9ubva?svg=true)](https://ci.appveyor.com/project/jbremer/sflock)
-[![Coverage Status](https://coveralls.io/repos/github/jbremer/sflock/badge.svg?branch=master)](https://coveralls.io/github/jbremer/sflock?branch=master)
-[![codecov](https://codecov.io/gh/jbremer/sflock/branch/master/graph/badge.svg)](https://codecov.io/gh/jbremer/sflock)
+![example workflow](https://github.com/doomedraven/sflock/actions/workflows/pythonpackage.yml/badge.svg)
 
 Sample staging &amp; detonation utility to be used as unpacking engine for
-other analysis tools. Since version 0.3 sflock is compatible with both Python
-2 and Python 3 (to be precise, Python 2.7, 3.5, and 3.6).
+other analysis tools. Since version 0.3.14 sflock is compatible with Python >= 3.6
 
 Birds tend to move around in flocks, therefore the sflock utility can digest a
 flock of samples, but also inverse flocks, i.e., sflock unpacks various
@@ -32,40 +28,14 @@ $ sudo apt-get install p7zip-full rar unace-nonfree cabextract lzip libjpeg8-dev
 Installation of sflock itself may be done as follows.
 
 ```bash
-$ sudo pip install -U sflock
+$ sudo pip install -U sflock2
 ```
 
 Or in a virtualenv environment.
 
 ```bash
-(venv)$ pip install -U sflock
+(venv)$ pip install -U sflock2
 ```
-
-Installation (Windows)
-======================
-
-Since version 0.2 sflock properly supports Windows-based operating systems.
-
-To avoid difficult setup instructions, sflock ships the required 32-bit and
-64-bit binaries to use libmagic under Windows such that it works flawlessly.
-
-Note: on Windows the `7z`, `ace`, `cab`, `daa`, `gzip`, `iso`, `lzh`, and
-`rar` file formats are not supported.
-
-Installation (macOS)
-=======================
-
-Since version 0.2 sflock properly supports macOS-based operating systems.
-One does have to manually install `libmagic` though. This may be done through
-the `brew` package manager.
-
-```bash
-$ brew update
-$ brew install libmagic
-```
-
-Note: on macOS the `7z`, `ace`, `cab`, `daa`, `gzip`, `iso`, `lzh`, and `rar`
-file formats are not supported.
 
 Supported archives
 ==================
@@ -90,6 +60,7 @@ SFlock supports a number of (semi-)archive types, sorted by extension:
 * .tar.bz2 (bzip2 compressed Unix file archive)
 * .tar.gz (gzip compressed Unix file archive)
 * .zip (ZIP archive)
+* .win (Windows imaging (WIM) image)
 
 Security
 ========
