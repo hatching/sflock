@@ -16,14 +16,14 @@ file_extensions = OrderedDict(
         ("xls", (b".xls", b".xlt", b".xlm", b".xlsx", b".xltx", b".xlsm", b".xltm", b".xlsb", b".xla", b".xlam", b".xll", b".xlw", b".slk")),
         ("ppt", (b".ppt", b".pot", b".pps", b".pptx", b".pptm", b".potx", b".potm", b".ppam", b".ppsx", b".ppsm", b".sldx", b".sldm")),
         ("jar", (b".jar",)),
-        ("rar", (b".rar",)),
+        # ("rar", (b".rar",)),
         ("swf", (b".swf", b".fws")),
         ("python", (b".py", b".pyc", b".pyw")),
         ("ps1", (b".ps1",)),
-        ("msg", (b".msg",)),
-        ("eml", (b".eml", b".ics")),
+        # ("msg", (b".msg",)),
+        # ("eml", (b".eml", b".ics")),
         ("js", (b".js", b".jse")),
-        ("html", (b".htm", b".html", b".url")),
+        ("ie", (b".html", b".url")), # b".htm",
         ("xps", (b".xps",)),
         ("hta", (b".hta",)),
         ("mht", (b".mht",)),
@@ -74,7 +74,7 @@ magics = OrderedDict(
         ("Microsoft Office Word", "doc"),
         ("Microsoft Word", "doc"),
         ("Microsoft OOXML", "doc"),
-        ("MIME entity", "doc"),
+        # ("MIME entity", "doc"),
         ("Microsoft Disk Image", "vhd"),
         ("PDF document", "pdf"),
         ("Windows imaging (WIM) image", "wim"),
@@ -91,7 +91,7 @@ magics = OrderedDict(
         ("MS Windows HtmlHelp Data", "chm"),
         ("Hangul (Korean) Word Processor File", "hwp"),
         ("XSL stylesheet", "xslt"),
-        ("HTML", "html"),
+        # ("HTML", "html"),
     ]
 )
 
@@ -104,7 +104,7 @@ def mso(f):
         return "doc"
 
 def sct(f):
-    if f.filename.endswith(b".sct"):
+    if f.filename and f.filename.endswith(b".sct"):
         if re.search(br"(?is)<\?XML.*?<scriptlet.*?<registration", f.contents):
             return "sct"
         else:
@@ -357,7 +357,7 @@ def identify(f):
     if not f.stream.read(0x1000):
         return
 
-    if f and hasattr(f, "filename") and f.filename:
+    if f.filename:
         for package, extensions in file_extensions.items():
             if f.filename.endswith(extensions):
                 return package
