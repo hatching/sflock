@@ -7,6 +7,40 @@ from collections import OrderedDict
 
 from sflock.aux.decode_vbe_jse import DecodeVBEJSE
 
+
+file_extensions = OrderedDict(
+    [
+        ("msi", (b".msi", b".msp", b".appx")),
+        ("pub", (b".pub",)),
+        ("doc", (b".doc", b".dot", b".docx", b".dotx", b".docm", b".dotm", b".docb", b".rtf", b".mht", b".mso", b".wbk")),
+        ("xls", (b".xls", b".xlt", b".xlm", b".xlsx", b".xltx", b".xlsm", b".xltm", b".xlsb", b".xla", b".xlam", b".xll", b".xlw", b".slk")),
+        ("ppt", (b".ppt", b".pot", b".pps", b".pptx", b".pptm", b".potx", b".potm", b".ppam", b".ppsx", b".ppsm", b".sldx", b".sldm")),
+        ("jar", (b".jar",)),
+        ("rar", (b".rar",)),
+        ("swf", (b".swf", b".fws")),
+        ("python", (b".py", b".pyc", b".pyw")),
+        ("ps1", (b".ps1",)),
+        ("msg", (b".msg",)),
+        ("eml", (b".eml", b".ics")),
+        ("js", (b".js", b".jse")),
+        ("html", (b".htm", b".html", b".url")),
+        ("xps", (b".xps",)),
+        ("hta", (b".hta",)),
+        ("mht", (b".mht",)),
+        ("lnk", (b".lnk",)),
+        ("chm", (b".chm",)),
+        ("hwp", (b".hwp", b".hwpx", b".hwt", b".hml")),
+        ("inp", (b".inp", b".int")),
+        ("xslt", (b".xsl", b".xslt")),
+        ("wsf", (b".wsf",)),
+        ("pdf", (b".pdf",)),
+        ("vbs", (b".vbs", b".vbe")),
+        ("msbuild", (b".csproj", b".vbproj", b".vcxproj", b".dbproj", b".fsproj")),
+        ("zip", (b".zip",)),
+        ("cpl", (b".cpl",)),
+    ]
+)
+
 mimes = OrderedDict(
     [
         ("application/x-lzh-compressed", "lzh"),
@@ -27,6 +61,7 @@ mimes = OrderedDict(
 
 magics = OrderedDict(
     [
+        # ToDo msdos
         ("ACE archive data", "ace"),
         ("PE32 executable (DLL)", "dll"),
         ("PE32+ executable (DLL)", "dll"),
@@ -38,12 +73,42 @@ magics = OrderedDict(
         ("Rich Text Format", "doc"),
         ("Microsoft Office Word", "doc"),
         ("Microsoft Word", "doc"),
+        ("Microsoft OOXML", "doc"),
+        ("MIME entity", "doc"),
         ("Microsoft Disk Image", "vhd"),
         ("PDF document", "pdf"),
         ("Windows imaging (WIM) image", "wim"),
+        ("Nullsoft Installer", "nsis"),
+        ("MSI Installer", "msi"),
+        ("Java Jar", "jar"),
+        ("Java archive", "jar"),
+        ("RAR archive", "rar"),
+        ("Macromedia Flash", "swf"),
+        ("Python script", "python"),
+        ("MS Windows 95 Internet shortcut", "html"),
+        ("Windows URL shortcut", "html"),
+        ("MS Windows shortcut", "lnk"),
+        ("MS Windows HtmlHelp Data", "chm"),
+        ("Hangul (Korean) Word Processor File", "hwp"),
+        ("XSL stylesheet", "xslt"),
+        ("HTML", "html"),
     ]
 )
 
+def inp(f):
+    if b"InPage Arabic Document" in f.contents:
+        return "inp"
+
+def mso(f):
+    if b"mso-application" in f.contents and b"Word.Document" in f.contents:
+        return "doc"
+
+def sct(f):
+    if f.filename.endswith(b".sct"):
+        if re.search(br"(?is)<\?XML.*?<scriptlet.*?<registration", f.contents):
+            return "sct"
+        else:
+            return "hta"
 
 def xxe(f):
     STRINGS = [
@@ -172,6 +237,7 @@ def powershell(f):
         b"Copy-Item",
         b"Set-ItemProperty",
         b"Select-Object",
+        b"Set-StrictMode",
     ]
 
     found = 0
@@ -283,12 +349,17 @@ def vbe_jse(f):
                 return "vbs"
             else:
                 return "js"
+        else:
+            return "vbejse"
 
 
 def identify(f):
     if not f.stream.read(0x1000):
         return
 
+    for package, extensions in file_extensions.items():
+        if f.filename.endswith(extensions):
+            return package
     for identifier in identifiers:
         package = identifier(f)
         if package:
@@ -316,4 +387,6 @@ identifiers = [
     xxe,
     pub,
     vbe_jse,
+    sct,
+    inp,
 ]
