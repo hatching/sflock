@@ -357,9 +357,10 @@ def identify(f):
     if not f.stream.read(0x1000):
         return
 
-    for package, extensions in file_extensions.items():
-        if f.filename.endswith(extensions):
-            return package
+    if f and hasattr(f, "filename"):
+        for package, extensions in file_extensions.items():
+            if f.filename.endswith(extensions):
+                return package
     for identifier in identifiers:
         package = identifier(f)
         if package:
