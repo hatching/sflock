@@ -38,6 +38,7 @@ file_extensions = OrderedDict(
         ("msbuild", (b".csproj", b".vbproj", b".vcxproj", b".dbproj", b".fsproj")),
         ("zip", (b".zip",)),
         ("cpl", (b".cpl",)),
+        ("xls", (b".xll",)),
     ]
 )
 
