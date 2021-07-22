@@ -39,6 +39,7 @@ file_extensions = OrderedDict(
         ("zip", (b".zip",)),
         ("cpl", (b".cpl",)),
         ("xls", (b".xll",)),
+        ("ichitaro", (b".jtd", b".jtdc", b".jttc", b".jtt"))
     ]
 )
 
