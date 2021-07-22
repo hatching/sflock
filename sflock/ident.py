@@ -251,6 +251,9 @@ def powershell(f):
 
 
 def javascript(f):
+    if f.contents[:2] == b'MZ':
+        return None
+
     JS_STRS = [
         b"var ",
         b"function ",
