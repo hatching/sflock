@@ -371,15 +371,17 @@ def identify(f):
         for package, extensions in file_extensions.items():
             if f.filename.endswith(extensions):
                 return package
-    for identifier in identifiers:
-        package = identifier(f)
-        if package:
-            return package
     for magic_types in magics:
         if f.magic.startswith(magic_types):
             return magics[magic_types]
     if f.mime in mimes:
         return mimes[f.mime]
+
+    # To avoid mismatch of files due to strigns in binary
+    for identifier in identifiers:
+        package = identifier(f)
+        if package:
+            return package
 
 
 identifiers = [
