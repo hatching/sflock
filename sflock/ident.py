@@ -53,7 +53,7 @@ mimes = OrderedDict(
         ("application/x-7z-compressed", "7z"),
         ("application/x-bzip2", "bzip2"),
         ("application/x-tar", "tar"),
-        # ("application/java-archive", "jar"),
+        ("application/java-archive", "jar"),
         ("application/x-dosexec", "exe"),
         ("application/vnd.ms-cab-compressed", "cab"),
         ("application/pdf", "pdf"),
@@ -229,7 +229,7 @@ def office_ole(f):
 
 
 def powershell(f):
-    if f.contents[:2] == b'MZ':
+    if f.contents.startswith(b"MZ"):
         return None
 
     POWERSHELL_STRS = [
@@ -254,7 +254,7 @@ def powershell(f):
 
 
 def javascript(f):
-    if f.contents[:2] == b'MZ':
+    if f.contents.startswith(b"MZ"):
         return None
 
     JS_STRS = [
@@ -302,7 +302,7 @@ def pub(f):
 
 
 def visualbasic(f):
-    if f.contents[:2] == b'MZ':
+    if f.contents.startswith(b"MZ"):
         return None
 
     VB_STRS = [
@@ -371,17 +371,15 @@ def identify(f):
         for package, extensions in file_extensions.items():
             if f.filename.endswith(extensions):
                 return package
+    for identifier in identifiers:
+        package = identifier(f)
+        if package:
+            return package
     for magic_types in magics:
         if f.magic.startswith(magic_types):
             return magics[magic_types]
     if f.mime in mimes:
         return mimes[f.mime]
-
-    # To avoid mismatch of files due to strigns in binary
-    for identifier in identifiers:
-        package = identifier(f)
-        if package:
-            return package
 
 
 identifiers = [
