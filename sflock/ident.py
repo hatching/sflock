@@ -53,7 +53,7 @@ mimes = OrderedDict(
         ("application/x-7z-compressed", "7z"),
         ("application/x-bzip2", "bzip2"),
         ("application/x-tar", "tar"),
-        ("application/java-archive", "jar"),
+        # ("application/java-archive", "jar"),
         ("application/x-dosexec", "exe"),
         ("application/vnd.ms-cab-compressed", "cab"),
         ("application/pdf", "pdf"),
