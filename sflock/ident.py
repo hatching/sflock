@@ -229,6 +229,9 @@ def office_ole(f):
 
 
 def powershell(f):
+    if f.contents[:2] == b'MZ':
+        return None
+
     POWERSHELL_STRS = [
         b"$PSHOME",
         b"Get-WmiObject",
@@ -299,6 +302,9 @@ def pub(f):
 
 
 def visualbasic(f):
+    if f.contents[:2] == b'MZ':
+        return None
+
     VB_STRS = [
         b"Dim ",
         b"dim ",
