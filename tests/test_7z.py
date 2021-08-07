@@ -71,7 +71,7 @@ class Test7zFile(object):
 
     def test_gzip_file(self):
         t = unpack(contents=open(b"tests/files/gzip1.gzip", "rb").read())
-        assert t.unpacker == "gzipfile"
+        assert t.unpacker == "targzfile"
         assert len(t.children) == 1
         assert len(t.children[0].contents) == 801792
 
