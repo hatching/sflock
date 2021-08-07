@@ -7,6 +7,12 @@ from collections import OrderedDict
 
 from sflock.aux.decode_vbe_jse import DecodeVBEJSE
 
+try:
+    from unicorn import Uc, UC_MODE_32, UC_MODE_64, UC_ARCH_X86, UC_HOOK_CODE, unicorn
+    from unicorn.x86_const import UC_X86_REG_ESP
+    HAVE_UNICORN = True
+except ImportError:
+    HAVE_UNICORN = False
 
 file_extensions = OrderedDict(
     [
@@ -17,6 +23,7 @@ file_extensions = OrderedDict(
         ("ppt", (b".ppt", b".ppa", b".pot", b".pps", b".pptx", b".pptm", b".potx", b".potm", b".ppam", b".ppsx", b".ppsm", b".sldx", b".sldm")),
         ("jar", (b".jar",)),
         # ("rar", (b".rar",)),
+        ("reg", (b".reg",)),
         ("swf", (b".swf", b".fws")),
         ("python", (b".py", b".pyc", b".pyw")),
         ("ps1", (b".ps1",)),
@@ -95,6 +102,50 @@ magics = OrderedDict(
         # ("HTML", "html"),
     ]
 )
+
+shellcode_code_base = 0x100000
+shellcode_threshold = 0x100
+shellcode_limit = 0x100000
+
+
+def detect_shellcode(f):
+    global shellcode_count32, shellcode_count64, shellcode_last_address
+    shellcode_count32 = 0
+    shellcode_count64 = 0
+    shellcode_last_address = 0
+    emulate(f.contents, UC_MODE_64)
+    if shellcode_last_address - shellcode_code_base < shellcode_threshold:
+        shellcode_count64 = 0
+    last_address = 0
+    emulate(f.contents, UC_MODE_32)
+    if last_address - shellcode_code_base < shellcode_threshold:
+        shellcode_count32 = 0
+    if shellcode_count64 > shellcode_threshold and shellcode_count64 > shellcode_count32:
+        return "shellcode_64"
+    elif shellcode_count32 > shellcode_threshold and shellcode_count32 > shellcode_count64:
+        return "shellcode"
+    return False
+
+def hook_instr(uc, address, size, mode):
+    global shellcode_count32, shellcode_count64, shellcode_last_address
+    if mode == UC_MODE_32:
+        shellcode_count32 += 1
+    elif mode == UC_MODE_64:
+        shellcode_count64 += 1
+    shellcode_last_address = address
+
+def emulate(data, mode):
+    try:
+        stack = 0x90000
+        uc = Uc(UC_ARCH_X86, mode)
+        uc.mem_map(stack, 0x1000*10)
+        uc.mem_map(shellcode_code_base, 0x100000)
+        uc.mem_write(shellcode_code_base, data)
+        uc.reg_write(UC_X86_REG_ESP, stack+0x1000)
+        uc.hook_add(UC_HOOK_CODE, hook_instr, user_data=mode)
+        uc.emu_start(shellcode_code_base, shellcode_code_base+len(data), 0, shellcode_limit)
+    except unicorn.UcError:
+        pass
 
 def inp(f):
     if b"InPage Arabic Document" in f.contents:
@@ -380,6 +431,8 @@ def identify(f):
             return magics[magic_types]
     if f.mime in mimes:
         return mimes[f.mime]
+
+    return detect_shellcode(f)
 
 
 identifiers = [
