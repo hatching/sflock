@@ -121,9 +121,9 @@ def detect_shellcode(f):
     if last_address - shellcode_code_base < shellcode_threshold:
         shellcode_count32 = 0
     if shellcode_count64 > shellcode_threshold and shellcode_count64 > shellcode_count32:
-        return "shellcode_64"
+        return "Shellcode_x64"
     elif shellcode_count32 > shellcode_threshold and shellcode_count32 > shellcode_count64:
-        return "shellcode"
+        return "Shellcode"
     return False
 
 def hook_instr(uc, address, size, mode):
