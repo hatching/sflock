@@ -18,7 +18,7 @@ file_extensions = OrderedDict(
     [
         ("msi", (b".msi", b".msp", b".appx")),
         ("pub", (b".pub",)),
-        ("doc", (b".doc", b".dot", b".docx", b".dotx", b".docm", b".dotm", b".docb", b".rtf", b".mht", b".mso", b".wbk")),
+        ("doc", (b".doc", b".dot", b".docx", b".dotx", b".docm", b".dotm", b".docb", b".rtf", b".mht", b".mso", b".wbk", b".wiz")),
         ("xls", (b".xls", b".xlt", b".xlm", b".xlsx", b".xltx", b".xlsm", b".xltm", b".xlsb", b".xla", b".xlam", b".xll", b".xlw", b".slk", b".xll", b".csv")),
         ("ppt", (b".ppt", b".ppa", b".pot", b".pps", b".pptx", b".pptm", b".potx", b".potm", b".ppam", b".ppsx", b".ppsm", b".sldx", b".sldm")),
         ("jar", (b".jar",)),
@@ -73,6 +73,7 @@ magics = OrderedDict(
         ("ACE archive data", "ace"),
         ("PE32 executable (DLL)", "dll"),
         ("PE32+ executable (DLL)", "dll"),
+        ("MS-DOS executable PE32 executable (DLL)", "dll"),
         ("PE32 executable", "exe"),
         ("PE32+ executable", "exe"),
         ("Microsoft PowerPoint", "ppt"),
