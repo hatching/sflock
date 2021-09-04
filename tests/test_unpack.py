@@ -132,17 +132,21 @@ def test_astree2():
         "extrpath": [],
         "size": 15035,
         "identified": True,
-        "extension": "email",
+        "extension": "eml",
         "platforms": [
-            {"platform": "windows", "os_version": ""}
+            {"platform": "windows", "os_version": ""},
+            {"platform": "darwin", "os_version": ""},
+            {"platform": "linux", "os_version": ""},
+            {"platform": "android", "os_version": ""},
+            {"platform": "ios", "os_version": ""}
         ],
         "dependency": "",
         "dependency_version": "",
-        "human_type": "Email file",
+        "human_type": "Email message file",
         "safelisted": False,
         "safelist_reason": "",
-        "selected": False,
-        "selectable": False,
+        "selected": True,
+        "selectable": True,
         'md5': 'ded1a5de62d0882f41613b00d5be02f3',
         'sha1': '8bbfc981546ef851f164a6aec91e92781674091a',
         'sha256': '0c4a1d51e8f2ca75afaeb506bfec85e2b6195bcfe617081659bf1b758f05a953',
@@ -225,7 +229,7 @@ def test_astree2():
 def test_astree3():
     f = unpack("tests/files/eml_nested_eml.eml")
     assert f.astree(finger=False) == {
-        "extension": "mht",
+        "extension": "eml",
         "platforms": [
             {"platform": "windows", "os_version": ""},
             {"platform": "darwin", "os_version": ""},
@@ -235,7 +239,7 @@ def test_astree3():
         ],
         "dependency": "",
         "dependency_version": "",
-        "human_type": "Mht file",
+        "human_type": "Email message file",
         "duplicate": False,
         "filename": "eml_nested_eml.eml",
         "relapath": None,
@@ -255,7 +259,7 @@ def test_astree3():
         "error": None,
         "type": "container",
         "children": [{
-            "extension": "mht",
+            "extension": "eml",
             "platforms": [
                 {"platform": "windows", "os_version": ""},
                 {"platform": "darwin", "os_version": ""},
@@ -267,7 +271,7 @@ def test_astree3():
             "dependency_version": "",
             "safelisted": False,
             "safelist_reason": "",
-            "human_type": "Mht file",
+            "human_type": "Email message file",
             "duplicate": False,
             "filename": "multipart.eml",
             "relapath": "multipart.eml",

@@ -9,10 +9,11 @@ import zipfile
 
 from sflock.abstracts import Unpacker
 
+
 class Zip7File(Unpacker):
     name = "7zfile"
     exe = "/usr/bin/7z"
-    exts = ".7z", ".iso", "zip"
+    exts = ".7z", ".iso", ".zip"
     # TODO Should we use "isoparser" (check PyPI) instead of 7z?
     magic = ("7-zip archive", "ISO 9660", "CDFV2 Encrypted",
              "Zip archive", "UDF filesystem")
@@ -20,17 +21,30 @@ class Zip7File(Unpacker):
     dependency = "p7zip-full"
 
     def handles(self):
-        if super(Zip7File, self).handles():
-            if self.f.stream.read(2) == b"PK":
-                try:
-                    zipfile.ZipFile(self.f.stream)
-                    return True
-                except (zipfile.BadZipFile, IOError):
-                    return False
+        if not super().handles():
+            return False
 
-            return True
+        # If this is a zip file, check if it can actually be parsed by
+        # zipfile. If not, do not handle it.
+        if self.f.stream.read(2) == b"PK":
+            try:
+                zipfile.ZipFile(self.f.stream)
+                return True
+            except (zipfile.BadZipFile, IOError):
+                return False
 
-        return False
+        # If the file magic is unknown/data and the given or identified
+        # extension is iso, it can be a UDF image. Try to unpack this.
+        if self.f.magic == "data":
+            if self.f.filename.endswith(".iso"):
+                return True
+
+            if self.f.identified and self.f.extension == "iso":
+                return True
+
+            return False
+
+        return True
 
     def decrypt(self, password, archive, entry):
         if password:

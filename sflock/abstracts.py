@@ -131,13 +131,30 @@ class Unpacker(object):
         return not return_code
 
     def handles(self):
-        if not self.magic:
-            if self.f.filename and self.f.filename.lower().endswith(self.exts):
+        # Only check file extensions if no magic is available or the file
+        # itself has unknown magic.
+        if not self.magic or self.f.magic in ("data", None, ""):
+
+            # If the magic is unknown/data, assume the extension will
+            # be either missing or wrong and run the identify stage for this
+            # specific file.
+            if self.f.magic in ("data", None, ""):
+                self.f.identify()
+
+            if self.f.identified and self.f.extension:
+                if f".{self.f.extension}".endswith(self.exts):
+                    return True
+
+            if self.f.filename and \
+                    self.f.filename.lower().endswith(self.exts):
                 return True
+
+            return False
 
         for magic in make_list(self.magic or []):
             if magic in self.f.magic:
                 return True
+
         return False
 
     def decrypt(self, *args, **kwargs):
@@ -232,6 +249,11 @@ class Unpacker(object):
                 duplicates.append(f.sha256)
             else:
                 f.duplicate = True
+
+            # Clear identification here. Identification called by unpackers
+            # may only be used there. After unpacking, a file can be identified
+            # as something else.
+            f.clear_identify()
 
             f.parent = self.f
             ret.append(f)
@@ -330,7 +352,6 @@ class File(object):
                  filename=None, mode=None, password=None, description=None,
                  selected=False, stream=None, platforms=[]):
 
-
         if isinstance(filepath, Path):
             self.filepath = str(filepath)
         else:
@@ -407,7 +428,7 @@ class File(object):
         self._stream.seek(0)
         return self._stream
 
-    def _identify(self):
+    def identify(self):
         if self._identified_ran:
             return
         self._identified_ran = True
@@ -434,6 +455,19 @@ class File(object):
             self._human_type = "Empty file"
             self.identified = True
 
+    def clear_identify(self):
+        if not self._identified_ran:
+            return
+
+        self._selected = False
+        self._selectable = False
+        self._human_type = ""
+        self._extension = ""
+        self._platforms = []
+        self._dependency = ""
+        self._dependency_version = ""
+        self.identified = False
+        self._identified_ran = False
 
     def _hashes(self):
         sha256, s, buf = hashlib.sha256(), self.stream, True
@@ -517,6 +551,9 @@ class File(object):
 
     @property
     def filesize(self):
+        if self._contents:
+            return len(self._contents)
+
         if self.filepath:
             return os.path.getsize(self.filepath)
 
@@ -527,37 +564,37 @@ class File(object):
     @property
     def dependency(self):
         if not self._identified_ran:
-            self._identify()
+            self.identify()
         return self._dependency
 
     @property
     def dependency_version(self):
         if not self._identified_ran:
-            self._identify()
+            self.identify()
         return self._dependency_version
 
     @property
     def extension(self):
         if not self._identified_ran:
-            self._identify()
+            self.identify()
         return self._extension
 
     @property
     def human_type(self):
         if not self._identified_ran:
-            self._identify()
+            self.identify()
         return self._human_type
 
     @property
     def platforms(self):
         if not self._identified_ran:
-            self._identify()
+            self.identify()
         return self._platforms
 
     @property
     def selected(self):
         if not self._identified_ran:
-            self._identify()
+            self.identify()
 
         if self.error:
             return False
@@ -567,7 +604,7 @@ class File(object):
     @property
     def selectable(self):
         if not self._identified_ran:
-            self._identify()
+            self.identify()
 
         if self.error:
             return False

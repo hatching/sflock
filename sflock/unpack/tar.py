@@ -23,6 +23,15 @@ class TarFile(Unpacker):
     def supported(self):
         return True
 
+    def handles(self):
+        if not super().handles():
+            return False
+
+        if self.f.magic == "data":
+            return False
+
+        return True
+
     def unpack(self, depth=0, password=None, duplicates=None):
         self.f.archive = True
         try:

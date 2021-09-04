@@ -162,6 +162,15 @@ class Test7zFile(object):
         assert len(t.children) == 1
         assert t.children[0].filename == "ATTACHME.EXE"
 
+    def test_udf_nomagic_noext(self):
+        unpacker = Zip7File(f("iso_udf_nomagic_noext"))
+        assert unpacker.handles()
+        assert unpacker.supported()
+        unpacked = unpack("tests/files/iso_udf_nomagic_noext")
+        assert unpacked.unpacker == "7zfile"
+        assert len(unpacked.children) == 1
+        assert unpacked.children[0].filename == "Draft BL-msc7390378.exe"
+
 @pytest.mark.skipif("Zip7File(None).supported()")
 def test_no7z_plain():
     assert "7-zip archive" in f("7z_plain.7z").magic

@@ -15,6 +15,15 @@ class RarFile(Unpacker):
     magic = "RAR archive"
     dependency = "rar"
 
+    def handles(self):
+        if not super().handles():
+            return False
+
+        if self.f.magic == "data":
+            return False
+
+        return True
+
     def decrypt(self, password, archive, entry):
        return self.zipjail(
             archive, entry, "x", "-mt1", "-p%s" % (password or "-"),

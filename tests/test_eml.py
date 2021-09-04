@@ -17,7 +17,6 @@ def test_eml_tar_nested2():
     assert "smtp mail" in f("eml_tar_nested2.eml").magic.lower()
     t = EmlFile(f("eml_tar_nested2.eml"))
     assert t.handles() is True
-    assert not t.f.selected
     files = list(t.unpack())
 
     assert len(files) == 1

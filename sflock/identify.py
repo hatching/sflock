@@ -1,4 +1,7 @@
-from sflock.ident import javascript, powershell, wsf, visualbasic, java, ruby, office_zip, python, batch
+from sflock.ident import (
+    javascript, powershell, wsf, visualbasic, java, python, batch,
+    udf_token_search, hta
+)
 
 ttf_hdr = (
     b'\x00\x01\x00\x00\x00\xff\xff\xff\xff\x01\x00\x00\x00\x00\x00\x00'
@@ -36,9 +39,33 @@ class Platform:
     ANY_DESKTOP = (WINDOWS, MACOS, LINUX)
     ANY = (WINDOWS, MACOS, LINUX, ANDROID, IOS)
 
+def eml_mht(f):
+    filestart = f.contents[0:8192]
+    for mandatory in (b"MIME-Version:", b"Content-Type:"):
+        if mandatory not in filestart:
+            return False
+
+    headers = 0
+    for header in (b"To:", b"From:", b"Subject:", b"Reply-To:"):
+        if header in filestart:
+            headers += 1
+
+        if headers >= 3:
+            return True, "Email message file", "eml", Platform.ANY
+
+    return True, "MIME HTML single file webpage", "mht", Platform.ANY
+
 def HTML(f):
+    if hta(f):
+        return True, "HTML Application file", "hta", (Platform.WINDOWS,)
+
     if wsf(f):
         return True, "Windows script file", "wsf", (Platform.WINDOWS,)
+
+    data = eml_mht(f)
+    if data:
+        return data
+
     return True, "Hypertext Markup Language File", "html", Platform.ANY
 
 def XML(f):
@@ -49,8 +76,12 @@ def XML(f):
     if b"application/vnd.openxmlformats-officedocument" in f.contents:
         return True, "Office file", "doc",  Platform.ANY, Deps.WORD
 
+    if hta(f):
+        return True, "HTML Application file", "hta", (Platform.WINDOWS,)
+
     if wsf(f):
         return True, "Windows script file", "wsf", (Platform.WINDOWS,)
+
     return False, "XML file", "xml", Platform.ANY
 
 def SAT(f):
@@ -69,26 +100,34 @@ def Text(f):
     if wsf(f):
         return True, "Windows script file", "wsf", (Platform.WINDOWS,)
     if visualbasic(f):
-        return True, "Visual basic file", "vbs", (Platform.WINDOWS,)
+        return True, "Visual basic script file", "vbs", (Platform.WINDOWS,)
     if batch(f):
         return True, "DOS batch file", "bat", (Platform.WINDOWS,)
-    if ruby(f):
-        return True, "Ruby file", "rb", Platform.ANY_DESKTOP, Deps.RUBY
-    if f.contents.startswith(b"WEB"):
-        return True, "IQY file", "iqy", Platform.ANY, Deps.EXCEL
-    if f.contents.startswith(b"ID;"):
+    if f.contents.startswith(b"WEB\n1"):
+        return True, "IQY web query file", "iqy", Platform.ANY, Deps.EXCEL
+    if f.contents.startswith(b"ID;P") and \
+            f.contents.rstrip().endswith((b"E", b"E\n")):
         return True, "SYLK file", "slk", Platform.ANY, Deps.EXCEL
-    if b"Content-Type: text/html;" in f.contents:
-        return True, "Mht file", "mht", Platform.ANY
     if python(f):
         return True, "Python script", "py", Platform.ANY, Deps.PYTHON
+
+    data = eml_mht(f)
+    if data:
+        return data
+
+    if f.contents.startswith(b"{\\rt"):
+        return True, "Rich Text Format File", "rtf", Platform.ANY
+
+    header_offset = f.contents.find(b"[InternetShortcut]", 0, 1024 * 1024)
+    if header_offset != -1 and b"URL=" in f.contents[header_offset:1024*1024]:
+        return True, "URL shortcut file", "url", (Platform.WINDOWS,)
 
     return False, "Text", "txt", Platform.ANY
 
 def ZIP(f):
     r = java(f)
-    if r  == "jar":
-        return True, "JAR file", "jar", (Platform.WINDOWS, Platform.MACOS, Platform.LINUX, Platform.ANDROID), Deps.JAVA
+    if r == "jar":
+        return True, "Java Archive File", "jar", (Platform.WINDOWS, Platform.MACOS, Platform.LINUX, Platform.ANDROID), Deps.JAVA
     elif r == "apk":
         return True, "Android Package File", "apk", (Platform.ANDROID,)
 
@@ -103,10 +142,7 @@ def ZIP(f):
     return False, "ZIP file", "zip", Platform.ANY, Deps.UNARCHIVE
 
 def JAR(f):
-    if java(f):
-        return True, "Java Archive File", "jar", (Platform.WINDOWS, Platform.MACOS, Platform.LINUX, Platform.ANDROID), Deps.JAVA
-
-    if f.get_child("AndroidManifest.xml"):
+    if java(f) == "apk":
         return True, "Android Package File", "apk", (Platform.ANDROID,)
 
     # Default
@@ -117,6 +153,9 @@ def OCTET(f):
         return True, "Windows script file", "wsf", (Platform.WINDOWS,)
     if f.contents.startswith(ttf_hdr):
         return False, "TrueType Font", "ttf", (Platform.WINDOWS,)
+
+    if udf_token_search(f):
+        return False, "UDF filesystem data", "iso", Platform.ANY
 
     return False, "Random bytes/Memory dump", "", ()
 
@@ -218,6 +257,7 @@ def OFFICEXML(f):
 
     return False
 
+
 # The magic and mime of a file will be used to match it to an extension or
 # a function.
 #   An extension will be used if the magic and mime are enough to distinct
@@ -270,6 +310,7 @@ string_matches = [
     (False, ['CDFV2', 'Microsoft', 'Outlook'],
      'ms-outlook', "msg", "Microsoft outlook message", Platform.ANY, Deps.OUTLOOK),
 
+
     #
     # Archive/compression related
     #
@@ -296,6 +337,8 @@ string_matches = [
      (Platform.WINDOWS, Platform.MACOS), Deps.UNARCHIVE),
     (False, ['ARC'], "x-arc", "arc", "Compressed file",
      (Platform.WINDOWS, Platform.MACOS), Deps.ARC),
+    (False, ["PowerISO", "Direct-Access-Archive"], "", "daa",
+     "PowerISO Direct-Access-Archive", Platform.ANY_DESKTOP,),
 
     #
     # Apple related
@@ -444,7 +487,6 @@ string_matches = [
      "Windows enhanced metafile", (Platform.WINDOWS,)),
     (False, ['E-book'], "octet-stream", "ebook", "Ebook file",
      (Platform.WINDOWS,)),
-    (False, ['SMTP'], "rfc822", "email", "Email file", (Platform.WINDOWS,)),
     (False, ['TrueType', 'Font'], "font-sfnt", "ttf", "TrueType Font",
      (Platform.WINDOWS)),
     (False, ['capture'], "tcpdump.pcap", "pcap", "Network traffic data",
@@ -452,7 +494,9 @@ string_matches = [
     (False, ['capture'], "octet-stream", "pcap", "Network traffic data",
      (Platform.WINDOWS,)),
     (False, ['Netscape', 'cookie'], "plain", "iecookie", "Cookie for ie",
-    (Platform.WINDOWS))
+    (Platform.WINDOWS)),
+    (True, ["Internet", "shortcut"], "plain", "url",
+     "URL shortcut file", (Platform.WINDOWS,)),
 ]
 
 # Add function variables
@@ -479,7 +523,10 @@ func_matches = [
     (['Microsoft', 'Word'],
      "openxmlformats-officedocument.wordprocessingml.document", OFFICEXML),
     (["Microsoft"], "openxmlformats-officedocument", OFFICEXML),
-    (["Microsoft", "OOXML"], "octet", OFFICEXML)
+    (["Microsoft", "OOXML"], "octet", OFFICEXML),
+    (["SMTP"], "", eml_mht),
+    (["MIME"], "", eml_mht),
+    (["news", "mail"], "", eml_mht),
 ]
 
 def identify(f):

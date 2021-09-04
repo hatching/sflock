@@ -20,11 +20,11 @@ def test_identify():
     f = unpack(contents=open("tests/files/sample.apk", "rb").read())
     assert f.extension == "apk"
 
-def test_ppt():
-    f = unpack(contents=open("tests/files/ppt_1.ppt", "rb").read())
+def test_pptx():
+    f = unpack(contents=open("tests/files/pptx_1.pptx", "rb").read())
     assert f.duplicate is False
     assert f.selected
-    assert f.extension == "ppt" # based on magic/mime ..
+    assert f.extension == "pptx"
     assert f.platforms == [
                         {"platform": "windows", "os_version": ""},
                         {"platform": "darwin", "os_version": ""},
@@ -39,7 +39,7 @@ def test_doc1():
     f = unpack("tests/files/doc_1.docx_")
     assert f.duplicate is False
     assert f.selected is True
-    assert f.extension == "thmx"
+    assert f.extension == "docx"
     assert f.platforms == [
                         {"platform": "windows", "os_version": ""},
                         {"platform": "darwin", "os_version": ""},
@@ -84,14 +84,8 @@ def test_oledoc1():
 
 def test_url():
     f = unpack("tests/files/1.url")
-    assert f.extension == "txt"
-    assert f.platforms == [
-                        {"platform": "windows", "os_version": ""},
-                        {"platform": "darwin", "os_version": ""},
-                        {"platform": "linux", "os_version": ""},
-                        {"platform": "android", "os_version": ""},
-                        {"platform": "ios", "os_version": ""}
-                    ]
+    assert f.extension == "url"
+    assert f.platforms == [{"platform": "windows", "os_version": ""}]
 
 def test_slk():
     f = unpack("tests/files/1.slk")
