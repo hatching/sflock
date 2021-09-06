@@ -513,6 +513,7 @@ func_matches = [
     (['HTML', 'document'], "html", HTML),
     (['text'], "text", Text),
     (['text'], "plain", Text),
+    (['Generic', 'INItialization', 'configuration'], "", Text),
     (['PE32'], "x-dosexec", PE32),
     (['PE32+'], "x-dosexec", PE32),
     (['Macromedia', 'Flash', 'data'], "x-shockwave-flash", FLASH),
