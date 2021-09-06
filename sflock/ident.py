@@ -164,6 +164,9 @@ def sct(f):
             return "hta"
 
 def xxe(f):
+    if f.contents.startswith(b"MZ"):
+        return None
+
     STRINGS = [
         b"XXEncode",
         b"begin",
@@ -179,6 +182,9 @@ def xxe(f):
 
 
 def hta(f):
+    if f.contents.startswith(b"MZ"):
+        return None
+
     STRINGS = [
         b"<head",
         b"<title",
@@ -208,6 +214,9 @@ def hta(f):
 
 
 def office_webarchive(f):
+    if f.contents.startswith(b"MZ"):
+        return None
+
     STRINGS = [
         b"<o:Pages>",
         b"<o:DocumentProperties>",
@@ -334,12 +343,18 @@ def javascript(f):
 
 
 def wsf(f):
+    if f.contents.startswith(b"MZ"):
+        return None
+
     match = re.search(b'<script\\s+language="(J|VB|Perl)Script"', f.contents, re.I)
     if match:
         return "wsf"
 
 
 def pub(f):
+    if f.contents.startswith(b"MZ"):
+        return None
+
     PUB_STRS = [
         b"Microsoft Publisher",
         b"MSPublisher",
@@ -404,6 +419,9 @@ def dmg(f):
 
 
 def vbe_jse(f):
+    if f.contents.startswith(b"MZ"):
+        return None
+
     if b"#@~^" in f.contents[:100]:
         data = DecodeVBEJSE(f.contents, "")
         if data:
