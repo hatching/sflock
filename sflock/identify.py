@@ -182,6 +182,8 @@ def EXCEL(f):
         return True, "Microsoft Excel Open XML Spreadsheet", "xlsb", Platform.ANY, Deps.EXCEL
     if b"ContentType=\"application/vnd.ms-excel.sheet.macroEnabled" in content.contents:
         return True, "Microsoft Excel Open XML Spreadsheet", "xlsm", Platform.ANY, Deps.EXCEL
+    if b"ContentType=\"application/vnd.ms-excel.addin.macroEnabled" in content.contents:
+        return True, "Microsoft Excel Open XML Spreadsheet", "xlam", Platform.ANY, Deps.EXCEL
     if b"ContentType=\"application/vnd.ms-office.vbaProject" in content.contents:
         return True, "Microsoft Excel Open XML Spreadsheet", "xlsm", Platform.ANY, Deps.EXCEL
     return True, "Microsoft Excel Open XML Spreadsheet", "xlsx", Platform.ANY, Deps.EXCEL

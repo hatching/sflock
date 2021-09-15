@@ -174,5 +174,8 @@ def test_xlsb():
 def test_xlsm():
     _help("xlsm")
 
+def test_xlam():
+    _help("xlam")
+
 def test_xlsx():
     _help("xlsx")
