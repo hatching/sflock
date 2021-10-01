@@ -69,13 +69,6 @@ def HTML(f):
     return True, "Hypertext Markup Language File", "html", Platform.ANY
 
 def XML(f):
-    if b"application/vnd.openxmlformats-officedocument.presentationml" in f.contents:
-        return True, "Office file", "xml", Platform.ANY, Deps.WORD
-    if b"application/vnd.openxmlformats-officedocument.wordprocessingml" in f.contents:
-        return True, "Office file", "xml",  Platform.ANY, Deps.WORD
-    if b"application/vnd.openxmlformats-officedocument" in f.contents:
-        return True, "Office file", "doc",  Platform.ANY, Deps.WORD
-
     if hta(f):
         return True, "HTML Application file", "hta", (Platform.WINDOWS,)
 
@@ -388,7 +381,7 @@ string_matches = [
     (False, ['RIFF'], "x-wav", "wav", "WAVE Audio File", (Platform.WINDOWS,), Deps.MEDIAPLAYER),
     (True, ['Macromedia', 'Flash', 'data', '(compressed)'],
      "x-shockwave-flash", "swf", "Shockwave Flash Movie", (Platform.WINDOWS,), Deps.FLASH),  # todo
-    (True, ['RIFF'], "msvideo", "avi", "Audio Video Interleave File",
+    (False, ['RIFF'], "msvideo", "avi", "Audio Video Interleave File",
      (Platform.WINDOWS,), Deps.MEDIAPLAYER),
     (True, ['Macromedia', 'Flash', 'Video'], "x-flv", "flv",
      "Flash Video File", (Platform.WINDOWS,), Deps.FLASH),
@@ -403,7 +396,7 @@ string_matches = [
      (Platform.WINDOWS,)),
     (False, ['ISO', 'Media'], "video/mp4", "mp4", "MPEG-4 Video File",
      Platform.ANY, Deps.MEDIAPLAYER),
-    (True, ['contains:MPEG'], "mpeg", "mp3", "MP3 Audio File",
+    (False, ['contains:MPEG'], "mpeg", "mp3", "MP3 Audio File",
      (Platform.ANY), Deps.MEDIAPLAYER),
     (False, ['3GPP', 'MPEG', 'v4'], "octet-stream", "3gp",
      "3GPP Multimedia File", (Platform.WINDOWS,), Deps.MEDIAPLAYER),
@@ -421,7 +414,7 @@ string_matches = [
      "Encapsulated PostScript File", (Platform.WINDOWS,), Deps.PDF),
     (False, ['PHP'], "x-php", "php", "PHP Source Code File",
      (Platform.WINDOWS, Platform.LINUX, Platform.MACOS), Deps.PHP),
-    (True, ['Perl', 'script'], "x-perl", "perl", "Perl script",
+    (True, ['Perl', 'script'], "x-perl", "pl", "Perl script",
      (Platform.WINDOWS, Platform.LINUX), Deps.PERL),
     (True, ['Bourne-Again', 'shell'], "x-shellscript", "sh",
      "Shell script", (Platform.LINUX,)),
@@ -566,3 +559,4 @@ def identify(f):
                 return (*data,)
 
     return None
+
