@@ -5,27 +5,25 @@
 import re
 
 def hta(f):
+    headstart = re.search(
+        rb"<[\s+]{0,128}head[\s+]{0,128}", f.contents, re.I
+    )
+    if not headstart:
+        return
+
+    if not re.compile(
+        rb"<[\s+]{0,1024}hta:application[\s+]{0,1024}", re.I
+    ).search(f.contents, headstart.end()):
+        return
+
     STRINGS = [
-        b"<head", b"<title", b"<body", b"SINGLEINSTANCE",
+        b"<title", b"<body", b"SINGLEINSTANCE",
         b"<script", b"<input", b"WINDOWSTATE",
-        b"APPLICATIONNAME", b"SCROLL", b"</"
+        b"APPLICATIONNAME", b"SCROLL"
     ]
-
-    MANDATORY_STRINGS = [
-        b"HTA:APPLICATION", b"<head", b"<body"
-    ]
-
-    # Make sure all mandatory strings are found
-    for string in MANDATORY_STRINGS:
-        if string not in f.contents:
-            return
-
-    found = 0
     for string in STRINGS:
-        found += f.contents.count(string)
-
-    if found >= 10:
-        return "hta"
+        if string in f.contents[headstart.end():]:
+            return "hta"
 
 def office_webarchive(f):
     STRINGS = [
