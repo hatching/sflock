@@ -15,7 +15,6 @@ import zipfile
 
 from sflock.abstracts import File, Unpacker
 from sflock.exception import IncorrectUsageException
-from sflock.ident import identify
 from sflock.misc import make_list
 from sflock.unpack import plugins
 
@@ -34,18 +33,6 @@ def supported():
 
 def ident(f):
     """Identifies a file based on its contents."""
-    package = identify(f)
-
-    if package:
-        f.preview = False
-        f.package = package
-
-        # Deselect the direct children.
-        for child in f.children:
-            child.selected = False
-        return
-
-    # Recursively enumerate further.
     for child in f.children:
         ident(child)
 
@@ -82,10 +69,10 @@ def zipify(f):
     for child in f.children:
 
         # Avoid specific characters that aren't allowed under Windows NTFS.
-        if re.search('["*<>?]', child.relapath.decode()):
+        if re.search('["*<>?]', child.relapath):
             continue
         filepath = child.temp_path()
-        z.write(filepath, child.relapath.decode())
+        z.write(filepath, child.relapath)
         os.unlink(filepath)
 
     z.close()

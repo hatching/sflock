@@ -7,7 +7,7 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 import os
-import subprocess
+import shutil
 import tempfile
 
 from sflock.abstracts import Unpacker
@@ -16,10 +16,11 @@ from sflock.abstracts import Unpacker
 class AceFile(Unpacker):
     name = "acefile"
     exe = "/usr/bin/unace"
-    exts = b".ace"
+    exts = ".ace"
     magic = "ACE archive"
+    dependency = "unace-nonfree"
 
-    def unpack(self, password=None, duplicates=None):
+    def unpack(self, depth=0, password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()
         original_path = self.f.filepath
         if self.f.filepath:
@@ -43,4 +44,4 @@ class AceFile(Unpacker):
             os.rename(self.f.filepath, original_path)
             self.f.filepath = original_path
 
-        return self.process_directory(dirpath, duplicates)
+        return self.process_directory(dirpath, duplicates, depth)

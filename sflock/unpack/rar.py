@@ -4,7 +4,6 @@
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 import os
-import subprocess
 import tempfile
 
 from sflock.abstracts import Unpacker
@@ -13,10 +12,11 @@ from sflock.abstracts import Unpacker
 class RarFile(Unpacker):
     name = "rarfile"
     exe = "/usr/bin/rar"
-    exts = b".rar"
+    exts = ".rar"
     magic = "RAR archive"
+    dependency = "rar"
 
-    def unpack(self, password: str = None, duplicates=None):
+    def unpack(self, depth = 0, password: str = None, duplicates=None):
         dirpath = tempfile.mkdtemp()
 
         if self.f.filepath:
@@ -30,7 +30,4 @@ class RarFile(Unpacker):
         if not ret:
             return []
 
-        if temporary:
-            os.unlink(filepath)
-
-        return self.process_directory(dirpath, duplicates, password)
+        return self.process_directory(dirpath, duplicates, depth, password)

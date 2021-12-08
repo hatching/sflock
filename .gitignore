@@ -6,7 +6,10 @@
 *.pyc
 *.pyo
 
+.coverage
+.eggs/
 .idea/
+.vscode/
 .pytest_cache/
 SFlock.egg-info/
 dist/
@@ -15,3 +18,4 @@ SFlock2.egg-info/
 tests/files/document3230.vbe.lz
 tests/files/test.win
 .DS_Store
+venv/

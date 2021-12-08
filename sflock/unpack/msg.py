@@ -3,11 +3,12 @@
 # See the file 'docs/LICENSE.txt' for copying permission.
 
 from sflock.abstracts import Unpacker, File
+from sflock.errors import Errors
 
 
 class MsgFile(Unpacker):
     name = "msgfile"
-    exts = b".msg"
+    exts = ".msg"
 
     def supported(self):
         return True
@@ -34,28 +35,26 @@ class MsgFile(Unpacker):
         stream = self.get_stream(unicode_filename)
         if stream:
             return stream.decode("utf16")
-
-        return self.get_stream(ascii_filename)
+        return self.get_stream(ascii_filename).decode()
 
     def get_attachment(self, dirname):
         filename = self.get_string(dirname, "__substg1.0_3707") or self.get_string(dirname, "__substg1.0_3704") or "att1"
         contents = self.get_stream(dirname, "__substg1.0_37010102")
         return filename, contents
 
-    def unpack(self, password=None, duplicates=None):
+    def unpack(self, depth=0, password=None, duplicates=None):
         seen, entries = [], []
 
         if not self.f.ole:
-            self.f.mode = "failed"
-            self.f.error = "No OLE structure found"
+            self.f.set_error(Errors.UNPACK_FAILED, "No OLE structure found")
             return []
 
         for dirname in self.f.ole.listdir():
             if dirname[0].startswith("__attach") and dirname[0] not in seen:
                 filename, contents = self.get_attachment(dirname[0])
-                if isinstance(filename, str):
-                    filename = filename.encode()
-                entries.append(File(relapath=filename, contents=contents))
+                entries.append(File(
+                    relapath=filename, contents=contents
+                ))
                 seen.append(dirname[0])
 
-        return self.process(entries, duplicates)
+        return self.process(entries, duplicates, depth)

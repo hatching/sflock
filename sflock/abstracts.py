@@ -6,18 +6,47 @@
 import hashlib
 import io
 import ntpath
-import olefile
 import os.path
 import re
 import shutil
 import subprocess
 import tempfile
+from pathlib import Path, PureWindowsPath
+
+import olefile
 
 from sflock.compat import magic
 from sflock.config import iter_passwords
-from sflock.exception import UnpackException
+from sflock.errors import Errors
+from sflock.exception import (
+    UnpackException, MaxNestedError, DecryptionFailedError,
+    NotSupportedError
+)
+from sflock.identify import identify
 from sflock.misc import data_file, make_list
-from sflock.pick import package, platform
+
+MAX_NESTED = 10
+
+class Identifier:
+    name = None
+    ext = []
+    platform = []
+
+    plugins = {}
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def identify(f):
+        raise NotImplementedError()
+
+    @staticmethod
+    def to_json(object):
+        return {
+            "name": object.name,
+            "platform": object.platform
+        }
 
 
 class Unpacker(object):
@@ -28,6 +57,8 @@ class Unpacker(object):
     exts = ()
     package = None
     magic = None
+    priority = 0
+    dependency = ""
 
     # Initiated at runtime - contains each Unpacker subclass.
     plugins = {}
@@ -43,7 +74,11 @@ class Unpacker(object):
         return os.path.exists(self.exe)
 
     def zipjail(self, filepath, dirpath, *args):
-        zipjail = data_file(b"zipjail.elf")
+        zipjail = data_file("zipjail.elf")
+        arg = "--clone=10" if self.name == "7zfile" else "--clone=0"
+
+        if os.path.exists(dirpath):
+            shutil.rmtree(dirpath)
 
         p = subprocess.Popen(
             (zipjail, filepath, dirpath, "-c=1", "--", self.exe) + args,
@@ -54,31 +89,75 @@ class Unpacker(object):
 
         return_code = p.wait()
         out, err = p.communicate()
+        low_err = err.lower()
 
-        if b"Excessive writing caused incomplete unpacking!" in err:
-            self.f.error = "files_too_large"
-            return False
+        if b"excessive writing caused incomplete unpacking!" in low_err:
+            raise UnpackException(
+                "Cancelled: unpacked archive exceeds maximum size",
+                Errors.TOTAL_TOO_LARGE
+            )
 
-        if b"Detected potential out-of-path arbitrary overwrite!" in err:
-            self.f.error = "directory_traversal"
-            return False
+        if any(x in low_err for x in
+               (b"detected potential out-of-path arbitrary overwrite",
+                b"Detected potential directory traversal arbitrary overwrite")
+        ):
 
-        if b"Blocked system call" in err and b"syscall=symlink" in err:
-            self.f.error = "malicious_symlink"
-            return False
+            raise UnpackException(
+                "Cancelled: directory traversal attempt detected",
+                Errors.CANCELLED_DIR_TRAVERSAL
+            )
+
+        if b"blocked system call" in low_err \
+                and b"syscall=symlink" in low_err or \
+                b"potential symlink-based arbitrary overwrite" in low_err:
+            raise UnpackException(
+                "Cancelled: symlink creation attempt detected",
+                Errors.CANCELLED_SYMLINK
+            )
+
+        if any(x in low_err for x in
+               (b"wrong password", b"bad password", b"password is incorrect",
+                b"password required")):
+            raise DecryptionFailedError(
+                "No correct password for encrypted archive"
+            )
+
+        if b"unknown lstat() errno" in low_err:
+            # Handle unknown lstat errors as if the unpacking tool does
+            # not supported the current file and allow another unpacker to
+            # be chosen.
+            raise NotSupportedError(f"Zipjail error: {err}")
+
+        if return_code == 1:
+            raise UnpackException(f"Zipjail error: {err}", Errors.ZIPJAIL_FAIL)
 
         return not return_code
 
     def handles(self):
-        if self.f.filename and self.f.filename.lower().endswith(self.exts):
-            return True
+        # Only check file extensions if no magic is available or the file
+        # itself has unknown magic.
+        if not self.magic or self.f.magic in ("data", None, ""):
 
-        if self.f.package and self.f.package in make_list(self.package or []):
-            return True
+            # If the magic is unknown/data, assume the extension will
+            # be either missing or wrong and run the identify stage for this
+            # specific file.
+            if self.f.magic in ("data", None, ""):
+                self.f.identify()
+
+            if self.f.identified and self.f.extension:
+                if f".{self.f.extension}".endswith(self.exts):
+                    return True
+
+            if self.f.filename and \
+                    self.f.filename.lower().endswith(self.exts):
+                return True
+
+            return False
 
         for magic in make_list(self.magic or []):
             if magic in self.f.magic:
                 return True
+
         return False
 
     def decrypt(self, *args, **kwargs):
@@ -87,24 +166,70 @@ class Unpacker(object):
     @staticmethod
     def guess(f):
         """Guesses the unpacker based on the filename and/or contents."""
-        for plugin in Unpacker.plugins.values():
+        plugins = list(Unpacker.plugins.values())
+        plugins.sort(key=lambda x: x.priority, reverse=True)
+        for plugin in plugins:
             if plugin(f).handles():
+
                 yield plugin.name
 
-    def unpack(self, password="infected", duplicates=None):
+    def unpack(self, depth=0, password="infected", duplicates=None):
         raise NotImplementedError
 
-    def process(self, entries, duplicates, password=None):
+    def process(self, entries, duplicates, depth, password=None):
         """Recursively unpacks embedded archives if found."""
         if duplicates is None:
             duplicates = []
 
+        if self.f:
+            self.f.clear_error()
+
         ret = []
         for f in entries:
+            if f.filename and f.filename.strip() == "":
+                continue
+
+            unavailable_plugins = []
+            detected_plugins = 0
             for unpacker in Unpacker.guess(f):
+                detected_plugins += 1
                 plugin = self.plugins[unpacker](f)
+
                 if plugin.supported():
-                    f.children = plugin.unpack(password, duplicates)
+                    depth += 1
+                    if depth > MAX_NESTED:
+                        raise MaxNestedError(
+                            "The submitted file exceeded the maximum of %s "
+                            "nested archive files" % MAX_NESTED
+                        )
+
+                    try:
+                        f.children = plugin.unpack(depth, password, duplicates)
+
+                    except NotSupportedError as e:
+                        # This state can occur when a unpacker encounters a
+                        # thing it cannot handle that it did not detect during
+                        # the 'handles' or 'supported' phase. We let other
+                        # unpackers try to unpack the current file after this.
+                        f.set_error(Errors.NOT_SUPPORTED, str(e))
+                        f.unpacker = unpacker
+                        continue
+
+                    except UnpackException as e:
+                        state = e.state
+
+                        # Use a default error state if no error state was set
+                        if not state:
+                            state = Errors.UNPACK_FAILED
+
+                        f.set_error(state, str(e))
+
+                        # Store the unpacker and stop unpacking this file.
+                        f.unpacker = unpacker
+                        break
+
+                    depth -= 1
+
                     # TODO Improve this. The following is simply a guesstimate
                     # towards which unpacker is actually used. If there are
                     # multiple unpackers eligible for the current file, but
@@ -113,11 +238,25 @@ class Unpacker(object):
                     f.unpacker = unpacker
                     if f.children:
                         break
+                else:
+                    unavailable_plugins.append(plugin)
+
+            if not f.mode and unavailable_plugins and \
+                    len(unavailable_plugins) == detected_plugins:
+                deps = ', '.join(p.dependency for p in unavailable_plugins)
+                err = "One or more unpackers support this file, but the " \
+                      f"following dependencies are missing: {deps}"
+                f.set_error(Errors.MISSING_DEPENDENCY, err)
 
             if f.sha256 not in duplicates:
                 duplicates.append(f.sha256)
             else:
                 f.duplicate = True
+
+            # Clear identification here. Identification called by unpackers
+            # may only be used there. After unpacking, a file can be identified
+            # as something else.
+            f.clear_identify()
 
             f.parent = self.f
             ret.append(f)
@@ -125,18 +264,24 @@ class Unpacker(object):
 
     @staticmethod
     def single(f, password, duplicates):
-        return Unpacker(None).process([f], duplicates, password)
+        depth = 0
+        return Unpacker(None).process([f], duplicates, depth, password)
 
-    def process_directory(self, dirpath, duplicates, password=None):
+    def process_directory(self, dirpath, duplicates, depth, password=None):
         """Enumerates a directory, removes the directory, and returns data
         after calling the process function."""
         entries = []
         if duplicates is None:
             duplicates = []
 
+        if self.f:
+            self.f.clear_error()
+
         if not os.listdir(dirpath):
-            self.f.mode = "failed"
-            self.f.error = "no files extracted"
+            shutil.rmtree(dirpath)
+            raise UnpackException(
+                "Extraction directory was empty", Errors.NOTHING_EXTRACTED
+            )
 
         for dirpath2, dirnames, filepaths in os.walk(dirpath):
             for filepath in filepaths:
@@ -144,23 +289,40 @@ class Unpacker(object):
                 entries.append(File(relapath=filepath[len(dirpath) + 1 :], password=password, contents=open(filepath, "rb").read()))
 
         shutil.rmtree(dirpath)
-        return self.process(entries, duplicates)
+        return self.process(entries, duplicates, depth)
 
     def bruteforce(self, passwords, *args, **kwargs):
-        if type(passwords) is str:
+        if isinstance(passwords, str):
             passwords = [passwords]
         elif not passwords:
             passwords = []
+
+        # If a password was provided, first try that.
+        insert_at = 0
+        if passwords:
+            insert_at = 1
+        passwords.insert(insert_at, None)
 
         for password in iter_passwords():
             if password not in passwords:
                 passwords.append(password)
 
-        passwords.insert(0, None)
+        last_error = None
         for password in passwords:
-            value = self.decrypt(password, *args, **kwargs)
-            if value:
-                return value
+            try:
+                unpacked = self.decrypt(password, *args, **kwargs)
+                if password:
+                    self.f.password = password
+
+                return unpacked
+            except DecryptionFailedError as e:
+                last_error = str(e)
+
+        #
+        # self.f.set_error(Errors.DECRYPTION_FAILED, last_error)
+
+        raise DecryptionFailedError(last_error, Errors.DECRYPTION_FAILED)
+        #return False
 
 
 class Decoder(object):
@@ -187,24 +349,21 @@ class File(object):
     The `extrpath` determines the extraction path and may be used for read().
     """
 
-    def __init__(
-        self,
-        filepath=None,
-        contents=None,
-        relapath=None,
-        filename=None,
-        mode=None,
-        password=None,
-        description=None,
-        selected=None,
-        stream=None,
-        platform=None,
-    ):
-        if isinstance(relapath, str):
-            relapath = relapath.encode()
+    def __init__(self, filepath=None, contents=None, relapath=None,
+                 filename=None, mode=None, password=None, description=None,
+                 selected=False, stream=None, platforms=[]):
 
-        self.filepath = filepath
-        self.relapath = relapath
+        if isinstance(filepath, Path):
+            self.filepath = str(filepath)
+        else:
+            self.filepath = filepath
+
+        # Remove all \\ slashes by always parsing the relapath as a Windows
+        # path and changing it to posix.
+        if relapath:
+            self.relapath = PureWindowsPath(relapath).as_posix()
+        else:
+            self.relapath = relapath
         self.mode = mode
         self.error = None
         self.description = description
@@ -213,15 +372,24 @@ class File(object):
         self.duplicate = False
         self.unpacker = None
         self.parent = None
-        self.preview = True
-
+        self.archive = False
+        self.identified = False
+        self.safelisted = False
+        self.safelist_reason = ""
         # Extract the filename from any of the available path components.
         self.filename = ntpath.basename(filename or self.relapath or self.filepath or b"").rstrip(b"\x00") or None
 
         self._contents = contents
-        self._package = None
-        self._platform = platform
+        self._platforms = platforms
         self._selected = selected
+        self._selectable = selected
+        self._identified_ran = False
+        self._human_type = ""
+        self._extension = ""
+        self._dependency_version = ""
+        self._dependency = ""
+        self._md5 = None
+        self._sha1 = None
         self._sha256 = None
         self._mime = None
         self._magic = None
@@ -256,27 +424,91 @@ class File(object):
         self._stream.seek(0)
         return self._stream
 
+    def identify(self):
+        if self._identified_ran:
+            return
+        self._identified_ran = True
+
+        if self.filesize > 0:
+            data = identify(self)
+            if data:
+                self._selected = data[0]
+                self._selectable = data[0]
+                self._human_type = data[1]
+                self._extension = data[2]
+                self._platforms = []
+                for platform in data[3]:
+                    self._platforms.append(
+                        {"platform": platform, "os_version": ""}
+                    )
+
+                self._dependency = data[4]
+                self._dependency_version = ""
+                self.identified = True
+        else:
+            self._selected = False
+            self._selectable = False
+            self._human_type = "Empty file"
+            self.identified = True
+
+    def clear_identify(self):
+        if not self._identified_ran:
+            return
+
+        self._selected = False
+        self._selectable = False
+        self._human_type = ""
+        self._extension = ""
+        self._platforms = []
+        self._dependency = ""
+        self._dependency_version = ""
+        self.identified = False
+        self._identified_ran = False
+
+    def _hashes(self):
+        sha256, s, buf = hashlib.sha256(), self.stream, True
+        sha1 = hashlib.sha1()
+        md5 = hashlib.md5()
+        while buf:
+            buf = s.read(0x10000)
+            sha256.update(buf)
+            md5.update(buf)
+            sha1.update(buf)
+
+        self._sha256 = sha256.hexdigest()
+        self._sha1 = sha1.hexdigest()
+        self._md5 = md5.hexdigest()
+
+    @property
+    def md5(self):
+        if not self._md5:
+            self._hashes()
+        return self._md5
+
+    @property
+    def sha1(self):
+        if not self._sha1:
+            self._hashes()
+        return self._sha1
+
     @property
     def sha256(self):
         if not self._sha256:
-            h, s, buf = hashlib.sha256(), self.stream, True
-            while buf:
-                buf = s.read(0x10000)
-                h.update(buf)
-
-            self._sha256 = h.hexdigest()
+            self._hashes()
         return self._sha256
 
     @property
     def magic(self):
         if not self._magic and self.filesize:
-            self._magic = magic.from_buffer(self.stream.read(1024 * 1024))
+            self._magic = magic.from_buffer(self.contents)
         return self._magic or ""
 
     @property
     def mime(self):
         if not self._mime and self.filesize:
-            self._mime = magic.from_buffer(self.stream.read(1024 * 1024), mime=True)
+            self._mime = magic.from_buffer(
+                self.contents, mime=True
+            )
         return self._mime or ""
 
     @property
@@ -310,49 +542,78 @@ class File(object):
         if not self.relapath:
             return []
 
-        dirname = os.path.dirname(self.relapath.replace(b"\\", b"/"))
-        return dirname.split(b"/") if dirname else []
+        dirname = os.path.dirname(self.relapath.replace("\\", "/"))
+        return dirname.split("/") if dirname else []
 
     @property
     def filesize(self):
+        if self._contents:
+            return len(self._contents)
+
+        if self.filepath:
+            return os.path.getsize(self.filepath)
+
         s = self.stream
         s.seek(0, os.SEEK_END)
         return s.tell()
 
     @property
-    def package(self):
-        if self._package is None:
-            self._package = package(self)
-        return self._package
-
-    @package.setter
-    def package(self, value):
-        self._package = value
+    def dependency(self):
+        if not self._identified_ran:
+            self.identify()
+        return self._dependency
 
     @property
-    def platform(self):
-        if self._platform is None:
-            self._platform = platform(self)
-        return self._platform
+    def dependency_version(self):
+        if not self._identified_ran:
+            self.identify()
+        return self._dependency_version
 
-    @platform.setter
-    def platform(self, value):
-        self._platform = value
+    @property
+    def extension(self):
+        if not self._identified_ran:
+            self.identify()
+        return self._extension
+
+    @property
+    def human_type(self):
+        if not self._identified_ran:
+            self.identify()
+        return self._human_type
+
+    @property
+    def platforms(self):
+        if not self._identified_ran:
+            self.identify()
+        return self._platforms
 
     @property
     def selected(self):
-        if self._selected is None:
-            self._selected = bool(self.package)
+        if not self._identified_ran:
+            self.identify()
+
+        if self.error:
+            return False
+
         return self._selected
 
-    @selected.setter
-    def selected(self, value):
-        self._selected = value
+    @property
+    def selectable(self):
+        if not self._identified_ran:
+            self.identify()
+
+        if self.error:
+            return False
+
+        return self._selectable
 
     @property
     def extrpath(self):
         ret, child = [], self
         while child.parent:
+            if not child.relapath:
+                return ret
+
             ret.insert(0, child.relapath)
             child = child.parent
         return ret
@@ -363,7 +624,7 @@ class File(object):
             return
         # TODO Strip absolute paths for Windows.
         # TODO Normalize relative paths.
-        return self.relapath.lstrip(b"\\/").rstrip(b"\x00")
+        return self.relapath.lstrip("\\/").rstrip("\x00")
 
     @property
     def ole(self):
@@ -375,11 +636,36 @@ class File(object):
             self._ole_tried = True
         return self._ole
 
+    def set_error(self, state, error):
+        self.mode = state
+        self.error = error
+
+    def clear_error(self):
+        self.mode = Errors.NO_ERROR
+        self.error = None
+
+    def safelist(self, reason):
+        self.safelisted = True
+        self.safelist_reason = reason
+
+    def deselect(self):
+        self._selected = False
+
+    def unselectable(self):
+        self._selected = False
+        self._selectable = False
+
     def raise_no_ole(self, message):
         if self.ole is None:
             raise UnpackException(message)
 
-    def to_dict(self):
+    def to_dict(self, selected_files=None):
+        children = []
+        for child in self.children:
+            children.append(child.to_dict(selected_files))
+            if selected_files and child.selected:
+                selected_files.append(child)
+
         return {
             "filename": self.filename,
             "relapath": self.relapath,
@@ -389,7 +675,7 @@ class File(object):
             "parentdirs": self.parentdirs,
             "duplicate": self.duplicate,
             "size": self.filesize,
-            "children": [child.to_dict() for child in self.children],
+            "children": children,
             "type": "container" if self.children else "file",
             "finger": {
                 "magic": self.magic,
@@ -398,29 +684,44 @@ class File(object):
                 "magic_human": self.magic_human,
             },
             "password": self.password,
-            "sha256": self.sha256,
-            "platform": self.platform,
-            "package": self.package,
+            "human_type": self.human_type,
+            "extension": self.extension,
+            "identified": self.identified,
+            "platforms": self.platforms,
             "selected": self.selected,
-            "preview": self.preview,
+            "selectable": self.selectable,
+            "dependency": self._dependency,
+            "dependency_version": self._dependency_version,
+            "safelisted": self.safelisted,
+            "safelist_reason": self.safelist_reason,
             "error": self.error,
         }
 
-    def astree(self, finger=True, sanitize=False):
+    def astree(self, finger=True, sanitize=False, selected_files=None,
+               child_cb=None):
         ret = {
             "duplicate": self.duplicate,
             "password": self.password,
+            "human_type": self.human_type,
+            "extension": self.extension,
+            "dependency": self._dependency,
+            "dependency_version": self._dependency_version,
             "filename": self.filename,
             "relapath": self.relapath,
             "relaname": self.relaname,
             "extrpath": self.extrpath,
             "size": self.filesize,
-            "platform": self.platform,
-            "package": self.package,
+            "identified": self.identified,
+            "platforms": self.platforms,
             "selected": self.selected,
+            "selectable": self.selectable,
+            "safelisted": self.safelisted,
+            "safelist_reason": self.safelist_reason,
+            "sha256": self.sha256,
+            "md5": self.md5,
+            "sha1": self.sha1,
             "type": "container" if self.children else "file",
             "children": [],
-            "preview": self.preview,
             "error": self.error,
         }
 
@@ -434,6 +735,9 @@ class File(object):
                 "magic": self.magic,
                 "magic_human": self.magic_human,
             }
+
+        if child_cb:
+            child_cb(self, ret)
 
         def findentry(entry, name):
             for idx in range(len(entry)):
@@ -449,12 +753,20 @@ class File(object):
                 }
             )
             return entry[-1]
-
         for child in self.children:
             entry = ret["children"]
             for part in child.parentdirs:
                 entry = findentry(entry, part)["children"]
-            entry.append(child.astree(finger=finger, sanitize=sanitize))
+            if selected_files and child.selected:
+                selected_files.append(child)
+            entry.append(
+                child.astree(
+                    finger=finger,
+                    sanitize=sanitize,
+                    selected_files=selected_files,
+                    child_cb=child_cb
+                )
+            )
 
         return ret
 
@@ -482,7 +794,7 @@ class File(object):
         """Extract a single file from a possibly nested archive. See also the
         `extrpath` field of an embedded document."""
         if isinstance(relapath, (str, bytes)):
-            relapath = (relapath,)
+            relapath = relapath,
 
         relapath, nextpath = relapath[0], relapath[1:]
         for child in self.children:
@@ -493,7 +805,7 @@ class File(object):
 
     def get_child(self, relaname, regex=False):
         if not regex:
-            relaname = b"%s$" % re.escape(relaname)
+            relaname = "%s$" % re.escape(relaname)
 
         for child in self.children:
             if child.relaname and re.match(relaname, child.relaname):

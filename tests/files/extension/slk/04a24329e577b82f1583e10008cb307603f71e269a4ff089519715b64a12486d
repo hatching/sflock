@@ -1,0 +1,6 @@
+ID;P 
+O;E 
+NN;NAuto_open;ER101C1
+C;X1;Y101;EEXEC("CALC.EXE") 
+C;X1;Y102;EHALT() 
+E 

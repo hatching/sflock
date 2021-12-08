@@ -1,0 +1,225 @@
+MIME-Version: 1.0
+Content-Location: file:///C:/AF83B113/ShellProgrammingExamplesCaseStudies.htm
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/html; charset="windows-1256"
+
+<html xmlns:o=3D"urn:schemas-microsoft-com:office:office"
+xmlns:w=3D"urn:schemas-microsoft-com:office:word"
+xmlns=3D"http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=3DContent-Type content=3D"text/html; charset=3Dwindows-125=
+6">
+<meta name=3DProgId content=3DWord.Document>
+<meta name=3DGenerator content=3D"Microsoft Word 11">
+<meta name=3DOriginator content=3D"Microsoft Word 11">
+<link rel=3DFile-List
+href=3D"ShellProgrammingExamplesCaseStudies_files/filelist.xml">
+<title>Shell Programming Examples: Case Studies</title>
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author> </o:Author>
+  <o:LastAuthor> </o:LastAuthor>
+  <o:Revision>2</o:Revision>
+  <o:TotalTime>0</o:TotalTime>
+  <o:Created>2007-03-13T05:58:00Z</o:Created>
+  <o:LastSaved>2007-03-13T05:58:00Z</o:LastSaved>
+  <o:Pages>1</o:Pages>
+  <o:Words>368</o:Words>
+  <o:Characters>2104</o:Characters>
+  <o:Company>University of Pittsburgh</o:Company>
+  <o:Lines>17</o:Lines>
+  <o:Paragraphs>4</o:Paragraphs>
+  <o:CharactersWithSpaces>2468</o:CharactersWithSpaces>
+  <o:Version>11.8122</o:Version>
+ </o:DocumentProperties>
+ <o:OfficeDocumentSettings>
+  <o:AllowPNG/>
+ </o:OfficeDocumentSettings>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:Zoom>BestFit</w:Zoom>
+  <w:GrammarState>Clean</w:GrammarState>
+  <w:ValidateAgainstSchemas/>
+  <w:SaveIfXMLInvalid>false</w:SaveIfXMLInvalid>
+  <w:IgnoreMixedContent>false</w:IgnoreMixedContent>
+  <w:AlwaysShowPlaceholderText>false</w:AlwaysShowPlaceholderText>
+ </w:WordDocument>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:LatentStyles DefLockedState=3D"false" LatentStyleCount=3D"156">
+ </w:LatentStyles>
+</xml><![endif]-->
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;
+	mso-font-charset:2;
+	mso-generic-font-family:auto;
+	mso-font-pitch:variable;
+	mso-font-signature:0 268435456 0 0 -2147483648 0;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-parent:"";
+	margin:0in;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+h1
+	{mso-margin-top-alt:auto;
+	margin-right:0in;
+	mso-margin-bottom-alt:auto;
+	margin-left:0in;
+	mso-pagination:widow-orphan;
+	mso-outline-level:1;
+	font-size:24.0pt;
+	font-family:"Times New Roman";}
+h3
+	{mso-margin-top-alt:auto;
+	margin-right:0in;
+	mso-margin-bottom-alt:auto;
+	margin-left:0in;
+	mso-pagination:widow-orphan;
+	mso-outline-level:3;
+	font-size:13.5pt;
+	font-family:"Times New Roman";}
+span.GramE
+	{mso-style-name:"";
+	mso-gram-e:yes;}
+@page Section1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.25in 1.0in 1.25in;
+	mso-header-margin:.5in;
+	mso-footer-margin:.5in;
+	mso-paper-source:0;}
+div.Section1
+	{page:Section1;}
+ /* List Definitions */
+ @list l0
+	{mso-list-id:1495027736;
+	mso-list-template-ids:-728203458;}
+@list l0:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+ol
+	{margin-bottom:0in;}
+ul
+	{margin-bottom:0in;}
+-->
+</style>
+<!--[if gte mso 10]>
+<style>
+ /* Style Definitions */
+ table.MsoNormalTable
+	{mso-style-name:"Table Normal";
+	mso-tstyle-rowband-size:0;
+	mso-tstyle-colband-size:0;
+	mso-style-noshow:yes;
+	mso-style-parent:"";
+	mso-padding-alt:0in 5.4pt 0in 5.4pt;
+	mso-para-margin:0in;
+	mso-para-margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Times New Roman";
+	mso-ansi-language:#0400;
+	mso-fareast-language:#0400;
+	mso-bidi-language:#0400;}
+</style>
+<![endif]-->
+</head>
+
+<body lang=3DEN-US link=3Dblue vlink=3Dblue style=3D'tab-interval:.5in'>
+
+<div class=3DSection1>
+
+<h1>Shell Programming Examples: Case Studies </h1>
+
+<h3><a href=3D"http://unix01.sac.edu/casestudies/study1.htm">Case Study #1:=
+ show
+certain file characteristics in nice columns</a></h3>
+
+<p class=3DMsoNormal>Also illustrates Usage error, <br>
+Errors going to standard error, <br>
+Printf to output in nice columns, <br>
+set to access fields in a line, <br>
+<span class=3DGramE>bc</span> to calculate with fractions. </p>
+
+<h3><a href=3D"http://unix01.sac.edu/casestudies/study2.htm">Case Study #2:=
+ show
+which files from a list do exist</a></h3>
+
+<p class=3DMsoNormal>Also illustrates how to use unique temp files so multi=
+ple
+users can run the script simultaneously, <br>
+How to make sure the temp files are deleted when the program is done or if =
+the
+user aborts it (via INTR or QUIT), <br>
+How to use sed to add chars to the start of the line, <br>
+Using comm to compare two sorted lists, <br>
+Also illustrates that trap variables are evaluated when trap code is define=
+d so
+we make trap call a subroutine so that variables will be evaluated when the
+subroutine is invoked. We use this technique to return a valid zero vs.
+non-zero exit status. </p>
+
+<h3><a href=3D"http://unix01.sac.edu/casestudies/study3.htm">Case Study #3:=
+ How
+to output to different files from one script</a></h3>
+
+<h3><a href=3D"http://unix01.sac.edu/casestudies/study4.htm">Case Study #4:=
+ how
+to ask for user input until valid input is given. </a></h3>
+
+<p class=3DMsoNormal>Also illustrates how to check if no characters were in=
+put, <br>
+check if input exceeds 30 characters in length, <br>
+check if input lacks both first and last name, <br>
+exit if too many wrong answers. </p>
+
+<h3><a href=3D"http://unix01.sac.edu/casestudies/study5.htm">Case Study #5:=
+ How
+to process a list of files, generated by several methods </a></h3>
+
+<h3><a href=3D"http://unix01.sac.edu/casestudies/study6.htm">Case Study #6:=
+ How
+to remember where stdout is going, redirect stdout somewhere else, then res=
+tore
+stdout back to what it was </a></h3>
+
+<h3><a href=3D"http://unix01.sac.edu/casestudies/study7.htm">Case Study #7:
+Access each word in each line of a file </a></h3>
+
+<p class=3DMsoNormal>Also illustrates how to redirect stdin to a while loop=
+, <br>
+how to use &quot;set&quot; and &quot;for&quot; to access each word in the l=
+ine,
+</p>
+
+<h3><a href=3D"http://unix01.sac.edu/casestudies/study8.htm">Case Study #8:=
+ Using
+the case statement to implement a menu </a></h3>
+
+<p class=3DMsoNormal>Also illustrates how echo can output multiple lines, <=
+br>
+How to use a shell function/subroutine, <br>
+How to backup the system using cpio, <br>
+How to save and report the status of the cpio backup, <br>
+How to save start/end time and errors in a log, <br>
+How to force output to the screen (/dev/tty) even if stdout is redirected a=
+way
+from the screen. </p>
+
+</div>
+
+</body>
+
+</html>

@@ -8,9 +8,10 @@ from __future__ import print_function
 
 import os
 import tempfile
+import zipfile
 
 from sflock.abstracts import Unpacker
-from sflock.exception import UnpackException
+
 
 
 class ZipFile(Unpacker):
@@ -58,7 +59,9 @@ class Zip7File(Unpacker):
     exe = "/usr/bin/7z"
     exts = b".7z", b".iso", b".udf", b".xz"
     # TODO Should we use "isoparser" (check PyPI) instead of 7z?
-    magic = "7-zip archive", "ISO 9660", "UDF filesystem data", "XZ compressed data"
+    magic = ("7-zip archive", "ISO 9660", "UDF filesystem data", "XZ compressed data")
+    priority = 1
+    dependency = "p7zip-full"
 
     def unpack(self, password="infected", duplicates=None):
         dirpath = tempfile.mkdtemp()
@@ -75,10 +78,7 @@ class Zip7File(Unpacker):
         if not ret:
             return []
 
-        if temporary:
-            os.unlink(filepath)
-
-        return self.process_directory(dirpath, duplicates)
+        return self.process_directory(dirpath, duplicates, depth)
 
 
 class GzipFile(Unpacker):
@@ -86,8 +86,9 @@ class GzipFile(Unpacker):
     exe = "/usr/bin/7z"
     exts = b".gzip", b".gz"
     magic = "gzip compressed data, was"
+    dependency = "p7zip-full"
 
-    def unpack(self, password=None, duplicates=None):
+    def unpack(self, depth=0, password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()
 
         if self.f.filepath:
@@ -104,16 +105,17 @@ class GzipFile(Unpacker):
         if temporary:
             os.unlink(filepath)
 
-        return self.process_directory(dirpath, duplicates)
+        return self.process_directory(dirpath, duplicates, depth)
 
 
 class LzhFile(Unpacker):
     name = "lzhfile"
     exe = "/usr/bin/7z"
-    exts = b".lzh", b".lha"
-    magic = "LHa ("
+    exts = ".lzh", ".lha"
+    magic = "LHa "
+    dependency = "p7zip-full"
 
-    def unpack(self, password=None, duplicates=None):
+    def unpack(self, depth=0, password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()
 
         if self.f.filepath:
@@ -130,16 +132,17 @@ class LzhFile(Unpacker):
         if temporary:
             os.unlink(filepath)
 
-        return self.process_directory(dirpath, duplicates)
+        return self.process_directory(dirpath, duplicates, depth)
 
 
 class VHDFile(Unpacker):
     name = "vhdfile"
     exe = "/usr/bin/7z"
-    exts = b".vhd", b".vhdx"
+    exts = ".vhd", ".vhdx"
     magic = " Microsoft Disk Image"
+    dependency = "p7zip-full"
 
-    def unpack(self, password=None, duplicates=None):
+    def unpack(self, depth=0, password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()
 
         if self.f.filepath:
@@ -210,4 +213,4 @@ class XZFile(Unpacker):
         if temporary:
             os.unlink(filepath)
 
-        return self.process_directory(dirpath, duplicates)
+        return self.process_directory(dirpath, duplicates, depth)

@@ -2,6 +2,8 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import os.path
+
 from sflock.abstracts import File, Unpacker
 
 
@@ -26,4 +28,4 @@ def test_extensions():
 
 
 def test_case():
-    assert guess(b"A.ZIP") == ["zipfile"]
+    assert guess("ZIP_PLAIN.ZIP") == ["7zfile", "zipfile"]

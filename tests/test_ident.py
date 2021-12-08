@@ -5,90 +5,114 @@
 import os
 import tempfile
 
-from sflock.abstracts import File
-from sflock.ident import identify
 from sflock.main import unpack
 
 
 def test_empty():
     fd, filepath = tempfile.mkstemp()
     os.close(fd)
-    assert unpack(filepath.encode()).package is None
-    assert unpack(filepath.encode()).platform is None
+    assert unpack(filepath).extension == ""
+    assert unpack(filepath).platforms == []
 
 
 def test_identify():
-    assert identify(File(b"tests/files/script.js")) == "js"
-    assert identify(File(b"tests/files/script.wsf")) == "wsf"
-    assert identify(File(b"tests/files/script.vbs")) == "vbs"
-    assert identify(File(b"tests/files/script.ps1")) == "ps1"
     f = unpack(contents=open("tests/files/sample.jar", "rb").read())
-    assert f.package == "jar"
+    assert f.extension == "jar"
+
     f = unpack(contents=open("tests/files/sample.apk", "rb").read())
-    assert f.package == "apk"
-    assert identify(File(b"tests/files/maldoc_office.htm")) == "doc"
-    assert identify(File(b"tests/files/maldoc.xls")) == "xls"
-    assert identify(File(b"tests/files/test.hta_")) == "hta"
+    assert f.extension == "apk"
 
-
-def test_ppt():
-    f = unpack(contents=open("tests/files/ppt_1.pptx", "rb").read())
+def test_pptx():
+    f = unpack(contents=open("tests/files/pptx_1.pptx", "rb").read())
     assert f.duplicate is False
-    assert f.preview is False
-    assert f.selected is True
-    assert f.package == "ppt"
-    assert f.platform == "windows"
-    assert f.get_child(b"[Content_Types].xml") is not None
+    assert f.selected
+    assert f.extension == "pptx"
+    assert f.platforms == [
+                        {"platform": "windows", "os_version": ""},
+                        {"platform": "darwin", "os_version": ""},
+                        {"platform": "linux", "os_version": ""},
+                        {"platform": "android", "os_version": ""},
+                        {"platform": "ios", "os_version": ""}
+                    ]
+    assert f.get_child("[Content_Types].xml") is not None
     assert len(f.children) == 37
 
 
 def test_doc1():
-    f = unpack(b"tests/files/doc_1.docx_")
+    f = unpack("tests/files/doc_1.docx_")
     assert f.duplicate is False
     assert f.selected is True
-    assert f.preview is False
-    assert f.package == "doc"
-    assert f.platform == "windows"
-    assert f.get_child(b"[Content_Types].xml") is not None
+    assert f.extension == "docx"
+    assert f.platforms == [
+                        {"platform": "windows", "os_version": ""},
+                        {"platform": "darwin", "os_version": ""},
+                        {"platform": "linux", "os_version": ""},
+                        {"platform": "android", "os_version": ""},
+                        {"platform": "ios", "os_version": ""}
+                    ]
+    assert f.get_child("[Content_Types].xml") is not None
     assert len(f.children) == 12
-    assert f.children[0].selected is False
-    assert f.children[4].selected is False
-    assert f.children[8].selected is False
-    assert f.children[11].selected is False
+    assert f.children[0].selected == True
+    assert f.children[4].selected == False
+    assert f.children[8].selected == False
+    assert f.children[11].selected == False
 
 
 def test_doc2():
-    f = unpack(b"tests/files/doc_2.xlsx_")
+    f = unpack("tests/files/doc_2.xlsx_")
     assert f.duplicate is False
     assert f.selected is True
-    assert f.preview is False
-    assert f.package == "xls"
-    assert f.platform == "windows"
-    assert f.get_child(b"[Content_Types].xml") is not None
+    assert f.extension == "xlsm"
+    assert f.platforms == [
+                        {"platform": "windows", "os_version": ""},
+                        {"platform": "darwin", "os_version": ""},
+                        {"platform": "linux", "os_version": ""},
+                        {"platform": "android", "os_version": ""},
+                        {"platform": "ios", "os_version": ""}
+                    ]
+    assert f.get_child("[Content_Types].xml") is not None
     assert len(f.children) == 12
-    assert f.children[0].selected is False
-    assert f.children[11].selected is False
+    assert f.children[0].selected == True
+    assert f.children[11].selected == False
 
 
 def test_oledoc1():
-    f = unpack(b"tests/files/oledoc1.doc_")
-    assert f.package == "doc"
-    assert f.platform == "windows"
+    f = unpack("tests/files/oledoc1.doc_")
+    assert f.extension == "doc"
+    assert f.platforms == [
+                        {"platform": "windows", "os_version": ""},
+                        {"platform": "darwin", "os_version": ""},
+                        {"platform": "linux", "os_version": ""},
+                        {"platform": "android", "os_version": ""},
+                        {"platform": "ios", "os_version": ""}
+                    ]
 
 
 def test_url():
-    f = unpack(b"tests/files/1.url")
-    assert f.package == "ie"
-    assert f.platform == "windows"
+    f = unpack("tests/files/1.url")
+    assert f.extension == "url"
+    assert f.platforms == [{"platform": "windows", "os_version": ""}]
 
 
 def test_slk():
-    f = unpack(b"tests/files/1.slk")
-    assert f.package == "xls"
-    assert f.platform == "windows"
+    f = unpack("tests/files/1.slk")
+    assert f.extension == "slk"
+    assert f.platforms == [
+                        {"platform": "windows", "os_version": ""},
+                        {"platform": "darwin", "os_version": ""},
+                        {"platform": "linux", "os_version": ""},
+                        {"platform": "android", "os_version": ""},
+                        {"platform": "ios", "os_version": ""}
+                    ]
 
 
 def test_iqy():
-    f = unpack(b"tests/files/1.iqy")
-    assert f.package == "xls"
-    assert f.platform == "windows"
+    f = unpack("tests/files/1.iqy")
+    assert f.extension == "iqy"
+    assert f.platforms == [
+                        {"platform": "windows", "os_version": ""},
+                        {"platform": "darwin", "os_version": ""},
+                        {"platform": "linux", "os_version": ""},
+                        {"platform": "android", "os_version": ""},
+                        {"platform": "ios", "os_version": ""}
+                    ]

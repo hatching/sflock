@@ -10,25 +10,39 @@ import tarfile
 import tempfile
 
 from sflock.abstracts import Unpacker, File
+from sflock.exception import NotSupportedError
 from sflock.config import MAX_TOTAL_SIZE
+from sflock.errors import Errors
 
 
 class TarFile(Unpacker):
     name = "tarfile"
     mode = "r:"
-    exts = b".tar"
+    exts = ".tar"
     magic = "POSIX tar archive"
 
     def supported(self):
         return True
 
-    def unpack(self, password=None, duplicates=None):
+    def handles(self):
+        if not super().handles():
+            return False
+
+        if self.f.magic == "data":
+            return False
+
+        return True
+
+    def unpack(self, depth=0, password=None, duplicates=None):
+        self.f.archive = True
         try:
             archive = tarfile.open(mode=self.mode, fileobj=self.f.stream)
         except tarfile.ReadError as e:
-            self.f.mode = "failed"
-            self.f.error = e
-            return []
+            # Raise not supported instead of setting invalid archive error
+            # as .gzip archives are also recognized as tar.gz files.
+            # this errors tells the unpack caller to try the next
+            # supporting plugin.
+            raise NotSupportedError(f"Invalid tar/tar.gz archive: {e}")
 
         entries, total_size = [], 0
         for entry in archive:
@@ -40,19 +54,25 @@ class TarFile(Unpacker):
             # utilities over the Python implementation in the future.
             total_size += entry.size
             if total_size >= MAX_TOTAL_SIZE:
-                self.f.error = "files_too_large"
+                self.f.set_error(
+                    Errors.TOTAL_TOO_LARGE,
+                    f"Unpacked archive size exceeds: {MAX_TOTAL_SIZE}"
+                )
                 return []
 
-            relapath = entry.path.encode()
-            entries.append(File(relapath=relapath, contents=archive.extractfile(entry).read()))
+            entries.append(File(
+                relapath=entry.path,
+                contents=archive.extractfile(entry).read()
+            ))
 
-        return self.process(entries, duplicates)
+        return self.process(entries, duplicates, depth)
 
 
 class TargzFile(TarFile, Unpacker):
     name = "targzfile"
     mode = "r:gz"
-    exts = b".tar.gz"
+    exts = ".tar.gz"
+    magic = "gzip compressed data"
 
     def supported(self):
         return True
@@ -120,11 +140,10 @@ class TargzFile(TarFile, Unpacker):
             os.unlink(filepath)
         return self.process_directory(dirpath, duplicates)
 
-
 class Tarbz2File(TarFile, Unpacker):
     name = "tarbz2file"
     mode = "r:bz2"
-    exts = b".tar.bz2"
+    exts = ".tar.bz2"
 
     def handles(self):
         if self.f.filename and self.f.filename.lower().endswith(self.exts):
@@ -143,14 +162,14 @@ class Tarbz2File(TarFile, Unpacker):
             ret = False
             if d.read(0x1000):
                 ret = True
-        except IOError:
+        except (IOError, EOFError):
             pass
 
         d.close()
         os.unlink(filepath)
         return ret
 
-    def unpack(self, password=None, duplicates=None):
+    def unpack(self, depth=0, password=None, duplicates=None):
         dirpath = tempfile.mkdtemp()
 
         if not self.f.filepath:
@@ -166,7 +185,7 @@ class Tarbz2File(TarFile, Unpacker):
         while f.tell() < MAX_TOTAL_SIZE:
             try:
                 buf = d.read(0x10000)
-            except IOError:
+            except (IOError, EOFError):
                 break
             if not buf:
                 break
@@ -180,7 +199,10 @@ class Tarbz2File(TarFile, Unpacker):
         f.close()
 
         if filesize >= MAX_TOTAL_SIZE:
-            self.f.error = "files_too_large"
+            self.f.set_error(
+                Errors.TOTAL_TOO_LARGE,
+                f"Unpacked archive size exceeds: {MAX_TOTAL_SIZE}"
+            )
             return []
 
-        return self.process_directory(dirpath, duplicates)
+        return self.process_directory(dirpath, duplicates, depth)

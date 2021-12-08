@@ -9,17 +9,29 @@ import sys
 # import peepdf
 
 from sflock.abstracts import Unpacker, File
+from sflock.exception import UnpackException
+from sflock.misc import make_list
 
 
 class PdfFile(Unpacker):
     name = "pdffile"
-    exts = b".pdf"
+    exts = ".pdf"
     package = "pdf"
+    magic = "PDF document"
 
     def supported(self):
         return False
 
-    def unpack(self, password=None, duplicates=None):
+    def handles(self):
+
+        # Temporarily only use the file magic to detect PDF files, as peepdf
+        # can fail with invalid/fake PDFs.
+        for magic in make_list(self.magic or []):
+            if magic in self.f.magic:
+                return True
+        return False
+
+    def unpack(self, depth=0, password=None, duplicates=None):
         entries = []
         """
         if self.f.filepath:
@@ -30,9 +42,14 @@ class PdfFile(Unpacker):
             temporary = True
 
         p = peepdf.PDFCore.PDFParser()
-        _, f = p.parse(
-            filepath, forceMode=True, looseMode=True, manualAnalysis=False
-        )
+
+        try:
+            _, f = p.parse(
+                filepath, forceMode=True, looseMode=True, manualAnalysis=False
+            )
+        except Exception as e:
+            raise UnpackException(f"peepdf parsing failure: {e}")
+
 
         for version in range(f.updates + 1):
             for obj in f.body[version].objects.values():
@@ -64,7 +81,7 @@ class PdfFile(Unpacker):
                     continue
 
                 obj = f.body[version].objects[ref.id]
-                contents = obj.object.decodedStream
+                contents = obj.object.decodedStream.encode("latin-1")
                 filename = filename.value
 
                 if sys.version_info.major == 3:
@@ -72,6 +89,7 @@ class PdfFile(Unpacker):
                     filename = filename.encode()
 
                 entries.append(File(
+                    relapath=filename,
                     contents=contents,
                     filename=filename,
                     selected=False
@@ -82,4 +100,4 @@ class PdfFile(Unpacker):
         if entries:
             self.f.preview = False
         """
-        return self.process(entries, duplicates)
+        return self.process(entries, duplicates, depth)

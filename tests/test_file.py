@@ -48,8 +48,8 @@ def test_stream():
 
 
 def test_has_child():
-    f = unpack(b"tests/files/doc_1.docx_")
-    assert f.get_child(b"[Content_Types].xml") is not None
-    assert f.get_child(b"docProps/app.xml") is not None
-    assert f.get_child(b"docProps/.*\\.xml$", True) is not None
-    assert f.get_child(b"docProps/.*\\.xmk", True) is None
+    f = unpack("tests/files/doc_1.docx_")
+    assert f.get_child("[Content_Types].xml") is not None
+    assert f.get_child("docProps/app.xml") is not None
+    assert f.get_child("docProps/.*\\.xml$", True) is not None
+    assert f.get_child("docProps/.*\\.xmk", True) is None

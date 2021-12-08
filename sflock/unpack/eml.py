@@ -11,7 +11,8 @@ from sflock.abstracts import Unpacker, File
 
 class EmlFile(Unpacker):
     name = "emlfile"
-    exts = b".eml"
+    exts = ".eml", ".mht"
+    magic = ("news or mail", "SMTP mail", "MIME entity")
 
     whitelisted_content_type = [
         "text/plain",
@@ -58,7 +59,7 @@ class EmlFile(Unpacker):
 
         return entries
 
-    def unpack(self, password=None, duplicates=None):
+    def unpack(self, depth=0, password=None, duplicates=None):
         re_compile_orig = re.compile
 
         def re_compile_our(pattern):
@@ -71,4 +72,4 @@ class EmlFile(Unpacker):
         finally:
             re.compile = re_compile_orig
 
-        return self.process(entries, duplicates)
+        return self.process(entries, duplicates, depth)

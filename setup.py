@@ -45,12 +45,16 @@ setup(
     license="GPLv3",
     description="Sample staging and detonation utility",
     include_package_data=True,
+    python_requires='>3.6',
     install_requires=[
         "click",
-        "cryptography>=2.1",
+        "cryptography>=3.2",
         "olefile>=0.43",
         # "peepdf>=0.4.1",
         "python-magic>=0.4.13",
         "unicorn",
     ],
+    extras_require={
+        'test': ['pytest', 'mock']
+    }
 )

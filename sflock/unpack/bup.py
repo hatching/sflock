@@ -2,16 +2,16 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
-
 import ntpath
 import configparser
 
 from sflock.abstracts import Unpacker, File
+from sflock.errors import Errors
 
 
 class BupFile(Unpacker):
     name = "bupfile"
-    exts = b".bup"
+    exts = ".bup"
 
     def supported(self):
         return True
@@ -27,12 +27,11 @@ class BupFile(Unpacker):
     def decrypt(self, content):
         return b"".join(b"%c" % (ch ^ 0x6A) for ch in content)
 
-    def unpack(self, password=None, duplicates=None):
+    def unpack(self, depth=0,  password=None, duplicates=None):
         entries = []
 
         if not self.f.ole:
-            self.f.mode = "failed"
-            self.f.error = "No OLE structure found"
+            self.f.set_error(Errors.UNPACK_FAILED, "No OLE structure found")
             return []
 
         if ["Details"] not in self.f.ole.listdir():
@@ -49,9 +48,15 @@ class BupFile(Unpacker):
             if filename[0] == "Details" or not ole.get_size(filename[0]):
                 continue
 
-            relapath = ntpath.basename(config.get(filename[0], "OriginalName"))
-            relapath = relapath.encode()
+            relapath = ntpath.basename(
+                config.get(filename[0], "OriginalName")
+            )
 
-            entries.append(File(relapath=relapath, contents=self.decrypt(bytearray(ole.openstream(filename[0]).read()))))
+            entries.append(File(
+                relapath=relapath,
+                contents=self.decrypt(
+                    bytearray(ole.openstream(filename[0]).read())
+                )
+            ))
 
-        return self.process(entries, duplicates)
+        return self.process(entries, duplicates, depth)
