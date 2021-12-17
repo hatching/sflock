@@ -52,5 +52,6 @@ setup(
         # "peepdf>=0.4.1",
         "python-magic>=0.4.13",
         "unicorn",
+        "pefile",
     ],
 )

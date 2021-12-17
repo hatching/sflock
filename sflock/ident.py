@@ -5,6 +5,7 @@
 import re
 from collections import OrderedDict
 
+import pefile
 from sflock.aux.decode_vbe_jse import DecodeVBEJSE
 
 try:
@@ -76,6 +77,7 @@ magics = OrderedDict(
         ("MS-DOS executable PE32 executable (DLL)", "dll"),
         ("PE32 executable", "exe"),
         ("PE32+ executable", "exe"),
+        ('MS-DOS executable, MZ for MS-DOS', "exe"),
         ("Microsoft PowerPoint", "ppt"),
         ("Microsoft Office Excel", "xls"),
         ("Microsoft Excel", "xls"),
@@ -447,6 +449,13 @@ def identify(f):
             return package
     for magic_types in magics:
         if f.magic.startswith(magic_types):
+            # MS-DOS executable PE32 executable (DLL) (GUI) Intel 80386, for MS Windows
+            #   MZ for MS-DOS -> MS-DOS executable
+            #       MZ for MS-DOS -> but is DLL
+            package = magics[magic_types]
+            if package in ("exe", "dll"):
+                pe = pefile.PE(data=f.contents, fast_load=True)
+                return "dll" if pe.is_dll() else "exe"
             return magics[magic_types]
     if f.mime in mimes:
         return mimes[f.mime]
