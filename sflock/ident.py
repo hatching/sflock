@@ -102,19 +102,6 @@ magics = OrderedDict(
         ("MS Windows HtmlHelp Data", "chm"),
         ("Hangul (Korean) Word Processor File", "hwp"),
         ("XSL stylesheet", "xslt"),
-        ("RFC 822 mail", "eml"),
-        ("old news", "eml"),
-        ("mail forwarding", "eml"),
-        ("smtp mail", "eml"),
-        ("news", "eml"),
-        ("news or mail", "eml"),
-        ("saved news", "eml"),
-        ("MIME entity", "eml"),
-        ("Zip archive data, Java Jar archive", "jar"),
-        ("META-INF/MANIFEST.MF", "jar"),
-        ("Java Jar file data (zip)", "jar"),
-        ("Java archive data (JAR)", "jar"),
-        ("Zip archive data, at least v1.0 to extract", "jar"),
         # ("HTML", "html"),
     ]
 )
@@ -452,6 +439,10 @@ def identify(f):
     if not f.stream.read(0x1000):
         return
 
+    if f.filename:
+        for package, extensions in file_extensions.items():
+            if f.filename.endswith(extensions):
+                return package
     for identifier in identifiers:
         package = identifier(f)
         if package:
@@ -468,10 +459,6 @@ def identify(f):
             return magics[magic_types]
     if f.mime in mimes:
         return mimes[f.mime]
-    if f.filename:
-        for package, extensions in file_extensions.items():
-            if f.filename.endswith(extensions):
-                return package
 
     return detect_shellcode(f)
 
