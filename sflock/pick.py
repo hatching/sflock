@@ -2,54 +2,84 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
-doc_ext = (
-    b".rtf",
-    b".doc",
-    b".docx",
-    b".docm",
-    b".dot",
-    b".dotx",
-    b".docb",
-    b".mso",
-)
+import os
+
 doc_hdr = (b"\x7b\x5c\x72\x74",)
-xls_ext = (
-    b".xls",
-    b".xlsx",
-    b".xlm",
-    b".xlt",
-    b".xltx",
-    b".xlsm",
-    b".xltm",
-    b".xlsb",
-    b".xla",
-    b".xlam",
-    b".xll",
-    b".xlw",
-    b".slk",
-    b".iqy",
+suffix_dic = {
+    b".jar": "jar",
+    b".py": "python",
+    b".pyc": "python",
+    b".pyo": "python",
+    b".vbs": "vbs",
+    b".js": "js",
+    b".jse": "jse",
+    b".msi": "msi",
+    b".ps1": "ps1",
+    b".ps1xml": "ps1",
+    b".psc1": "ps1",
+    b".psm1": "ps1",
+    b".wsf": "wsf",
+    b".wsc": "wsf",
+    b".lnk": "generic",
+    b".bat": "generic",
+    b".cmd": "generic",
+    b".htm": "ie",
+    b".html": "ie",
+    b".hta": "ie",
+    b".mht": "ie",
+    b".mhtml": "ie",
+    b".url": "ie",
+    b".ppt": "ppt",
+    b".pptx": "ppt",
+    b".pps": "ppt",
+    b".ppsx": "ppt",
+    b".pptm": "ppt",
+    b".potm": "ppt",
+    b".potx": "ppt",
+    b".ppsm": "ppt",
+    b".pot": "ppt",
+    b".ppam": "ppt",
+    b".sldx": "ppt",
+    b".sldm": "ppt",
+    b".xls": "xls",
+    b".xlsx": "xls",
+    b".xlm": "xls",
+    b".xlt": "xls",
+    b".xltx": "xls",
+    b".xlsm": "xls",
+    b".xltm": "xls",
+    b".xlsb": "xls",
+    b".xla": "xls",
+    b".xlam": "xls",
+    b".xll": "xls",
+    b".xlw": "xls",
+    b".slk": "xls",
+    b".iqy": "xls",
+    b".rtf": "doc",
+    b".doc": "doc",
+    b".docx": "doc",
+    b".docm": "doc",
+    b".dot": "doc",
+    b".dotx": "doc",
+    b".docb": "doc",
+    b".mso": "doc",
+}
+eml_magics = (
+    "RFC 822 mail",
+    "old news",
+    "mail forwarding",
+    "smtp mail",
+    "news",
+    "news or mail",
+    "saved news",
+    "MIME entity",
 )
-ppt_ext = (
-    b".ppt",
-    b".pptx",
-    b".pps",
-    b".ppsx",
-    b".pptm",
-    b".potm",
-    b".potx",
-    b".ppsm",
-    b".pot",
-    b".ppam",
-    b".sldx",
-    b".sldm",
-)
-ie_ext = (
-    b".htm",
-    b".html",
-    b".hta",
-    b".mht",
-    b".mhtml",
-    b".url",
+jar_magics = (
+    "Zip archive data, Java Jar archive",
+    "META-INF/MANIFEST.MF",
+    "Java Jar file data (zip)",
+    "Java archive data (JAR)",
+    "Zip archive data, at least v1.0 to extract",
 )
 
 
@@ -67,20 +97,23 @@ def package(f):
     if "PE32" in f.magic or "MS-DOS" in f.magic:
         return "exe"
 
-    if "PDF" in f.magic or filename.endswith(b".pdf"):
+    if "PDF" in f.magic:
         return "pdf"
+    
+    if is_magic(f, eml_magics):
+        return "eml"
+    
+    if is_magic(f, jar_magics):
+        return "jar"
+    
+    if "HTML" in f.magic:
+        return "ie"
+    
+    if "Python script" in f.magic:
+        return "python"
 
-    if filename.endswith(doc_ext):
-        return "doc"
-
-    if filename.endswith(xls_ext):
-        return "xls"
-
-    if filename.endswith(ppt_ext):
-        return "ppt"
-
-    if filename.endswith(b".pub"):
-        return "pub"
+    if "vbs" in f.magic:
+        return "vbs"
 
     # TODO Get rid of this logic and replace it by actually inspecting
     # the contents of the .zip files (in case of Office 2007+).
@@ -96,44 +129,21 @@ def package(f):
     if "Microsoft PowerPoint" in f.magic:
         return "ppt"
 
-    if filename.endswith(b".jar"):
-        return "jar"
-
-    if filename.endswith((b".py", b".pyc", b".pyo")):
-        return "python"
-
-    if "Python script" in f.magic:
-        return "python"
-
-    if filename.endswith(b".vbs"):
-        return "vbs"
-
-    if filename.endswith(b".js"):
-        return "js"
-
-    if filename.endswith(b".jse"):
-        return "jse"
-
-    if filename.endswith(b".msi"):
-        return "msi"
-
-    if filename.endswith((b".ps1", b".ps1xml", b".psc1", b".psm1")):
-        return "ps1"
-
-    if filename.endswith((b".wsf", b".wsc")):
-        return "wsf"
-
-    if filename.endswith(b".lnk") or "MS Windows shortcut" in f.magic:
+    if "MS Windows shortcut" in f.magic:
         return "generic"
-
-    if filename.endswith((b".bat", b".cmd")):
-        return "generic"
-
-    if "HTML" in f.magic or filename.endswith(ie_ext):
-        return "ie"
+    
+    package = use_suffix_for_package(filename, suffix_dic)
+    if package:
+        return package
 
     if is_bash_script(f) or is_elf_executable(f):
         return "generic"
+
+
+def use_suffix_for_package(filename, suffix_dic):
+    suffix = os.path.splitext(filename)[1]
+    if suffix:
+        return suffix_dic.get(suffix)
 
 
 def is_bash_script(f):
@@ -142,6 +152,12 @@ def is_bash_script(f):
 
 def is_elf_executable(f):
     return f.magic.startswith("ELF")
+
+def is_magic(f, type_magics):
+    for magic in type_magics:
+        if magic in f.magic:
+            return True
+
 
 
 platforms = {
