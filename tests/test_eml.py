@@ -39,7 +39,7 @@ def test_eml_nested_eml():
     assert "MIME entity" in f(b"eml_nested_eml.eml").magic
     t = EmlFile(f(b"eml_nested_eml.eml"))
     assert t.handles() is True
-    assert not t.f.selected
+    assert t.f.selected
     files = list(t.unpack())
     assert len(files) == 2
 
@@ -98,3 +98,8 @@ def test_garbage():
     assert t.handles() is False
     assert not t.f.selected
     assert not t.unpack()
+
+def test_eml_suffix():
+    t = EmlFile(f(b"test_suffix.docx"))
+    files = list(t.unpack())
+    assert files[0].filename == b'\xec\xa3\xbc\xeb\xaa\xa9.docx'

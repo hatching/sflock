@@ -61,6 +61,8 @@ suffix_dic = {
     b".dotx": "doc",
     b".docb": "doc",
     b".mso": "doc",
+    b".pdf": "pdf",
+    b".pub": "pub",
 }
 eml_magics = (
     "RFC 822 mail",
@@ -73,11 +75,10 @@ eml_magics = (
     "MIME entity",
 )
 jar_magics = (
-    "Zip archive data, Java Jar archive",
+    "Java Jar archive",
     "META-INF/MANIFEST.MF",
     "Java Jar file data (zip)",
     "Java archive data (JAR)",
-    "Zip archive data, at least v1.0 to extract",
 )
 
 
