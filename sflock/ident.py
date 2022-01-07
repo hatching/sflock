@@ -451,6 +451,10 @@ def identify(f):
     if not f.stream.read(0x1000):
         return
 
+    if f.filename:
+        for package, extensions in file_extensions.items():
+            if f.filename.endswith(extensions):
+                return package
     for identifier in identifiers:
         package = identifier(f)
         if package:
@@ -467,10 +471,6 @@ def identify(f):
             return magics[magic_types]
     if f.mime in mimes:
         return mimes[f.mime]
-    if f.filename:
-        for package, extensions in file_extensions.items():
-            if f.filename.endswith(extensions):
-                return package
 
     return detect_shellcode(f)
 

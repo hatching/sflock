@@ -2,8 +2,16 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
-import os
-
+doc_ext = (
+    b".rtf",
+    b".doc",
+    b".docx",
+    b".docm",
+    b".dot",
+    b".dotx",
+    b".docb",
+    b".mso",
+)
 doc_hdr = (b"\x7b\x5c\x72\x74",)
 suffix_dic = {
     b".jar": "jar",
@@ -81,9 +89,8 @@ jar_magics = (
     "META-INF/MANIFEST.MF",
     "Java Jar file data (zip)",
     "Java archive data (JAR)",
-)
 
-
+  
 def package(f):
     """Guesses the package based on the filename and/or contents."""
     filename = f.filename.lower() if f.filename else b""
@@ -98,23 +105,20 @@ def package(f):
     if "PE32" in f.magic or "MS-DOS" in f.magic:
         return "exe"
 
-    if "PDF" in f.magic:
+    if "PDF" in f.magic or filename.endswith(b".pdf"):
         return "pdf"
-    
-    if is_magic(f, eml_magics):
-        return "eml"
-    
-    if is_magic(f, jar_magics):
-        return "jar"
-    
-    if "HTML" in f.magic:
-        return "ie"
-    
-    if "Python script" in f.magic:
-        return "python"
 
-    if "vbs" in f.magic:
-        return "vbs"
+    if filename.endswith(doc_ext):
+        return "doc"
+
+    if filename.endswith(xls_ext):
+        return "xls"
+
+    if filename.endswith(ppt_ext):
+        return "ppt"
+
+    if filename.endswith(b".pub"):
+        return "pub"
 
     # TODO Get rid of this logic and replace it by actually inspecting
     # the contents of the .zip files (in case of Office 2007+).
@@ -130,21 +134,44 @@ def package(f):
     if "Microsoft PowerPoint" in f.magic:
         return "ppt"
 
-    if "MS Windows shortcut" in f.magic:
+    if filename.endswith(b".jar"):
+        return "jar"
+
+    if filename.endswith((b".py", b".pyc", b".pyo")):
+        return "python"
+
+    if "Python script" in f.magic:
+        return "python"
+
+    if filename.endswith(b".vbs"):
+        return "vbs"
+
+    if filename.endswith(b".js"):
+        return "js"
+
+    if filename.endswith(b".jse"):
+        return "jse"
+
+    if filename.endswith(b".msi"):
+        return "msi"
+
+    if filename.endswith((b".ps1", b".ps1xml", b".psc1", b".psm1")):
+        return "ps1"
+
+    if filename.endswith((b".wsf", b".wsc")):
+        return "wsf"
+
+    if filename.endswith(b".lnk") or "MS Windows shortcut" in f.magic:
         return "generic"
-    
-    package = use_suffix_for_package(filename, suffix_dic)
-    if package:
-        return package
+
+    if filename.endswith((b".bat", b".cmd")):
+        return "generic"
+
+    if "HTML" in f.magic or filename.endswith(ie_ext):
+        return "ie"
 
     if is_bash_script(f) or is_elf_executable(f):
         return "generic"
-
-
-def use_suffix_for_package(filename, suffix_dic):
-    suffix = os.path.splitext(filename)[1]
-    if suffix:
-        return suffix_dic.get(suffix)
 
 
 def is_bash_script(f):
@@ -153,12 +180,6 @@ def is_bash_script(f):
 
 def is_elf_executable(f):
     return f.magic.startswith("ELF")
-
-def is_magic(f, type_magics):
-    for magic in type_magics:
-        if magic in f.magic:
-            return True
-
 
 
 platforms = {
