@@ -3,16 +3,6 @@
 # See the file 'docs/LICENSE.txt' for copying permission.
 import os
 
-doc_ext = (
-    b".rtf",
-    b".doc",
-    b".docx",
-    b".docm",
-    b".dot",
-    b".dotx",
-    b".docb",
-    b".mso",
-)
 doc_hdr = (b"\x7b\x5c\x72\x74",)
 suffix_dic = {
     b".jar": "jar",
