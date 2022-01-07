@@ -2,6 +2,8 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
+import os
+
 doc_hdr = (b"\x7b\x5c\x72\x74",)
 suffix_dic = {
     b".jar": "jar",
@@ -140,7 +142,6 @@ def package(f):
 
 
 def use_suffix_for_package(filename, suffix_dic):
-    import os
     suffix = os.path.splitext(filename)[1]
     if suffix:
         return suffix_dic.get(suffix)
