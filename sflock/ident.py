@@ -102,6 +102,18 @@ magics = OrderedDict(
         ("MS Windows HtmlHelp Data", "chm"),
         ("Hangul (Korean) Word Processor File", "hwp"),
         ("XSL stylesheet", "xslt"),
+        # ("RFC 822 mail", "eml"),
+        # ("old news", "eml"),
+        # ("mail forwarding", "eml"),
+        # ("smtp mail", "eml"),
+        # ("news", "eml"),
+        # ("news or mail", "eml"),
+        # ("saved news", "eml"),
+        # ("MIME entity", "eml"),
+        ("Java Jar archive", "jar"),
+        ("META-INF/MANIFEST.MF", "jar"),
+        ("Java Jar file data (zip)", "jar"),
+        ("Java archive data (JAR)", "jar"),
         # ("HTML", "html"),
     ]
 )
