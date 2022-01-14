@@ -24,9 +24,9 @@ def test_bup_plain():
     assert files[0].relapath == b"efax_9057733019_pdf.zip"
     assert "Zip archive" in files[0].magic
     assert files[0].parentdirs == []
-    assert files[0].package is None
+    assert files[0].package == "zip"
     assert files[0].platform is None
-    assert not files[0].selected
+    assert files[0].selected
 
     assert len(files[0].children) == 1
     assert not files[0].children[0].filepath

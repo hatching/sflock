@@ -81,6 +81,7 @@ jar_magics = (
     "Java Jar file data (zip)",
     "Java archive data (JAR)",
 )
+
   
 def package(f):
     """Guesses the package based on the filename and/or contents."""
@@ -113,6 +114,15 @@ def package(f):
 
     if "vbs" in f.magic:
         return "vbs"
+    
+    if "Zip archive" in f.magic:
+        return "zip"
+    
+    if "RAR archive" in f.magic:
+        return "rar"
+
+    if "7-zip archive" in f.magic:
+        return "7z"
 
     # TODO Get rid of this logic and replace it by actually inspecting
     # the contents of the .zip files (in case of Office 2007+).
