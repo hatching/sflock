@@ -21,7 +21,7 @@ class Test7zFile(object):
         assert "7-zip archive" in f(b"7z_plain.7z").magic
         t = Zip7File(f(b"7z_plain.7z"))
         assert t.handles() is True
-        assert not t.f.selected
+        assert t.f.selected
         files = list(t.unpack())
         assert len(files) == 1
         assert not files[0].filepath
@@ -35,7 +35,7 @@ class Test7zFile(object):
         assert "7-zip archive" in f(b"7z_nested.7z").magic
         t = Zip7File(f(b"7z_nested.7z"))
         assert t.handles() is True
-        assert not t.f.selected
+        assert t.f.selected
         files = list(t.unpack())
         assert len(files) == 1
 
@@ -50,7 +50,7 @@ class Test7zFile(object):
         assert "7-zip archive" in f(b"7z_nested2.7z").magic
         t = Zip7File(f(b"7z_nested2.7z"))
         assert t.handles() is True
-        assert not t.f.selected
+        assert t.f.selected
         files = list(t.unpack())
         assert len(files) == 1
 
@@ -101,7 +101,7 @@ class Test7zFile(object):
     def test_garbage2(self):
         t = Zip7File(f(b"7z_garbage.7z"))
         assert t.handles() is True
-        assert not t.f.selected
+        assert t.f.selected
         files = t.unpack()
         assert len(files) == 1
         assert not files[0].children
@@ -144,3 +144,10 @@ def test_no7z_plain():
     assert "7-zip archive" in f(b"7z_plain.7z").magic
     t = Zip7File(f(b"7z_plain.7z"))
     assert t.handles() is True
+
+
+def test_suffix():
+    assert "7-zip archive" in f(b"7z_suffix.docx").magic
+    t = Zip7File(f(b"7z_suffix.docx"))
+    assert t.handles() is True
+    assert t.f.package == "7z"

@@ -23,7 +23,7 @@ class TestZipfile(object):
         assert "Zip archive" in f(b"zip_plain.zip").magic
         z = ZipFile(f(b"zip_plain.zip"))
         assert z.handles() is True
-        assert not z.f.selected
+        assert z.f.selected
         assert z.f.preview is True
         files = list(z.unpack())
         assert len(files) == 1
@@ -40,7 +40,7 @@ class TestZipfile(object):
         assert "Zip archive" in f(b"zip_encrypted.zip").magic
         z = ZipFile(f(b"zip_encrypted.zip"))
         assert z.handles() is True
-        assert not z.f.selected
+        assert z.f.selected
         assert z.f.preview is True
         files = list(z.unpack("infected"))
         assert len(files) == 1
@@ -53,7 +53,7 @@ class TestZipfile(object):
 
         z = ZipFile(f(b"zip_encrypted2.zip"))
         assert z.handles() is True
-        assert not z.f.selected
+        assert z.f.selected
         files = list(z.unpack("sflock"))
         assert len(files) == 1
         assert files[0].relapath == b"sflock.txt"
@@ -65,7 +65,7 @@ class TestZipfile(object):
 
         z = ZipFile(f(b"zip_encrypted2.zip"))
         assert z.handles() is True
-        assert not z.f.selected
+        assert z.f.selected
         files = list(z.unpack("sflock"))
         assert len(files) == 1
         assert files[0].relapath == b"sflock.txt"
@@ -79,7 +79,7 @@ class TestZipfile(object):
         assert "Zip archive" in f(b"zip_nested.zip").magic
         z = ZipFile(f(b"zip_nested.zip"))
         assert z.handles() is True
-        assert not z.f.selected
+        assert z.f.selected
         files = list(z.unpack())
         assert len(files) == 1
 
@@ -93,7 +93,7 @@ class TestZipfile(object):
         assert "Zip archive" in f(b"zip_nested2.zip").magic
         z = ZipFile(f(b"zip_nested2.zip"))
         assert z.handles() is True
-        assert not z.f.selected
+        assert z.f.selected
         files = list(z.unpack())
         assert len(files) == 1
 
@@ -134,7 +134,7 @@ class TestZipfile(object):
     def test_garbage2(self):
         t = ZipFile(f(b"zip_garbage.zip"))
         assert t.handles() is True
-        assert not t.f.selected
+        assert t.f.selected
         assert t.f.preview is True
         files = t.unpack()
         assert len(files) == 1
@@ -229,3 +229,10 @@ class TestZipfile(object):
         filepath2 = os.path.join(dirpath, "1.js")
         assert open(filepath1, "rb").read() == b"foo5"
         assert open(filepath2, "rb").read() == b"bar"
+
+    def test_zip_suffix(self):
+        assert "Zip archive" in f(b"zip_suffix.docx").magic
+        z = ZipFile(f(b"zip_suffix.docx"))
+        assert z.handles() is True
+        assert z.f.package == "zip"
+        assert z.f.preview is True
