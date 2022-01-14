@@ -62,6 +62,9 @@ class TargzFile(TarFile, Unpacker):
         if self.f.filename and self.f.filename.lower().endswith(b".tar.gz"):
             return True
 
+        if "gzip compressed data, was" in self.f.magic:
+            return False
+
         if not self.f.filesize:
             return ret
 
