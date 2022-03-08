@@ -138,13 +138,13 @@ class Unpacker(object):
             self.f.mode = "failed"
             self.f.error = "no files extracted"
 
-        for dirpath2, dirnames, filepaths in os.walk(dirpath):
+        for dirpath2, _, filepaths in os.walk(dirpath):
             for filepath in filepaths:
                 filepath = os.path.join(dirpath2, filepath)
                 entries.append(File(relapath=filepath[len(dirpath) + 1 :], password=password, contents=open(filepath, "rb").read()))
 
         shutil.rmtree(dirpath)
-        return self.process(entries, duplicates)
+        return self.process(entries, duplicates, password)
 
     def bruteforce(self, passwords, *args, **kwargs):
         if type(passwords) is str:
