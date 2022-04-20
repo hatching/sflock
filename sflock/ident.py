@@ -31,6 +31,7 @@ shellcode_limit = 0x100000
 
 file_extensions = OrderedDict(
     [
+        ("access", (b".accdr",)),
         ("msi", (b".msi", b".msp", b".appx")),
         ("pub", (b".pub",)),
         ("doc", (b".doc", b".dot", b".docx", b".dotx", b".docm", b".dotm", b".docb", b".rtf", b".mht", b".mso", b".wbk", b".wiz")),
