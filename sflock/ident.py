@@ -7,16 +7,16 @@ from collections import OrderedDict
 
 import pefile
 from sflock.aux.decode_vbe_jse import DecodeVBEJSE
-"""
+
 try:
     import yara
     cur_dir = os.path.dirname(os.path.abspath(__file__))
-    with open(os.path.join(cur_dir, "data", "yara", "shellcodes.yar"), "rb") as f:
-        shellcode_rules = yara.compile(sources=f.read())
+    shellcode_rules = yara.compile(filepath=os.path.join(cur_dir, "data", "yara", "shellcodes.yar"))
+    archives_rules = yara.compile(filepath=os.path.join(cur_dir, "data", "yara", "archives.yar"))
     HAVE_YARA = True
 except ImportError:
     HAVE_YARA = False
-"""
+
 
 try:
     from unicorn import Uc, UC_MODE_32, UC_MODE_64, UC_ARCH_X86, UC_HOOK_CODE, unicorn
@@ -464,6 +464,11 @@ def vbe_jse(f):
             return "vbejse"
 
 
+def udf(f):
+    matches = archives_rules.match(data=f.contents)
+    if "archive_udf" in [rule.rule for rule in matches]:
+        return "udf"
+
 def identify(f):
     if not f.stream.read(0x1000):
         return
@@ -510,4 +515,5 @@ identifiers = [
     vbe_jse,
     sct,
     inp,
+    udf,
 ]
