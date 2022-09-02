@@ -465,9 +465,10 @@ def vbe_jse(f):
 
 
 def udf(f):
-    matches = archives_rules.match(data=f.contents)
-    if "archive_udf" in [rule.rule for rule in matches]:
-        return "udf"
+    if HAVE_YARA:
+        matches = archives_rules.match(data=f.contents)
+        if "archive_udf" in [rule.rule for rule in matches]:
+            return "udf"
 
 def identify(f):
     if not f.stream.read(0x1000):
