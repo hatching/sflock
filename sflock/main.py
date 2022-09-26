@@ -32,9 +32,9 @@ def supported():
     return ret
 
 
-def ident(f):
+def ident(f, check_shellcode: bool = False):
     """Identifies a file based on its contents."""
-    package = identify(f)
+    package = identify(f, check_shellcode)
 
     if package:
         f.preview = False
@@ -47,7 +47,7 @@ def ident(f):
 
     # Recursively enumerate further.
     for child in f.children:
-        ident(child)
+        ident(child, check_shellcode)
 
 
 def unpack(filepath: bytes = None, contents: bytes = None, password: str = None, filename=None, duplicates=None):

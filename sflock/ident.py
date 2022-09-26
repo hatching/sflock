@@ -470,7 +470,7 @@ def udf(f):
         if "archive_udf" in [rule.rule for rule in matches]:
             return "udf"
 
-def identify(f):
+def identify(f, check_shellcode: bool = False):
     if not f.stream.read(0x1000):
         return
 
@@ -495,7 +495,8 @@ def identify(f):
     if f.mime in mimes:
         return mimes[f.mime]
 
-    return detect_shellcode(f)
+    if check_shellcode:
+        return detect_shellcode(f)
 
 
 identifiers = [
