@@ -211,3 +211,28 @@ class XZFile(Unpacker):
             os.unlink(filepath)
 
         return self.process_directory(dirpath, duplicates)
+
+
+class NSIS(Unpacker):
+    name = "nsis"
+    exe = "/usr/bin/7z"
+    exts = b".exe"
+    magic = "Nullsoft Installer self-extracting archive"
+
+    def unpack(self, password=None, duplicates=None):
+        dirpath = tempfile.mkdtemp()
+
+        if self.f.filepath:
+            filepath = self.f.filepath
+            temporary = False
+        else:
+            filepath = self.f.temp_path(b".7z")
+            temporary = True
+        ret = self.zipjail(filepath, dirpath, "x", "-mmt=off", "-o{}".format(dirpath), filepath)
+        if not ret:
+            return []
+
+        if temporary:
+            os.unlink(filepath)
+
+        return self.process_directory(dirpath, duplicates)
