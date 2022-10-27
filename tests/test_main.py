@@ -14,7 +14,7 @@ def test_supported():
 
 
 def test_count_supported():
-    count = 15
+    count = 16
 
     if AceFile(None).supported():
         count += 1
