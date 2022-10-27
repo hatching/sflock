@@ -52,7 +52,7 @@ setup(
         # "peepdf>=0.4.1",
         "python-magic>=0.4.13",
         # "yara-python>=4.1.0",
-        "unicorn",
+        "unicorn>=2.0.0",
         "pefile",
     ],
 )
