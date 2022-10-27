@@ -15,4 +15,4 @@ def f(filename):
 
 def test_shellcode64_plain():
     t = unpack(f(b"shellcode.zip"))
-    assert identify(t.children[0]) == "Shellcode_x64"
+    assert identify(t.children[0], check_shellcode=True) == "Shellcode_x64"
