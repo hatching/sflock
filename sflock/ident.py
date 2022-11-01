@@ -500,6 +500,7 @@ def identify(f, check_shellcode: bool = False):
 
 
 identifiers = [
+    udf,
     dmg,
     office_zip,
     office_ole,
@@ -517,5 +518,4 @@ identifiers = [
     vbe_jse,
     sct,
     inp,
-    udf,
 ]
