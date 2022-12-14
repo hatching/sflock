@@ -64,7 +64,7 @@ def test_eml_nested_eml():
     assert not files[0].children[1].selected
 
     assert files[1].relapath == b"att1"
-    assert "UTF-8 Unicode" in files[1].magic
+    assert "UTF-8 Unicode" in files[1].magic or "Unicode text, UTF-8 text" in files[1].magic
     assert files[1].contents == b"\xe6\x83\xa1\xe6\x84\x8f\xe8\xbb\x9f\xe9\xab\x94"
     assert files[1].package is None
     assert files[1].platform is None

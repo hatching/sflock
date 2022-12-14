@@ -65,6 +65,12 @@ file_extensions = OrderedDict(
     ]
 )
 
+trusted_archive_mimes = OrderedDict(
+    [
+        ("application/x-iso9660-image", "iso"),
+    ]
+)
+
 mimes = OrderedDict(
     [
         ("application/x-lzh-compressed", "lzh"),
@@ -478,6 +484,11 @@ def identify(f, check_shellcode: bool = False):
         for package, extensions in file_extensions.items():
             if f.filename.endswith(extensions):
                 return package
+
+    # Trusted mimes should be applied before identifiers which could run on files within archives
+    if f.mime in trusted_archive_mimes:
+        return trusted_archive_mimes[f.mime]
+
     for identifier in identifiers:
         package = identifier(f)
         if package:
