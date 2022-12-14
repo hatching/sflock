@@ -89,6 +89,12 @@ mimes = OrderedDict(
     ]
 )
 
+trusted_archive_magics = OrderedDict(
+    [
+        ("ISO 9660", "iso"),
+    ]
+)
+
 magics = OrderedDict(
     [
         # ToDo msdos
@@ -485,9 +491,13 @@ def identify(f, check_shellcode: bool = False):
             if f.filename.endswith(extensions):
                 return package
 
-    # Trusted mimes should be applied before identifiers which could run on files within archives
+    # Trusted mimes and magics should be applied before identifiers which could run on files within archives
     if f.mime in trusted_archive_mimes:
         return trusted_archive_mimes[f.mime]
+
+    for magic_types in trusted_archive_magics:
+        if f.magic.startswith(magic_types):
+            return trusted_archive_magics[magic_types]
 
     for identifier in identifiers:
         package = identifier(f)
