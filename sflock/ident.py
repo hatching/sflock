@@ -61,7 +61,8 @@ file_extensions = OrderedDict(
         ("msbuild", (b".csproj", b".vbproj", b".vcxproj", b".dbproj", b".fsproj")),
         ("zip", (b".zip",)),
         ("cpl", (b".cpl",)),
-        ("ichitaro", (b".jtd", b".jtdc", b".jttc", b".jtt"))
+        ("ichitaro", (b".jtd", b".jtdc", b".jttc", b".jtt")),
+        ("one", (b".one", ".onetoc2"))
     ]
 )
 
@@ -255,6 +256,9 @@ def hta(f):
     if found >= 10:
         return "hta"
 
+def office_one(f):
+    if f.contents.startswith(b"\xE4\x52\x5C\x7B\x8C\xD8\xA7\x4D\xAE\xB1\x53\x78\xD0\x29\x96\xD3"):
+        return "one"
 
 def office_webarchive(f):
     if f.contents.startswith(b"MZ"):
@@ -525,6 +529,7 @@ identifiers = [
     dmg,
     office_zip,
     office_ole,
+    office_one,
     office_webarchive,
     office_activemime,
     hta,
