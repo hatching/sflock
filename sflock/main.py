@@ -50,7 +50,7 @@ def ident(f, check_shellcode: bool = False):
         ident(child, check_shellcode)
 
 
-def unpack(filepath: bytes = None, contents: bytes = None, password: str = None, filename=None, duplicates=None):
+def unpack(filepath: bytes = None, contents: bytes = None, password: str = None, filename=None, duplicates=None, check_shellcode: bool = False):
     """Unpacks the file or contents provided."""
     if duplicates is None:
         duplicates = []
@@ -71,7 +71,7 @@ def unpack(filepath: bytes = None, contents: bytes = None, password: str = None,
 
     Unpacker.single(f, password, duplicates)
 
-    ident(f)
+    ident(f, check_shellcode)
     return f
 
 
