@@ -55,4 +55,5 @@ setup(
         "unicorn>=2.0.0",
         "pefile",
     ],
+    extras_require={"dev": ["mock", "pytest"]}
 )
