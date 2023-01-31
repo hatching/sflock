@@ -3,4 +3,4 @@ files:
   - "**.yar"
   - "**.yara"
   ignore:
-  - "sflock/sflock/data/yara/shellcodes.yar"
+  - "sflock/sflock/data/yara/*.yar"
