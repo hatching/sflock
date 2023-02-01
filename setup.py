@@ -38,6 +38,8 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Topic :: Security",
     ],
     keywords=("sflock unarchive"),
@@ -51,9 +53,10 @@ setup(
         "olefile>=0.43",
         # "peepdf>=0.4.1",
         "python-magic>=0.4.13",
-        "yara-python>=4.1.0",
-        "unicorn>=2.0.0",
         "pefile",
     ],
-    extras_require={"dev": ["mock", "pytest"]}
+    extras_require={
+        "dev": ["mock", "pytest"],
+        "shellcode": ["unicorn>=2.0.0", "yara-python>=4.1.0"],
+    }
 )
