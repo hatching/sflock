@@ -33,6 +33,7 @@ file_extensions = OrderedDict(
     [
         ("access", (b".accdr",)),
         ("msi", (b".msi", b".msp", b".appx")),
+        ("msix", (b".msix", b".msixbundle")),
         ("pub", (b".pub",)),
         ("doc", (b".doc", b".dot", b".docx", b".dotx", b".docm", b".dotm", b".docb", b".rtf", b".mht", b".mso", b".wbk", b".wiz")),
         ("xls", (b".xls", b".xlt", b".xlm", b".xlsx", b".xltx", b".xlsm", b".xltm", b".xlsb", b".xla", b".xlam", b".xll", b".xlw", b".slk", b".xll", b".csv")),
@@ -301,6 +302,9 @@ def office_activemime(f):
     if f.contents.startswith((b"QWN0aXZlTWltZQ", b"ActiveMime")):
         return "doc"
 
+def msix(f):
+    if all([pattern in f.contents for pattern in (b"Registry.dat", b"AppxManifest.xml")]):
+        return "msix"
 
 def office_zip(f):
     if not f.get_child(b"[Content_Types].xml"):
@@ -492,8 +496,14 @@ def identify(f, check_shellcode: bool = False):
 
     if f.filename:
         for package, extensions in file_extensions.items():
+            print(package, extensions, f.filename)
             if f.filename.endswith(extensions):
                 return package
+
+    for identifier in identifiers_special:
+        package = identifier(f)
+        if package:
+            return package
 
     # Trusted mimes and magics should be applied before identifiers which could run on files within archives
     if f.mime in trusted_archive_mimes:
@@ -523,6 +533,9 @@ def identify(f, check_shellcode: bool = False):
     if check_shellcode:
         return detect_shellcode(f)
 
+identifiers_special = [
+    msix,
+]
 
 identifiers = [
     udf,
