@@ -478,7 +478,7 @@ def vbe_jse(f):
     if b"#@~^" in f.contents[:100]:
         data = DecodeVBEJSE(f.contents, "")
         if data:
-            if re.findall(b"\s?Dim\s", data, re.I):
+            if re.findall(rb"\s?Dim\s", data, re.I):
                 return "vbs"
             else:
                 return "js"
