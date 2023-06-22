@@ -63,6 +63,7 @@ file_extensions = OrderedDict(
         ("zip", (b".zip",)),
         ("cpl", (b".cpl",)),
         ("ichitaro", (b".jtd", b".jtdc", b".jttc", b".jtt")),
+        ("inf", (b".inf",))
         ("one", (b".one", b".onetoc2"))
     ]
 )
@@ -88,6 +89,7 @@ mimes = OrderedDict(
         ("application/x-dosexec", "exe"),
         ("application/vnd.ms-cab-compressed", "cab"),
         ("application/pdf", "pdf"),
+        ("application/x-setupscript", "inf"),
     ]
 )
 
@@ -490,13 +492,32 @@ def udf(f):
         if "archive_udf" in [rule.rule for rule in matches]:
             return "udf"
 
+def inf(f):
+    if f.contents.startswith(b"MZ"):
+        return None
+
+    STRINGS = [
+        # b"[version]",
+        b"Signature=",
+        b"AdvancedINF=",
+        b"[DefaultInstall_SingleUser]",
+        b"[DefaultInstall]",
+    ]
+
+    found = 0
+    for string in STRINGS:
+        found += f.contents.count(string)
+
+    if found >= 3:
+        return "inf"
+
+
 def identify(f, check_shellcode: bool = False):
     if not f.stream.read(0x1000):
         return
 
     if f.filename:
         for package, extensions in file_extensions.items():
-            print(package, extensions, f.filename)
             if f.filename.endswith(extensions):
                 return package
 
@@ -557,4 +578,5 @@ identifiers = [
     vbe_jse,
     sct,
     inp,
+    inf,
 ]
