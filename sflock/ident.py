@@ -6,7 +6,8 @@ import re
 from collections import OrderedDict
 
 import pefile
-from sflock.aux.decode_vbe_jse import DecodeVBEJSE
+from sflock.aux.decode_vbe_jse import decode_file as vbe_decode_file
+
 
 try:
     import yara
@@ -476,7 +477,7 @@ def vbe_jse(f):
         return None
 
     if b"#@~^" in f.contents[:100]:
-        data = DecodeVBEJSE(f.contents, "")
+        data = vbe_decode_file("", f.contents)
         if data:
             if re.findall(rb"\s?Dim\s", data, re.I):
                 return "vbs"
