@@ -480,7 +480,9 @@ def visualbasic(f):
 
     VB_STRS = [
         b"Dim ",
+        b"\x00D\x00i\x00m\x00 ",
         b"dim ",
+        b"\s\x00d\x00i\x00m\x00 ",
         b"Set ",
         b"Attribute ",
         b"Public ",
@@ -531,7 +533,7 @@ def vbe_jse(f):
     if b"#@~^" in f.contents[:100]:
         data = vbe_decode_file("", f.contents)
         if data:
-            if re.findall(rb"\s?Dim\s", data, re.I):
+            if re.findall(rb"\s?Dim\s", data, re.I) or re.findall(b"\s\x00D\x00i\x00m\x00\s", data, re.I):
                 return "vbs"
             else:
                 return "js"
