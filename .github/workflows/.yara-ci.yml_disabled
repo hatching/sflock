@@ -1,8 +1,0 @@
-files:
-  accept:
-  - "**.yar"
-  - "**.yara"
-  ignore:
-  - "sflock/sflock/data/yara/*.yar"
-  - "sflock/data/yara/archives.yar"
-  - "sflock/data/yara/shellcodes.yar"
