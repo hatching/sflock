@@ -506,7 +506,7 @@ def visualbasic(f):
 
 
 def java(f):
-    if not f.get_child(b"META-INF/MANIFEST.MF"):
+    if not f.get_child(b"META-INF/MANIFEST.MF") and not b"META-INF/MANIFEST.MF" in f.contents:
         return
     if f.get_child(b"AndroidManifest.xml"):
         return
@@ -584,7 +584,10 @@ def identify(f, check_shellcode: bool = False):
 
     # Trusted mimes and magics should be applied before identifiers which could run on files within archives
     if f.mime in trusted_archive_mimes:
-        return trusted_archive_mimes[f.mime]
+        if f.mime == "application/zip" and not java(f):
+            return trusted_archive_mimes[f.mime]
+        else:
+            return trusted_archive_mimes[f.mime]
 
     for magic_types in trusted_archive_magics:
         if f.magic.startswith(magic_types):
