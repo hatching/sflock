@@ -55,7 +55,6 @@ file_extensions = OrderedDict(
                 b".xll",
                 b".xlw",
                 b".slk",
-                b".xll",
                 b".csv",
             ),
         ),
@@ -574,7 +573,7 @@ def identify(f, check_shellcode: bool = False):
 
     if f.filename:
         for package, extensions in file_extensions.items():
-            if f.filename.endswith(extensions):
+            if f.filename.endswith(extensions) and not f.contents.startswith(b"MZ"):
                 return package
 
     for identifier in identifiers_special:
