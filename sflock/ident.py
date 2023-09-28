@@ -85,7 +85,8 @@ file_extensions = OrderedDict(
         # ("msg", (b".msg",, b".rpmsg")),
         # ("eml", (b".eml", b".ics")),
         ("js", (b".js", b".jse")),
-        ("ie", (b".html", b".url")),  # b".htm",
+        ("ie", (b".url")),
+        ("html", (b"html")), #b".htm")),
         ("xps", (b".xps",)),
         ("hta", (b".hta",)),
         ("mht", (b".mht",)),
@@ -128,6 +129,7 @@ mimes = OrderedDict(
         ("application/vnd.ms-cab-compressed", "cab"),
         ("application/pdf", "pdf"),
         ("application/x-setupscript", "inf"),
+        ("text/html", "html"),
     ]
 )
 
@@ -184,7 +186,7 @@ magics = OrderedDict(
         ("META-INF/MANIFEST.MF", "jar"),
         ("Java Jar file data (zip)", "jar"),
         ("Java archive data (JAR)", "jar"),
-        # ("HTML", "html"),
+        ("HTML", "html"),
     ]
 )
 

@@ -23,7 +23,7 @@ suffix_dic = {
     b".bat": "generic",
     b".cmd": "generic",
     b".htm": "ie",
-    b".html": "ie",
+    b".html": "html",
     b".hta": "ie",
     b".mht": "ie",
     b".mhtml": "ie",
