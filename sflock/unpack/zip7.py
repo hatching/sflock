@@ -3,14 +3,10 @@
 # This file is part of SFlock - http://www.sflock.org/.
 # See the file 'docs/LICENSE.txt' for copying permission.
 
-from __future__ import absolute_import
-from __future__ import print_function
-
 import os
 import tempfile
 
 from sflock.abstracts import Unpacker
-from sflock.exception import UnpackException
 
 
 class ZipFile(Unpacker):
@@ -23,6 +19,9 @@ class ZipFile(Unpacker):
         return True
 
     def handles(self):
+        # MSIX shouldn't be unpacked
+        if all([pattern in self.f.contents for pattern in (b"Registry.dat", b"AppxManifest.xml")]):
+            return False
         if super(ZipFile, self).handles():
             return True
         if self.f.stream.read(2) == b"PK":
