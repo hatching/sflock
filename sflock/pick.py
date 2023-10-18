@@ -64,6 +64,7 @@ suffix_dic = {
     b".mso": "doc",
     b".pdf": "pdf",
     b".pub": "pub",
+    b".a3x": "autoit",
 }
 eml_magics = (
     "RFC 822 mail",
@@ -82,7 +83,7 @@ jar_magics = (
     "Java archive data (JAR)",
 )
 
-  
+
 def package(f):
     """Guesses the package based on the filename and/or contents."""
     filename = f.filename.lower() if f.filename else b""
@@ -99,25 +100,25 @@ def package(f):
 
     if "PDF" in f.magic:
         return "pdf"
-    
+
     if is_magic(f, eml_magics):
         return "eml"
-    
+
     if is_magic(f, jar_magics):
         return "jar"
-    
+
     if "HTML" in f.magic:
         return "ie"
-    
+
     if "Python script" in f.magic:
         return "python"
 
     if "vbs" in f.magic:
         return "vbs"
-    
+
     if "Zip archive" in f.magic:
         return "zip"
-    
+
     if "RAR archive" in f.magic:
         return "rar"
 
@@ -140,7 +141,7 @@ def package(f):
 
     if "MS Windows shortcut" in f.magic:
         return "generic"
-    
+
     package = use_suffix_for_package(filename, suffix_dic)
     if package:
         return package
