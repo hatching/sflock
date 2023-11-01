@@ -104,6 +104,7 @@ file_extensions = OrderedDict(
         ("ichitaro", (b".jtd", b".jtdc", b".jttc", b".jtt")),
         ("inf", (b".inf",)),
         ("one", (b".one", b".onetoc2")),
+        ("zpaq", (b".zpaq",)),
     ]
 )
 
@@ -122,6 +123,7 @@ mimes = OrderedDict(
         ("text/x-python", "py"),
         ("application/x-rar", "rar"),
         ("application/x-7z-compressed", "7z"),
+        ("application/zlib", "7z")
         ("application/x-bzip2", "bzip2"),
         ("application/x-tar", "tar"),
         ("application/java-archive", "jar"),
@@ -187,6 +189,7 @@ magics = OrderedDict(
         ("Java Jar file data (zip)", "jar"),
         ("Java archive data (JAR)", "jar"),
         ("HTML", "html"),
+        ("ZPAQ file", "zpaq")
     ]
 )
 
