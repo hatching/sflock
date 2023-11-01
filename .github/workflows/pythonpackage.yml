@@ -20,7 +20,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        sudo apt-get install p7zip-full rar unace-nonfree cabextract lzip libjpeg8-dev zlib1g-dev
+        sudo apt-get install zpaq p7zip-full rar unace-nonfree cabextract lzip libjpeg8-dev zlib1g-dev
         python -m pip install --upgrade pip
         pip install pytest>=3.6 mock "pytest-cov<2.6.0" codecov
         pip install -e ".[shellcode]"
