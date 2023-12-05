@@ -105,6 +105,7 @@ file_extensions = OrderedDict(
         ("inf", (b".inf",)),
         ("one", (b".one", b".onetoc2")),
         ("zpaq", (b".zpaq",)),
+        ("pgp", (b".gpg", ".pgp")),
     ]
 )
 
@@ -189,7 +190,9 @@ magics = OrderedDict(
         ("Java Jar file data (zip)", "jar"),
         ("Java archive data (JAR)", "jar"),
         ("HTML", "html"),
-        ("ZPAQ file", "zpaq")
+        ("ZPAQ file", "zpaq"),
+        # https://github.com/file/file/blob/master/magic/Magdir/pgp
+        ("PGP ", "pgp"),
     ]
 )
 
